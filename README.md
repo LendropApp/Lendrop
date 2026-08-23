@@ -1,4 +1,4 @@
-# Lendrop — Base template (React 19 + Vite + Tailwind v4 + Supabase)
+# Lendrop 
 
 Clean template to start the repo fresh. Comes with: the public marketing
 landing page, full Supabase authentication, protected routes, brand

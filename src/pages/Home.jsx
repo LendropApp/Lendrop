@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
   Shirt,
@@ -18,8 +18,17 @@ import {
   X,
 } from 'lucide-react'
 
-
-const lockers = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3']
+const INITIAL_LOCKERS = [
+  { id: 'A1', item: 'Canon EOS R6 Camera', status: 'available' },
+  { id: 'A2', item: 'Bosch Cordless Drill', status: 'rented' },
+  { id: 'A3', item: 'DJI Mini 4 Drone', status: 'available' },
+  { id: 'B1', item: 'Yamaha Acoustic Guitar', status: 'available' },
+  { id: 'B2', item: 'Trek Mountain Bike', status: 'rented' },
+  { id: 'B3', item: 'Samsonite 28" Suitcase', status: 'available' },
+  { id: 'C1', item: '4-Person Camping Tent', status: 'available' },
+  { id: 'C2', item: 'Superhero Costume', status: 'rented' },
+  { id: 'C3', item: 'PlayStation 5 Console', status: 'available' },
+]
 
 const categories = [
   { id: 'cat-1', name: 'Clothing', icon: Shirt },
@@ -39,14 +48,14 @@ const steps = [
   },
   {
     step: 'Step 02',
-    title: 'Get your code',
-    desc: 'We send a unique code to open your assigned locker, ready whenever you are.',
+    title: 'Type your password',
+    desc: 'With your password, open your assigned locker, ready whenever you are.',
     icon: Key,
   },
   {
     step: 'Step 03',
     title: 'Pick up & go',
-    desc: 'Scan your code, open the locker, and check the item — already verified by our AI.',
+    desc: 'Type your password, open the locker, and check the item — already verified by our AI.',
     icon: Box,
   },
   {
@@ -83,12 +92,45 @@ const navLinks = [
 
 export default function Home() {
   const navigate = useNavigate()
+  const [lockers, setLockers] = useState(INITIAL_LOCKERS)
   const [selectedLocker, setSelectedLocker] = useState(null)
+  const [hoveredLocker, setHoveredLocker] = useState(null)
+  const [flashLocker, setFlashLocker] = useState(null)
   const [menuOpen, setMenuOpen] = useState(false)
 
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLockers((prev) => {
+        const index = Math.floor(Math.random() * prev.length)
+        const next = [...prev]
+        next[index] = {
+          ...next[index],
+          status: next[index].status === 'available' ? 'rented' : 'available',
+        }
+        setFlashLocker(next[index].id)
+        return next
+      })
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [])
+
+
+  useEffect(() => {
+    if (!flashLocker) return
+    const timeout = setTimeout(() => setFlashLocker(null), 700)
+    return () => clearTimeout(timeout)
+  }, [flashLocker])
+
+  const selectedLockerData = lockers.find((l) => l.id === selectedLocker)
+  const hoveredLockerData = lockers.find((l) => l.id === hoveredLocker)
+  const displayedLocker = hoveredLockerData ?? selectedLockerData
+  const canReserve = selectedLockerData?.status === 'available'
+
   function handleReserve() {
+    if (!canReserve) return
     // Booking requires an account — for now the demo widget routes
-    // straight to sign up once a locker is picked.
+    // straight to sign up once an available locker is picked.
     navigate('/signup')
   }
 
@@ -102,8 +144,8 @@ export default function Home() {
           </Link>
 
           <nav className="hidden items-center gap-8 md:flex">
-            {navLinks.map((link) => (
-              <a
+            {navLinks.map((link) => ( <a
+              
                 key={link.href}
                 href={link.href}
                 className="text-sm font-medium text-jet-black/70 transition hover:text-deep-purple"
@@ -140,11 +182,11 @@ export default function Home() {
 
         {menuOpen && (
           <div className="flex flex-col gap-1 border-t border-jet-black/5 px-6 py-4 md:hidden">
-            {navLinks.map((link) => (
-              <a
+            {navLinks.map((link) => (<a
+              
                 key={link.href}
                 href={link.href}
-                onClick={() => setMenuOpen(false)}
+                onClick={() => setMenuOpen(false)} 
                 className="rounded-lg px-2 py-2.5 text-sm font-medium text-jet-black/70 hover:bg-jet-black/5"
               >
                 {link.label}
@@ -168,12 +210,12 @@ export default function Home() {
         )}
       </header>
 
-      {/* ================= HERO ================= */}
+      /* ================= HERO ================= */
       <main className="mx-auto grid max-w-6xl gap-12 px-6 py-16 sm:px-10 lg:grid-cols-2 lg:items-center lg:py-24">
         <div>
           <span className="inline-flex items-center gap-2 rounded-full border border-lavender/30 bg-lavender/10 px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-widest text-deep-purple">
             <span className="h-1.5 w-1.5 rounded-full bg-lavender" />
-            Smart locker network &middot; El Salvador
+            Own Nothing. Miss Nothing &middot; El Salvador
           </span>
 
           <h1 className="mt-6 font-display text-5xl font-bold leading-[1.05] tracking-tight text-jet-black sm:text-6xl">
@@ -217,7 +259,7 @@ export default function Home() {
               <p className="text-xs font-medium uppercase tracking-wide text-jet-black/45">Secure</p>
             </div>
             <div>
-              <p className="font-display text-2xl font-bold text-jet-black">50+</p>
+              <p className="font-display text-2xl font-bold text-jet-black">5K+</p>
               <p className="text-xs font-medium uppercase tracking-wide text-jet-black/45">Items</p>
             </div>
           </div>
@@ -245,25 +287,31 @@ export default function Home() {
 
             <div className="grid grid-cols-3 gap-2">
               {lockers.map((locker) => {
-                const isSelected = selectedLocker === locker
+                const isSelected = selectedLocker === locker.id
+                const isHovered = hoveredLocker === locker.id
+                const isFlashing = flashLocker === locker.id
+                const isAvailable = locker.status === 'available'
+
                 return (
                   <button
-                    key={locker}
+                    key={locker.id}
                     type="button"
-                    onClick={() => setSelectedLocker(locker)}
+                    onClick={() => setSelectedLocker(locker.id)}
+                    onMouseEnter={() => setHoveredLocker(locker.id)}
+                    onMouseLeave={() => setHoveredLocker(null)}
                     className={`flex min-h-21 flex-col items-start justify-between rounded-xl border p-3 text-left transition ${
-                      isSelected
+                      isSelected || isHovered
                         ? 'border-lavender bg-lavender/15'
                         : 'border-white/10 bg-white/5 hover:border-lavender/50 hover:bg-lavender/10'
-                    }`}
+                    } ${isFlashing ? 'ring-2 ring-lavender' : ''}`}
                   >
-                    <span className="locker-code text-lg font-bold text-white">{locker}</span>
+                    <span className="locker-code text-lg font-bold text-white">{locker.id}</span>
                     <span
                       className={`font-mono text-[9px] uppercase tracking-wide ${
-                        isSelected ? 'text-lavender' : 'text-white/30'
+                        isAvailable ? 'text-emerald-400' : 'text-red-400'
                       }`}
                     >
-                      {isSelected ? 'Selected' : 'Available'}
+                      {isAvailable ? 'Available' : 'Rented'}
                     </span>
                   </button>
                 )
@@ -273,16 +321,23 @@ export default function Home() {
             <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-4">
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-wide text-white/35">
-                  {selectedLocker ? 'Locker' : 'Select a locker'}
+                  {displayedLocker ? (hoveredLocker ? 'Locker' : 'Selected') : 'Select a locker'}
                 </p>
-                <p className="locker-code text-sm text-white/85">
-                  {selectedLocker ?? 'above'}
-                </p>
+                {displayedLocker ? (
+                  <>
+                    <p className="locker-code text-sm text-white/85">{displayedLocker.item}</p>
+                    <p className="mt-0.5 text-[10px] text-lavender">
+                      TERMINAL LD-14 · {displayedLocker.id} · Downtown San Salvador
+                    </p>
+                  </>
+                ) : (
+                  <p className="locker-code text-sm text-white/85">above</p>
+                )}
               </div>
               <button
                 type="button"
                 onClick={handleReserve}
-                disabled={!selectedLocker}
+                disabled={!canReserve}
                 className="rounded-full bg-lavender px-5 py-2.5 text-sm font-semibold text-deep-purple transition hover:bg-lavender/90 disabled:cursor-not-allowed disabled:opacity-30"
               >
                 Reserve

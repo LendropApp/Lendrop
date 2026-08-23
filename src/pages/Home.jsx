@@ -210,7 +210,6 @@ export default function Home() {
         )}
       </header>
 
-      /* ================= HERO ================= */
       <main className="mx-auto grid max-w-6xl gap-12 px-6 py-16 sm:px-10 lg:grid-cols-2 lg:items-center lg:py-24">
         <div>
           <span className="inline-flex items-center gap-2 rounded-full border border-lavender/30 bg-lavender/10 px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-widest text-deep-purple">

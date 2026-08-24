@@ -5,6 +5,7 @@ import AuthLayout from '../components/AuthLayout'
 import AuthTabs from '../components/AuthTabs'
 import PasswordInput from '../components/PasswordInput'
 import StatusMessage from '../components/StatusMessage'
+import { validateSignup } from '../validations/signupValidation'
 
 const MIN_AGE = 18
 
@@ -13,18 +14,6 @@ function formatDui(raw) {
   const digits = raw.replace(/\D/g, '').slice(0, 9)
   if (digits.length <= 8) return digits
   return `${digits.slice(0, 8)}-${digits.slice(8)}`
-}
-
-function isAdult(dateString) {
-  if (!dateString) return false
-  const birthDate = new Date(dateString)
-  const today = new Date()
-  let age = today.getFullYear() - birthDate.getFullYear()
-  const monthDiff = today.getMonth() - birthDate.getMonth()
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-    age -= 1
-  }
-  return age >= MIN_AGE
 }
 
 export default function Signup() {
@@ -53,43 +42,47 @@ export default function Signup() {
     e.preventDefault()
     setStatus({ type: '', text: '' })
 
-    if (!/^\d{8}-\d{1}$/.test(dui)) {
-      setStatus({ type: 'error', text: 'Enter a valid DUI in the format 12345678-9.' })
-      return
-    }
-    if (!isAdult(dateOfBirth)) {
-      setStatus({ type: 'error', text: `You must be at least ${MIN_AGE} years old to create an account.` })
-      return
-    }
-    if (password !== confirmPassword) {
-      setStatus({ type: 'error', text: 'Passwords don\u2019t match.' })
-      return
-    }
-    if (password.length < 8) {
-      setStatus({ type: 'error', text: 'Password must be at least 8 characters.' })
-      return
-    }
-    if (!agreedToTerms) {
-      setStatus({ type: 'error', text: 'You need to accept the Terms of Service and Privacy Policy.' })
+    const errors = validateSignup({
+      fullName,
+      email,
+      dui,
+      dateOfBirth,
+      password,
+      confirmPassword,
+      agreedToTerms
+    })
+
+    if (Object.keys(errors).length > 0) {
+      const firstError = Object.values(errors)[0]
+      setStatus({ type: 'error', text: firstError })
       return
     }
 
     setIsSubmitting(true)
-    const { error } = await signUp({ email, password, fullName, dui, dateOfBirth, agreedToTerms })
-    setIsSubmitting(false)
 
-    if (error) {
-      setStatus({
-        type: 'error',
-        text:
-          error.message === 'User already registered'
-            ? 'An account with that email already exists.'
-            : error.message?.includes('profile_private_dui_key')
-              ? 'That DUI is already registered to another account.'
-              : 'Something went wrong while creating your account. Please try again.',
-      })
-      return
-    }
+  const { error } = await signUp({
+    email,
+    password,
+    fullName,
+    dui,
+    dateOfBirth,
+    agreedToTerms
+  })
+
+  setIsSubmitting(false)
+
+  if (error) {
+    setStatus({
+      type: 'error',
+      text:
+        error.message === 'User already registered'
+          ? 'An account with that email already exists.'
+          : error.message?.includes('profile_private_dui_key')
+            ? 'That DUI is already registered to another account.'
+            : 'Something went wrong while creating your account. Please try again.',
+    })
+    return
+  }
 
     // Supabase requires email verification before the first login, so
     // we show a "check your inbox" state in the same card.

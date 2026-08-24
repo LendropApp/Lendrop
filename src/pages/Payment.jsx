@@ -163,7 +163,7 @@ export default function Payment() {
 
   if (status === "success") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-violet-600 via-violet-500 to-indigo-600 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-linear-to-br from-violet-600 via-violet-500 to-indigo-600 flex items-center justify-center px-4">
         <div className="max-w-md w-full bg-white rounded-2xl shadow-xl border border-slate-100 p-8 text-center">
           <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl mx-auto mb-4">
             ✓
@@ -187,7 +187,7 @@ export default function Payment() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-600 via-violet-500 to-indigo-600 py-10 px-4">
+    <div className="min-h-screen bg-linear-to-br from-violet-600 via-violet-500 to-indigo-600 py-10 px-4">
       <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl border border-slate-100 p-6 md:p-8">
         <h1 className="text-xl md:text-2xl font-semibold text-slate-900 mb-6">
           Complete payment

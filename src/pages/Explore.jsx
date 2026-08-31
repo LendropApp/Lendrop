@@ -1,451 +1,284 @@
+import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
+import {
+  Search,
+  Heart,
+  Star,
+  Box,
+  User,
+  Shirt,
+  Dumbbell,
+  Wrench,
+  Laptop,
+  Package,
+} from 'lucide-react'
+import { useAuth } from '../context/AuthContext'
 
 
-import { useState } from "react";
-import "./Explore.css";
-function HangerIcon() {
-  return (
-    <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 3a2 2 0 1 1 2 2c-.5 0-1-.2-1.4-.6" />
-      <path d="M12 5v2" />
-      <path d="M12 7 3 15c-.7.6-.3 1.8.7 1.8h16.6c1 0 1.4-1.2.7-1.8L12 7Z" />
-      <path d="M4 20h16" />
-    </svg>
-  );
-}
+const CATEGORIES = [
+  { id: 'clothing', label: 'Clothing', Icon: Shirt },
+  { id: 'sports', label: 'Sports', Icon: Dumbbell },
+  { id: 'tools', label: 'Tools', Icon: Wrench },
+  { id: 'tech', label: 'Tech', Icon: Laptop },
+  { id: 'other', label: 'Other', Icon: Package },
+]
 
-function BallIcon() {
-  return (
-    <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 6.5 15.5 9l-1.3 4.1H9.8L8.5 9Z" strokeLinejoin="round" />
-      <path d="M12 6.5V3.3" />
-      <path d="M15.5 9l3.2-1" />
-      <path d="M14.2 13.1l2 2.7" />
-      <path d="M9.8 13.1l-2 2.7" />
-      <path d="M8.5 9l-3.2-1" />
-    </svg>
-  );
-}
+const OWNERS = [
+  { name: 'M. García', verified: true },
+  { name: 'C. Turcios', verified: false },
+  { name: 'A. Molina', verified: true },
+  { name: 'R. Hernández', verified: false },
+  { name: 'D. Alas', verified: true },
+  { name: 'L. Portillo', verified: false },
+  { name: 'S. Cerón', verified: true },
+  { name: 'J. Rivas', verified: false },
+]
 
-function ProfileIcon() {
-  return (
-    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="8" r="4" />
-      <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
-    </svg>
-  );
-}
+const RAW_LISTINGS = [
+  { title: 'Formal navy suit, size 40', category: 'clothing', price: 0, image: 'photo-1594938298603-c8148c4dae35' },
+  { title: 'Red evening gown', category: 'clothing', price: 0, image: 'photo-1595777457583-95e059d581b8' },
+  { title: 'Brown leather jacket', category: 'clothing', price: 0, image: 'photo-1591047139829-d91aecb6caea' },
+  { title: 'Winter coat, size L', category: 'clothing', price: 0, image: 'photo-1551028719-00167b16eac5' },
+  { title: 'Trek mountain bike', category: 'sports', price: 0, image: 'photo-1697423878282-0c4bbc3f821a' },
+  { title: 'Full golf set', category: 'sports', price: 0, image: 'photo-1587174486073-ae5e5cff23aa' },
+  { title: 'Adjustable dumbbell set', category: 'sports', price: 0, image: 'photo-1603077492579-39ff927823db' },
+  { title: 'Tennis racket, pro grade', category: 'sports', price: 0, image: 'photo-1542144582-1ba00456b5e3' },
+  { title: 'Cordless drill, Bosch', category: 'tools', price: 0, image: 'photo-1504148455328-c376907d081c' },
+  { title: 'Full wrench & socket set', category: 'tools', price: 0, image: 'photo-1530088528371-105e6f3b2336' },
+  { title: '6-ft folding ladder', category: 'tools', price: 0, image: 'photo-1549030782-4935f80baeb6' },
+  { title: 'Electric circular saw', category: 'tools', price: 0, image: 'photo-1505855796860-aa05646cbf1f' },
+  { title: 'Canon EOS R6 camera', category: 'tech', price: 0, image: 'photo-1516035069371-29a1b244cc32' },
+  { title: 'Portable HD projector', category: 'tech', price: 0, image: 'photo-1587202372775-e229f172b9d7' },
+  { title: 'PlayStation 5, one controller', category: 'tech', price: 0, image: 'photo-1600861194942-f883de0dfe96' },
+  { title: 'Noise-cancelling headphones', category: 'tech', price: 0, image: 'photo-1600294037681-c80b4cb5b434' },
+  { title: '4-person camping tent', category: 'other', price: 0, image: 'photo-1504851149312-7a075b496cc7' },
+  { title: 'Event table & chairs set', category: 'other', price: 0, image: 'photo-1533090161767-e6ffed986c88' },
+  { title: 'Portable party speaker', category: 'other', price: 0, image: 'photo-1517457373958-b7bdd4587205' },
+  { title: 'Superhero costume, adult M', category: 'other', price: 0, image: 'photo-1601925260368-ae2f83cf8b7f' },
+]
 
-function ToolboxIcon() {
-  return (
-    <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="8" width="20" height="12" rx="2" />
-      <path d="M9 8V6a3 3 0 0 1 3-3v0a3 3 0 0 1 3 3v2" />
-      <path d="M2 13h20" />
-      <path d="M12 11v4" />
-    </svg>
-  );
-}
-
-function ComputerIcon() {
-  return (
-    <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="4" width="18" height="12" rx="1" />
-      <path d="M8 20h8" />
-      <path d="M12 16v4" />
-    </svg>
-  );
-}
-
-function PlusIcon() {
-  return (
-    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-      <path d="M12 5v14" />
-      <path d="M5 12h14" />
-    </svg>
-  );
-}
-
-const categoryList = [
-  { name: "Ropa", Icon: HangerIcon },
-  { name: "Deportes", Icon: BallIcon },
-  { name: "Herramientas", Icon: ToolboxIcon },
-  { name: "Tecnología", Icon: ComputerIcon },
-  { name: "Otros", Icon: PlusIcon, isPlus: true },
-];
-
-const allProducts = [
-  {
-    letter: "E",
-    user: "User000001",
-    category: "Ropa",
-    image: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=500",
-    price: "$50.00",
-    description: "Traje de gala color azul",
-  },
-  {
-    letter: "L",
-    user: "User000005",
-    category: "Ropa",
-    image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500",
-    price: "$30.00",
-    description: "Vestido de gala color rojo",
-  },
-  {
-    letter: "P",
-    user: "User000006",
-    category: "Ropa",
-    image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=500",
-    price: "$20.00",
-    description: "Chaqueta de cuero marron",
-  },
-  {
-    letter: "A",
-    user: "User000007",
-    category: "Ropa",
-    image: "https://images.unsplash.com/photo-1591561954557-26941169b49e?w=500",
-    price: "$15.00",
-    description: "Bolso de mano",
-  },
-  {
-    letter: "Q",
-    user: "User000019",
-    category: "Ropa",
-    image: "https://images.unsplash.com/photo-1520975916090-3105956dac38?w=500",
-    price: "$25.00",
-    description: "Chaqueta negra talla M",
-  },
-  {
-    letter: "Y",
-    user: "User000020",
-    category: "Ropa",
-    image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500",
-    price: "$18.00",
-    description: "Abrigo de invierno talla L",
-  },
-  {
-    letter: "Z",
-    user: "User000021",
-    category: "Ropa",
-    image: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=500",
-    price: "$12.00",
-    description: "zapatillas deportivas talla 42",
-  },
-  {
-    letter: "V",
-    user: "User000022",
-    category: "Ropa",
-    image: "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=500",
-    price: "$10.00",
-    description: "Outfit casual para verano talla M",
-  },
-  {
-    letter: "M",
-    user: "User000003",
-    category: "Deportes",
-    image: "https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=500",
-    price: "$100.00",
-    description: "Equipo de Golf profesional",
-  },
-  {
-    letter: "R",
-    user: "User000008",
-    category: "Deportes",
-    image: "https://images.unsplash.com/photo-1697423878282-0c4bbc3f821a?w=500",
-    price: "$40.00",
-    description: "Bicicleta de montaña rodado 27",
-  },
-  {
-    letter: "C",
-    user: "User000010",
-    category: "Deportes",
-    image: "https://images.unsplash.com/photo-1603077492579-39ff927823db?w=500",
-    price: "$25.00",
-    description: "Set de pesas ajustables",
-  },
-  {
-    letter: "I",
-    user: "User000025",
-    category: "Deportes",
-    image: "https://images.unsplash.com/photo-1691109839715-b0170a8aa985?w=500",
-    price: "$30.00",
-    description: "Patines de línea talla 40",
-  },
-  {
-    letter: "U",
-    user: "User000026",
-    category: "Deportes",
-    image: "https://images.unsplash.com/photo-1542144582-1ba00456b5e3?w=500",
-    price: "$45.00",
-    description: "Raqueta de tenis profesional",
-  },
-  {
-    letter: "D",
-    user: "User000011",
-    category: "Herramientas",
-    image: "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=500",
-    price: "$45.00",
-    description: "Taladro inalámbrico profesional",
-  },
-  {
-    letter: "F",
-    user: "User000012",
-    category: "Herramientas",
-    image: "https://images.unsplash.com/photo-1530088528371-105e6f3b2336?w=500",
-    price: "$60.00",
-    description: "Set completo de llaves y herramientas",
-  },
-  {
-    letter: "G",
-    user: "User000013",
-    category: "Herramientas",
-    image: "https://images.unsplash.com/photo-1549030782-4935f80baeb6?w=500",
-    price: "$20.00",
-    description: "Escalera plegable 6 pies",
-  },
-  {
-    letter: "Ñ",
-    user: "User000027",
-    category: "Herramientas",
-    image: "https://images.unsplash.com/photo-1505855796860-aa05646cbf1f?w=500",
-    price: "$30.00",
-    description: "Sierra circular eléctrica",
-  },
-  {
-    letter: "B2",
-    user: "User000028",
-    category: "Herramientas",
-    image: "https://images.unsplash.com/photo-1542486500-db3f713278bc?w=500",
-    price: "$50.00",
-    description: "Compresor de aire portátil",
-  },
-  {
-    letter: "W",
-    user: "User000004",
-    category: "Tecnología",
-    image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=500",
-    price: "$25.00",
-    description: "Cámara lente profesional, resolución 4k",
-  },
-  {
-    letter: "H",
-    user: "User000014",
-    category: "Tecnología",
-    image: "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=500",
-    price: "$30.00",
-    description: "Proyector portátil HD",
-  },
-  {
-    letter: "S",
-    user: "User000015",
-    category: "Tecnología",
-    image: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=500",
-    price: "$18.00",
-    description: "Laptop para programación y diseño gráfico",
-  },
-  {
-    letter: "K",
-    user: "User000016",
-    category: "Tecnología",
-    image: "https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=500",
-    price: "$22.00",
-    description: "Auriculares inalámbricos con cancelación de ruido",
-  },
-  {
-    letter: "T2",
-    user: "User000030",
-    category: "Tecnología",
-    image: "https://images.unsplash.com/photo-1600861194942-f883de0dfe96?w=500",
-    price: "$15.00",
-    description: "Consola de videojuegos de un control",
-  },
-  {
-    letter: "V2",
-    user: "User000032",
-    category: "Tecnología",
-    image: "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=500",
-    price: "$28.00",
-    description: "Apple Watch",
-  },
-  {
-    letter: "J",
-    user: "User000002",
-    category: "Otros",
-    image: "https://images.unsplash.com/photo-1504851149312-7a075b496cc7?w=500",
-    price: "$100.00",
-    description: "Equipo de acampar color celeste y gris",
-  },
-  {
-    letter: "B",
-    user: "User000017",
-    category: "Otros",
-    image: "https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=500",
-    price: "$40.00",
-    description: "Set de mesa y sillas para eventos",
-  },
-  {
-    letter: "T",
-    user: "User000018",
-    category: "Otros",
-    image: "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=500",
-    price: "$15.00",
-    description: "Bocina portátil para fiestas",
-  },
-  {
-    letter: "W2",
-    user: "User000033",
-    category: "Otros",
-    image: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=500",
-    price: "$35.00",
-    description: "Decoración temática para fiestas infantiles",
-  },
-];
+const LISTINGS = RAW_LISTINGS.map((item, index) => ({
+  ...item,
+  id: index + 1,
+  image: `https://images.unsplash.com/${item.image}?w=600&q=80&auto=format&fit=crop`,
+  owner: OWNERS[index % OWNERS.length],
+  rating: (Math.random() * 2 + 3).toFixed(1), // Random rating between 3.0 and 5.0
+}))
 
 export default function Explore() {
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
+  const { user } = useAuth()
+  const [selectedCategory, setSelectedCategory] = useState(null)
+  const [searchTerm, setSearchTerm] = useState('')
 
-  const conditions = ["Como nuevo", "Buen estado"];
-  const productsWithMeta = allProducts.map((p, i) => ({
-    ...p,
-    condition: conditions[i % conditions.length],
-    uses: ((i * 3 + 2) % 12) + 1,
-  }));
+  const firstName = user?.user_metadata?.full_name?.split(' ')[0]
 
-  const handleCategoryClick = (name) => {
-    setSearchTerm("");
-    setSelectedCategory((prev) => (prev === name ? null : name));
-  };
+  function handleCategoryClick(id) {
+    setSearchTerm('')
+    setSelectedCategory((prev) => (prev === id ? null : id))
+  }
 
-  const handleSearchChange = (e) => {
-    setSelectedCategory(null);
-    setSearchTerm(e.target.value);
-  };
+  function handleSearchChange(e) {
+    setSelectedCategory(null)
+    setSearchTerm(e.target.value)
+  }
 
-  const normalizedSearch = searchTerm.trim().toLowerCase();
+  function clearFilters() {
+    setSelectedCategory(null)
+    setSearchTerm('')
+  }
 
-  const filteredProducts = normalizedSearch
-    ? productsWithMeta.filter(
-        (p) =>
-          p.description.toLowerCase().includes(normalizedSearch) ||
-          p.category.toLowerCase().includes(normalizedSearch)
+  const normalizedSearch = searchTerm.trim().toLowerCase()
+  const isFiltering = Boolean(normalizedSearch || selectedCategory)
+
+  const filteredListings = useMemo(() => {
+    if (normalizedSearch) {
+      return LISTINGS.filter((item) =>
+        item.title.toLowerCase().includes(normalizedSearch)
       )
+    }
+    if (selectedCategory) {
+      return LISTINGS.filter((item) => item.category === selectedCategory)
+    }
+    return LISTINGS
+  }, [normalizedSearch, selectedCategory])
+
+  const sectionTitle = normalizedSearch
+    ? `Results for "${searchTerm}"`
     : selectedCategory
-    ? productsWithMeta.filter((p) => p.category === selectedCategory)
-    : categoryList.map((cat) =>
-        productsWithMeta.find((p) => p.category === cat.name)
-      );
+      ? CATEGORIES.find((c) => c.id === selectedCategory)?.label
+      : 'Recommended for you'
 
   return (
-    <div className="app">
-      <header className="app-navbar">
-        <img src="/logo-lendrop.png" alt="LENDROOP" className="logo-img" />
-        <nav>
-          <a href="#">Inicio</a>
-          <a href="#">Explorar Artículos</a>
-          <a href="#" className="profile-link" aria-label="Perfil">
-            <ProfileIcon />
-          </a>
-        </nav>
-      </header>
+    <div className="min-h-screen bg-soft-white">
+      {/* ================= HEADER ================= */}
+      <header className="sticky top-0 z-50 border-b border-jet-black/5 bg-soft-white/80 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4 sm:px-10">
+          <Link to="/" className="shrink-0">
+            <img src="/logo-lendrop.png" alt="Lendrop" className="h-7 w-auto" />
+          </Link>
 
-      <section className="app-hero">
-        <h1>
-          Alquila lo que<br />
-          necesitas,<br />
-          cuando lo necesitas.
-        </h1>
-        <div className="search-bar">
-          <span>⌕</span>
+          <div className="hidden max-w-md flex-1 items-center gap-2 rounded-full border border-jet-black/10 bg-white px-4 py-2.5 shadow-sm transition focus-within:border-lavender focus-within:ring-2 focus-within:ring-lavender/30 sm:flex">
+            <Search className="h-4 w-4 shrink-0 text-jet-black/35" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              placeholder="Search cameras, tools, gear…"
+              className="w-full bg-transparent text-sm outline-none placeholder:text-jet-black/35"
+            />
+          </div>
+
+          <Link
+            to="/dashboard"
+            aria-label="Your account"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-jet-black/10 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple"
+          >
+            <User className="h-4 w-4" />
+          </Link>
+        </div>
+
+        {/* Search bar, mobile only */}
+        <div className="flex items-center gap-2 border-t border-jet-black/5 px-6 py-3 sm:hidden">
+          <Search className="h-4 w-4 shrink-0 text-jet-black/35" />
           <input
             type="text"
-            placeholder="Buscar"
             value={searchTerm}
             onChange={handleSearchChange}
+            placeholder="Search cameras, tools, gear…"
+            className="w-full bg-transparent text-sm outline-none placeholder:text-jet-black/35"
           />
         </div>
+      </header>
+
+      {/* ================= GREETING ================= */}
+      <section className="mx-auto max-w-6xl px-6 pt-10 sm:px-10">
+        <h1 className="font-display text-2xl font-bold text-jet-black sm:text-3xl">
+          {firstName ? `Welcome back, ${firstName}.` : 'Find what you need, nearby.'}
+        </h1>
+        <p className="mt-1 text-sm text-jet-black/50">
+          Every listing below is verified and ready to pick up from a locker near you.
+        </p>
       </section>
 
-      <section className="categories">
-        {categoryList.map((cat) => (
-          <div
-            className="category"
-            key={cat.name}
-            onClick={() => handleCategoryClick(cat.name)}
-            style={{ cursor: "pointer" }}
-          >
-            <div
-              className={`category-circle ${
-                selectedCategory === cat.name ? "active" : ""
-              }`}
+      {/* ================= CATEGORIES ================= */}
+      <section className="mx-auto max-w-6xl px-6 sm:px-10">
+        <div className="mt-6 flex gap-50 overflow-x-auto border-b border-jet-black/5 pb-4 align-items-center">
+          {CATEGORIES.map((cat) => {
+            const active = selectedCategory === cat.id
+            return (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => handleCategoryClick(cat.id)}
+                className={`flex shrink-0 flex-col items-center gap-2 border-b-2 pb-3 text-xs font-medium transition ${
+                  active
+                    ? 'border-jet-black text-jet-black'
+                    : 'border-transparent text-jet-black/40 hover:text-jet-black/70'
+                }`}
+              >
+                <cat.Icon className="h-5 w-5" strokeWidth={active ? 2 : 1.5} />
+                {cat.label}
+              </button>
+            )
+          })}
+        </div>
+      </section>
+
+      {/* ================= LISTINGS ================= */}
+      <section className="mx-auto max-w-6xl px-6 py-8 sm:px-10">
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="font-display text-xl font-semibold text-jet-black">
+            {sectionTitle}
+          </h2>
+          {isFiltering && (
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="text-sm font-medium text-deep-purple hover:text-lavender"
             >
-              <cat.Icon />
-            </div>
-            <strong>{cat.name}</strong>
+              Clear filters
+            </button>
+          )}
+        </div>
+
+        {filteredListings.length > 0 ? (
+          <div className="grid grid-cols-2 gap-x-5 gap-y-8 sm:grid-cols-3 lg:grid-cols-4">
+            {filteredListings.map((item) => (
+              <ProductCard key={item.id} item={item} />
+            ))}
           </div>
-        ))}
-        <div className="next">›</div>
-      </section>
-
-      {(selectedCategory || normalizedSearch) && (
-        <div className="filter-banner">
-          {normalizedSearch ? (
-            <>
-              Resultados para: <strong>"{searchTerm}"</strong>
-            </>
-          ) : (
-            <>
-              Mostrando: <strong>{selectedCategory}</strong>
-            </>
-          )}
-          <button
-            onClick={() => {
-              setSelectedCategory(null);
-              setSearchTerm("");
-            }}
-          >
-            Ver todos ✕
-          </button>
-        </div>
-      )}
-
-      <section className="products-section">
-        <div className="products">
-          {filteredProducts.length > 0 ? (
-            filteredProducts.map((p) => <Product key={p.user} {...p} />)
-          ) : (
-            <p className="no-results">
-              {normalizedSearch
-                ? `No encontramos artículos para "${searchTerm}".`
-                : "No hay artículos en esta categoría todavía."}
+        ) : (
+          <div className="flex flex-col items-center gap-1 py-20 text-center">
+            <p className="font-display text-lg font-semibold text-jet-black">
+              No items found
             </p>
-          )}
-        </div>
+            <p className="text-sm text-jet-black/50">
+              Try a different search, or browse another category.
+            </p>
+          </div>
+        )}
       </section>
 
-      <footer className="app-footer">
-        <a href="#">Ayuda</a>
+      {/* ================= FOOTER ================= */}
+      <footer className="border-t border-jet-black/5 px-6 py-8 text-center sm:px-10">
+        <a href="#" className="text-sm font-medium text-jet-black/50 hover:text-deep-purple">
+          Need help?
+        </a>
       </footer>
     </div>
-  );
+  )
 }
 
-function Product({ letter, user, category, image, price, description }) {
+function ProductCard({ item }) {
   return (
-    <article className="product-card">
-      <div className="product-user">
-        <div className="avatar">{letter}</div>
-        <div>
-          <b>{user}</b>
-          <small>{category}</small>
+    <article className="group cursor-pointer">
+      <div className="relative overflow-hidden rounded-2xl bg-jet-black/5">
+        <img
+          src={item.image}
+          alt={item.title}
+          className="aspect-4/3 w-full object-cover transition duration-300 group-hover:scale-105"
+        />
+
+        <button
+          type="button"
+          aria-label="Save"
+          className="absolute right-2.5 top-2.5 flex h-7 w-7 items-center justify-center rounded-full bg-jet-black/40 text-soft-white backdrop-blur transition hover:bg-jet-black/60"
+        >
+          <Heart className="h-3.5 w-3.5" />
+        </button>
+
+        {/* <span className="absolute bottom-2.5 left-2.5 inline-flex items-center gap-1 rounded-full bg-jet-black/70 px-2.5 py-1 font-mono text-[10px] font-medium text-soft-white backdrop-blur">
+          <Box className="h-3 w-3" />
+          Locker {item.locker}
+        </span> */}
+      </div>
+
+      <div className="mt-3 flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold text-jet-black">{item.title}</p>
+          <div className="mt-1 flex items-center gap-1.5">
+            {/* "Locker compartment" avatar frame: a rounded-square badge
+                with a seam line, echoing the physical locker doors. */}
+            <span className="relative flex h-5 w-5 items-center justify-center overflow-hidden rounded-6px border border-jet-black/10 bg-lavender/15 font-mono text-[9px] font-bold text-deep-purple after:absolute after:inset-x-0 after:top-1/2 after:h-px after:bg-jet-black/10">
+              {item.owner.name[0]}
+              {item.owner.verified && (
+                <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 animate-pulse rounded-full bg-lavender ring-2 ring-soft-white" />
+              )}
+            </span>
+            <span className="truncate text-xs text-jet-black/50">{item.owner.name}</span>
+          </div>
+        </div>
+
+        <div className="flex shrink-0 items-center gap-1 pt-0.5">
+          <Star className="h-3.5 w-3.5 fill-jet-black text-jet-black" />
+          <span className="font-mono text-xs font-medium text-jet-black">{item.rating}</span>
         </div>
       </div>
-      <img src={image} alt={description} />
-      <div className="product-info">
-        <span className="price">{price}</span>
-        <p>{description}</p>
-        <button>Alquilar</button>
-      </div>
+
+      <p className="mt-1.5 font-mono text-sm font-semibold text-jet-black">
+        ${item.price}
+        <span className="font-body font-normal text-jet-black/45"> / day</span>
+      </p>
     </article>
-  );
+  )
 }

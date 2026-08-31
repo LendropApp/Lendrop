@@ -16,7 +16,7 @@ export default function Login() {
   const [status, setStatus] = useState({ type: '', text: '' })
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const redirectTo = location.state?.from?.pathname || '/dashboard'
+  const redirectTo = location.state?.from?.pathname || '/explore'
 
   async function handleSubmit(e) {
     e.preventDefault()

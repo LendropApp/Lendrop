@@ -1,3 +1,4 @@
+import LockerWallBg from '../components/LockerWallBg'
 import { Link } from 'react-router-dom'
 
 

@@ -1,4 +1,4 @@
-import LockerWallBg from '../components/LockerWallBg'
+import LockerWallBg from '../components/background/LockerWallBg'
 import { Link } from 'react-router-dom'
 
 
@@ -6,15 +6,8 @@ export default function AuthLayout({ eyebrow = 'Smart locker network', children 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-jet-black px-4 py-12">
       {/* Grid pattern, on-brand lavender lines at low opacity */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 opacity-90"
-        style={{
-          backgroundImage:
-            'linear-gradient(rgba(165,140,244,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(165,140,244,0.12) 1px, transparent 1px)',
-          backgroundSize: '44px 44px',
-        }}
-      />
+      {/* Grid pattern, on-brand lavender lines at low opacity */}
+        <LockerWallBg className="pointer-events-none absolute inset-0" />
       {/* Ambient glows */}
       <div
         aria-hidden="true"

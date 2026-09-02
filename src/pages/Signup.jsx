@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import AuthLayout from '../components/AuthLayout'
 import AuthTabs from '../components/AuthTabs'
@@ -29,7 +29,8 @@ function isAdult(dateString) {
 
 export default function Signup() {
   const { signUp } = useAuth()
-
+  const [searchParams] = useSearchParams()
+  const intent = searchParams.get('intent')
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [dui, setDui] = useState('')
@@ -73,12 +74,14 @@ export default function Signup() {
       setStatus({ type: 'error', text: 'You need to accept the Terms of Service and Privacy Policy.' })
       return
     }
-
+    if(intent === 'host') {
+      localStorage.setItem('lendrop_post_auth_redirect', '/become-host/onboarding')
+    }
     setIsSubmitting(true)
     const { error } = await signUp({ email, password, fullName, dui, dateOfBirth, agreedToTerms })
     setIsSubmitting(false)
 
-    if (error) {
+        if (error) {
       setStatus({
         type: 'error',
         text:
@@ -95,7 +98,6 @@ export default function Signup() {
     // we show a "check your inbox" state in the same card.
     setSubmitted(true)
   }
-
   if (submitted) {
     return (
       <AuthLayout>
@@ -246,4 +248,7 @@ export default function Signup() {
       </form>
     </AuthLayout>
   )
-}
+  }
+
+
+

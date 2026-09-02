@@ -12,6 +12,12 @@ import {
   Gamepad2,
 } from "lucide-react";
 
+/**
+ * Íconos que representan las categorías de artículos que se guardan
+ * en los lockers de Lendrop (ropa/disfraces, herramientas, electrónica,
+ * deporte, camping, etc). Agregar/quitar aquí no requiere tocar el resto
+ * del componente.
+ */
 const LOCKER_ICONS = [
   Camera,
   Laptop,
@@ -26,9 +32,19 @@ const LOCKER_ICONS = [
 ];
 
 const ROW_LETTERS = "ABCDEF";
-const TICK_INTERVAL_MS = 900;
-const CELLS_PER_TICK = 2;
-const FLASH_DURATION_MS = 550;
+const CELL_SIZE_PX = 72;
+const ACTIVE_RATIO = 0.015;
+const TICK_INTERVAL_MS = 1200;
+const FLASH_DURATION_MS = 1100;
+const TRANSITION_MS = 700;
+
+/**
+ * Morado tenue y cálido, propio de este fondo (RGB, sin "rgb()" para poder
+ * componer distintas opacidades). Deliberadamente NO es el mismo `lavender`
+ * que usan botones/inputs en el resto de la app — es un acento de mood para
+ * esta pieza decorativa, así que cambiarlo aquí no afecta nada más.
+ */
+const DEFAULT_ACCENT_RGB = "173, 122, 176";
 
 function randomIcon(excludeIcon) {
   if (LOCKER_ICONS.length === 1) return LOCKER_ICONS[0];
@@ -39,6 +55,7 @@ function randomIcon(excludeIcon) {
   return icon;
 }
 
+/** Genera la data inicial de cada celda: ícono aleatorio y código estilo "B4". */
 function generateLockerCells({ rows, cols }) {
   const total = rows * cols;
   return Array.from({ length: total }, (_, i) => {
@@ -53,25 +70,86 @@ function generateLockerCells({ rows, cols }) {
   });
 }
 
-export default function LockerWallBackground({ rows = 7, cols = 9, className = "" }) {
-  const [cells, setCells] = useState(() => generateLockerCells({ rows, cols }));
+/**
+ * Mide el contenedor con ResizeObserver y calcula cuántas columnas/filas
+ * de locker caben a un tamaño de celda fijo, para que el patrón se vea
+ * consistente sin importar la altura del viewport.
+ */
+function useGridDimensions(containerRef, cellSize) {
+  const [dimensions, setDimensions] = useState({ rows: 0, cols: 0 });
 
   useEffect(() => {
+    const node = containerRef.current;
+    if (!node) return undefined;
+
+    const measure = () => {
+      const { width, height } = node.getBoundingClientRect();
+      setDimensions({
+        cols: Math.max(1, Math.ceil(width / cellSize)),
+        rows: Math.max(1, Math.ceil(height / cellSize)),
+      });
+    };
+
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [containerRef, cellSize]);
+
+  return dimensions;
+}
+
+/**
+ * Fondo decorativo tipo "pared de lockers inteligentes" para pantallas de
+ * autenticación. Cada cierto tiempo, un pequeño porcentaje de celdas al
+ * azar "cambian de contenido" con un destello suave y lento — como si un
+ * artículo acabara de entrar o salir del locker. Puramente presentacional:
+ * se posiciona absolute detrás del contenido real, así que va aria-hidden.
+ *
+ * Respeta prefers-reduced-motion: si el usuario lo tiene activado, el
+ * grid se queda estático (mismo look, sin el ciclo de íconos).
+ *
+ * Va UNA vez dentro de AuthLayout, no repetido en cada página.
+ *
+ * Uso:
+ *   <LockerWallBg className="pointer-events-none absolute inset-0" />
+ *
+ * Para cambiar el tono sin tocar el archivo:
+ *   <LockerWallBg accentColor="150, 110, 160" ... />
+ */
+export default function LockerWallBg({
+  cellSize = CELL_SIZE_PX,
+  activeRatio = ACTIVE_RATIO,
+  accentColor = DEFAULT_ACCENT_RGB,
+  className = "",
+}) {
+  const containerRef = useRef(null);
+  const { rows, cols } = useGridDimensions(containerRef, cellSize);
+  const total = rows * cols;
+
+  const [cells, setCells] = useState([]);
+
+  useEffect(() => {
+    if (total === 0) return;
     setCells(generateLockerCells({ rows, cols }));
-  }, [rows, cols]);
+  }, [rows, cols, total]);
 
   useEffect(() => {
+    if (total === 0) return undefined;
+
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
     if (prefersReducedMotion) return undefined;
 
-    const total = rows * cols;
+    const cellsPerTick = Math.max(1, Math.round(total * activeRatio));
+
     const tick = setInterval(() => {
       setCells((prev) => {
+        if (prev.length === 0) return prev;
         const next = [...prev];
-        for (let n = 0; n < CELLS_PER_TICK; n++) {
-          const idx = Math.floor(Math.random() * total);
+        for (let n = 0; n < cellsPerTick; n++) {
+          const idx = Math.floor(Math.random() * next.length);
           const current = next[idx];
           next[idx] = {
             ...current,
@@ -84,25 +162,32 @@ export default function LockerWallBackground({ rows = 7, cols = 9, className = "
     }, TICK_INTERVAL_MS);
 
     return () => clearInterval(tick);
-  }, [rows, cols]);
+  }, [total, activeRatio]);
 
   return (
     <div
+      ref={containerRef}
       className={`grid ${className}`}
       style={{
-        gridTemplateColumns: `repeat(${cols}, 1fr)`,
-        gridTemplateRows: `repeat(${rows}, 1fr)`,
+        gridTemplateColumns: `repeat(${cols || 1}, 1fr)`,
+        gridTemplateRows: `repeat(${rows || 1}, 1fr)`,
       }}
       aria-hidden="true"
     >
       {cells.map(({ id, code, Icon, swapId }) => (
-        <LockerCell key={id} code={code} Icon={Icon} swapId={swapId} />
+        <LockerCell
+          key={id}
+          code={code}
+          Icon={Icon}
+          swapId={swapId}
+          accentColor={accentColor}
+        />
       ))}
     </div>
   );
 }
 
-function LockerCell({ code, Icon, swapId }) {
+function LockerCell({ code, Icon, swapId, accentColor }) {
   const [isFlashing, setIsFlashing] = useState(false);
   const isFirstRender = useRef(true);
 
@@ -118,16 +203,24 @@ function LockerCell({ code, Icon, swapId }) {
 
   return (
     <div
-      className={`relative flex items-center justify-center border transition-colors duration-500 ${
-        isFlashing
-          ? "border-[#a58cf4]/45 bg-[#a58cf4]/[0.07] shadow-[inset_0_0_20px_rgba(165,140,244,0.22)]"
-          : "border-[#a58cf4]/[0.08]"
-      }`}
+      className="relative flex items-center justify-center border"
+      style={{
+        transitionProperty: "background-color, box-shadow, border-color",
+        transitionDuration: `${TRANSITION_MS}ms`,
+        borderColor: `rgba(${accentColor}, ${isFlashing ? 0.45 : 0.08})`,
+        backgroundColor: isFlashing ? `rgba(${accentColor}, 0.07)` : "transparent",
+        boxShadow: isFlashing
+          ? `inset 0 0 20px rgba(${accentColor}, 0.22)`
+          : "none",
+      }}
     >
       <span
-        className={`absolute left-1.5 top-1 font-mono text-[8px] transition-colors duration-500 ${
-          isFlashing ? "text-[#a58cf4]/45" : "text-[#a58cf4]/15"
-        }`}
+        className="absolute left-1.5 top-1 font-mono text-[8px]"
+        style={{
+          transitionProperty: "color",
+          transitionDuration: `${TRANSITION_MS}ms`,
+          color: `rgba(${accentColor}, ${isFlashing ? 0.45 : 0.15})`,
+        }}
       >
         {code}
       </span>
@@ -135,13 +228,22 @@ function LockerCell({ code, Icon, swapId }) {
       <Icon
         size={22}
         strokeWidth={1.5}
-        className={`transition-all duration-500 ${
-          isFlashing ? "scale-110 text-[#a58cf4]/65" : "scale-100 text-[#a58cf4]/15"
-        }`}
+        className={`transition-transform ${isFlashing ? "scale-110" : "scale-100"}`}
+        style={{
+          transitionProperty: "transform, color",
+          transitionDuration: `${TRANSITION_MS}ms`,
+          color: `rgba(${accentColor}, ${isFlashing ? 0.65 : 0.15})`,
+        }}
       />
 
       {isFlashing && (
-        <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-[#a58cf4] shadow-[0_0_6px_#a58cf4]" />
+        <span
+          className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full"
+          style={{
+            backgroundColor: `rgb(${accentColor})`,
+            boxShadow: `0 0 6px rgba(${accentColor}, 0.8)`,
+          }}
+        />
       )}
     </div>
   );

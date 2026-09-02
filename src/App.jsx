@@ -9,6 +9,7 @@ import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import Dashboard from './pages/Dashboard'
 import Explore from './pages/Explore'
+import BookingConfirmation from './pages/BookingConfirmation'
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/explore" element={<Explore />} />
+          <Route path="/booking-confirmation-preview" element={<BookingConfirmation />} />
 
           {/* Protected routes */}
           <Route

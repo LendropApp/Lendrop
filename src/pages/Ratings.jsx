@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Star } from "lucide-react";
 
-// ---- Mock data ----
+
 const mockReviews = [
   {
     id: 1,
@@ -27,7 +27,7 @@ const mockReviews = [
   },
 ];
 
-// ---- Estrellas para mostrar una reseña ----
+
 function StarDisplay({ rating }) {
   return (
     <div className="flex gap-0.5">
@@ -46,7 +46,7 @@ function StarDisplay({ rating }) {
   );
 }
 
-// ---- Estrellas seleccionables ----
+
 function StarInput({ value, onChange }) {
   const [hover, setHover] = useState(0);
 
@@ -114,9 +114,10 @@ export default function Ratings() {
   return (
     <div className="min-h-screen bg-[#fafafa]">
 
+      
       {/* Navbar */}
-      <nav className="bg-[#fafafa] border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-8 py-5 flex items-center justify-between">
+      <nav className="border-b border-black/10 bg-white">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-8 py-5">
 
           {/* Logo */}
           <div className="flex items-center">
@@ -128,49 +129,56 @@ export default function Ratings() {
           </div>
 
           {/* Navigation */}
-          <div
-            className="hidden md:flex items-center gap-12 text-[#0d0d0d]"
-            style={{ fontFamily: "Manrope" }}
-          >
+          <div className="flex items-center gap-10 font-medium text-[#0d0d0d]">
+
             <a
-              href="#how-it-works"
-              className="hover:text-[#433075] transition"
+              href="/"
+              className="transition hover:text-[#433075]"
             >
-              How it works
+              Home
             </a>
 
             <a
-              href="#categories"
-              className="hover:text-[#433075] transition"
+              href="/explore"
+              className="transition hover:text-[#433075]"
             >
-              Categories
+              Explore
             </a>
 
             <a
-              href="#security"
-              className="hover:text-[#433075] transition"
+              href="/help"
+              className="transition hover:text-[#433075]"
             >
-              Security
+              Help
             </a>
-          </div>
 
-          {/* Buttons */}
-          <div
-            className="flex items-center gap-6"
-            style={{ fontFamily: "Manrope" }}
-          >
-            <button className="text-[#0d0d0d] font-medium hover:text-[#433075] transition">
-              Log in
-            </button>
+            <a
+              href="/profile"
+              className="flex items-center gap-2 transition hover:text-[#433075]"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 12a4 4 0 100-8 4 4 0 000 8zm0 2c-4.418 0-8 1.79-8 4v2h16v-2c0-2.21-3.582-4-8-4z"
+                />
+              </svg>
 
-            <button className="bg-[#433075] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#37285f] transition">
-              Get started
-            </button>
+              <span>Profile</span>
+            </a>
+
           </div>
         </div>
       </nav>
 
-      {/* Contenido */}
+      
       <main className="px-4 py-8">
         <div className="mx-auto max-w-2xl">
 
@@ -232,6 +240,7 @@ export default function Ratings() {
 
           {/* Lista de reseñas */}
           <div className="mt-8 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+
             {reviews.length === 0 ? (
               <p
                 className="py-6 text-center text-sm text-gray-400"
@@ -245,9 +254,12 @@ export default function Ratings() {
                   key={review.id}
                   className="border-b border-gray-100 py-5 last:border-0"
                 >
+
                   <div className="mb-2 flex items-center justify-between">
 
+                    {/* Usuario */}
                     <div className="flex items-center gap-3">
+
                       <div
                         className="flex h-9 w-9 items-center justify-center rounded-full bg-[#a58cf4]/20 text-sm font-semibold text-[#433075]"
                         style={{ fontFamily: "Manrope" }}
@@ -261,27 +273,34 @@ export default function Ratings() {
                       >
                         {review.author}
                       </span>
+
                     </div>
 
+                    {/* Fecha */}
                     <span
                       className="text-xs text-gray-400"
                       style={{ fontFamily: "Manrope" }}
                     >
                       {review.date}
                     </span>
+
                   </div>
 
+                  
                   <StarDisplay rating={review.rating} />
 
+                  
                   <p
                     className="mt-2 text-sm text-gray-600"
                     style={{ fontFamily: "Manrope" }}
                   >
                     {review.comment}
                   </p>
+
                 </div>
               ))
             )}
+
           </div>
 
         </div>

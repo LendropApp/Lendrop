@@ -19,13 +19,17 @@ export default function App() {
       <AuthProvider>
         <Routes>
           {/* Public Routes */}
-          <Route path="/" element={<EarningsDashboard />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/explore" element={<Explore />} />
-          <Route path="/rental-tracking" element={<RentalTracking />} />
+<Route path="/signup" element={<Signup />} />
+<Route path="/forgot-password" element={<ForgotPassword />} />
+<Route path="/reset-password" element={<ResetPassword />} />
+<Route path="/explore" element={<Explore />} />
+<Route path="/rental-tracking" element={<RentalTracking />} />
+
+<Route path="/owner-delivery" element={<OwnerDeliveryReturn />} />
+<Route path="/earnings-dashboard" element={<EarningsDashboard />} />
+
+<Route path="/" element={<Home />} />
 
           <Route
             path="/owner-delivery"

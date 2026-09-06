@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import Explore from "./pages/Explore";
 import RentalTracking from "./pages/RentalTracking";
 import OwnerDeliveryReturn from "./pages/ownerdelivery";
+import EarningsDashboard from "./pages/earningdashboard";
 
 export default function App() {
   return (
@@ -18,16 +19,22 @@ export default function App() {
       <AuthProvider>
         <Routes>
           {/* Public Routes */}
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<EarningsDashboard />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/rental-tracking" element={<RentalTracking />} />
+
           <Route
             path="/owner-delivery"
             element={<OwnerDeliveryReturn />}
+          />
+
+          <Route
+            path="/earnings-dashboard"
+            element={<EarningsDashboard />}
           />
 
           {/* Protected Route */}
@@ -41,7 +48,10 @@ export default function App() {
           />
 
           {/* Fallback */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route
+            path="*"
+            element={<Navigate to="/" replace />}
+          />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

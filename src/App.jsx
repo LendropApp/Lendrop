@@ -11,6 +11,7 @@ import ResetPassword from './pages/ResetPassword'
 import Dashboard from './pages/Dashboard'
 import Explore from './pages/Explore'
 import BecomeHostEntry from './pages/BecomeHostEntry';
+import IdentityVerification from './pages/IdentityVerification'
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/become-host" element={<BecomeHostEntry />} />
+          <Route path="/identity-verification" element={<IdentityVerification />} />
 
           {/* Protected routes */}
           <Route

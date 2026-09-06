@@ -1,32 +1,30 @@
 import { useState } from "react";
 import { Star } from "lucide-react";
 
-
 const mockReviews = [
   {
     id: 1,
     author: "Maria G.",
     rating: 5,
     comment:
-      "Excelente comunicación y el artículo llegó exactamente como se describió.",
+      "Great communication and the item arrived exactly as described.",
     date: "2026-08-20",
   },
   {
     id: 2,
     author: "Carlos R.",
     rating: 4,
-    comment: "Buena experiencia, todo bien.",
+    comment: "Good experience overall.",
     date: "2026-08-15",
   },
   {
     id: 3,
     author: "Ana P.",
     rating: 5,
-    comment: "Súper recomendado, el trato fue muy amable.",
+    comment: "Highly recommended, very friendly service.",
     date: "2026-08-02",
   },
 ];
-
 
 function StarDisplay({ rating }) {
   return (
@@ -45,7 +43,6 @@ function StarDisplay({ rating }) {
     </div>
   );
 }
-
 
 function StarInput({ value, onChange }) {
   const [hover, setHover] = useState(0);
@@ -88,18 +85,18 @@ export default function Ratings() {
     e.preventDefault();
 
     if (rating === 0) {
-      setError("Selecciona una calificación de estrellas.");
+      setError("Please select a star rating.");
       return;
     }
 
     if (trimmedComment.length === 0) {
-      setError("Escribe un comentario antes de publicar.");
+      setError("Please write a comment before posting.");
       return;
     }
 
     const newReview = {
       id: Date.now(),
-      author: "Tú",
+      author: "You",
       rating,
       comment: trimmedComment,
       date: new Date().toISOString().split("T")[0],
@@ -114,7 +111,6 @@ export default function Ratings() {
   return (
     <div className="min-h-screen bg-[#fafafa]">
 
-      
       {/* Navbar */}
       <nav className="border-b border-black/10 bg-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-8 py-5">
@@ -131,24 +127,15 @@ export default function Ratings() {
           {/* Navigation */}
           <div className="flex items-center gap-10 font-medium text-[#0d0d0d]">
 
-            <a
-              href="/"
-              className="transition hover:text-[#433075]"
-            >
+            <a href="/" className="transition hover:text-[#433075]">
               Home
             </a>
 
-            <a
-              href="/explore"
-              className="transition hover:text-[#433075]"
-            >
+            <a href="/explore" className="transition hover:text-[#433075]">
               Explore
             </a>
 
-            <a
-              href="/help"
-              className="transition hover:text-[#433075]"
-            >
+            <a href="/help" className="transition hover:text-[#433075]">
               Help
             </a>
 
@@ -178,11 +165,10 @@ export default function Ratings() {
         </div>
       </nav>
 
-      
       <main className="px-4 py-8">
         <div className="mx-auto max-w-2xl">
 
-          {/* Título */}
+          {/* Title */}
           <h1
             className="text-3xl font-bold text-[#433075]"
             style={{ fontFamily: "Space Grotesk" }}
@@ -190,7 +176,7 @@ export default function Ratings() {
             Ratings & Reviews
           </h1>
 
-          {/* Formulario */}
+          {/* Form */}
           <form
             onSubmit={handleSubmit}
             className="mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"
@@ -199,13 +185,10 @@ export default function Ratings() {
               className="mb-3 text-sm font-medium text-[#0d0d0d]"
               style={{ fontFamily: "Manrope" }}
             >
-              Deja tu reseña
+              Leave a review
             </p>
 
-            <StarInput
-              value={rating}
-              onChange={setRating}
-            />
+            <StarInput value={rating} onChange={setRating} />
 
             <textarea
               value={comment}
@@ -213,7 +196,7 @@ export default function Ratings() {
                 setComment(e.target.value);
                 if (error) setError("");
               }}
-              placeholder="Cuéntanos cómo fue tu experiencia..."
+              placeholder="Tell us about your experience..."
               rows={3}
               className="mt-4 w-full resize-none rounded-xl border border-gray-200 bg-[#fafafa] p-3 text-sm text-[#0d0d0d] outline-none focus:border-[#a58cf4] focus:ring-2 focus:ring-[#a58cf4]/30"
               style={{ fontFamily: "Manrope" }}
@@ -234,11 +217,11 @@ export default function Ratings() {
               className="mt-4 rounded-xl bg-[#433075] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#37285f] disabled:cursor-not-allowed disabled:bg-gray-300"
               style={{ fontFamily: "Manrope" }}
             >
-              Publicar reseña
+              Post review
             </button>
           </form>
 
-          {/* Lista de reseñas */}
+          {/* Reviews list */}
           <div className="mt-8 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
 
             {reviews.length === 0 ? (
@@ -246,7 +229,7 @@ export default function Ratings() {
                 className="py-6 text-center text-sm text-gray-400"
                 style={{ fontFamily: "Manrope" }}
               >
-                Todavía no hay reseñas.
+                No reviews yet.
               </p>
             ) : (
               reviews.map((review) => (
@@ -257,7 +240,7 @@ export default function Ratings() {
 
                   <div className="mb-2 flex items-center justify-between">
 
-                    {/* Usuario */}
+                    {/* User */}
                     <div className="flex items-center gap-3">
 
                       <div
@@ -276,7 +259,7 @@ export default function Ratings() {
 
                     </div>
 
-                    {/* Fecha */}
+                    {/* Date */}
                     <span
                       className="text-xs text-gray-400"
                       style={{ fontFamily: "Manrope" }}
@@ -286,10 +269,8 @@ export default function Ratings() {
 
                   </div>
 
-                  
                   <StarDisplay rating={review.rating} />
 
-                  
                   <p
                     className="mt-2 text-sm text-gray-600"
                     style={{ fontFamily: "Manrope" }}

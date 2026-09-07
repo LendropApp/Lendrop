@@ -11,6 +11,7 @@ import ResetPassword from './pages/ResetPassword'
 import Dashboard from './pages/Dashboard'
 import Explore from './pages/Explore'
 import BecomeHostEntry from './pages/BecomeHostEntry';
+import RentalHistory from './pages/RentalHistory'
 
 export default function App() {
   return (
@@ -35,6 +36,15 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/rental-history"
+            element={
+              <ProtectedRoute>
+                <RentalHistory />
+              </ProtectedRoute>
+            }
+          />
+
           <Route
             path="/become-host/onboarding"
             element={

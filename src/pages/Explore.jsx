@@ -13,6 +13,7 @@ import {
   Package,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import EmptyState from '../components/EmptyState'
 
 
 const CATEGORIES = [
@@ -208,14 +209,12 @@ export default function Explore() {
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center gap-1 py-20 text-center">
-            <p className="font-display text-lg font-semibold text-jet-black">
-              No items found
-            </p>
-            <p className="text-sm text-jet-black/50">
-              Try a different search, or browse another category.
-            </p>
-          </div>
+          <EmptyState
+            icon={Search}
+            title="No items found"
+            description="Try a different search, or browse another category."
+            action={{ label: 'Clear filters', onClick: clearFilters }}
+          />
         )}
       </section>
 

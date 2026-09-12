@@ -12,6 +12,7 @@ import RentalTracking from "./pages/RentalTracking";
 import OwnerDeliveryReturn from "./pages/ownerdelivery";
 import EarningsDashboard from "./pages/earningdashboard";
 import LockerCoverage from "./pages/locker-coverage";
+import Categories from "./pages/categories";
 
 export default function App() {
   return (
@@ -29,6 +30,7 @@ export default function App() {
           <Route path="/earnings-dashboard" element={<EarningsDashboard />} />
           <Route path="/locker-coverage" element={<LockerCoverage />} />
           <Route path="/help" element={<RentalTracking />} />
+          <Route path="/categories" element={<Categories />} />
           <Route
             path="/profile"
             element={

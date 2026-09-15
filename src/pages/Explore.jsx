@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Search,
@@ -7,68 +7,88 @@ import {
   Box,
   User,
   Shirt,
-  Dumbbell,
-  Wrench,
+  Plane,
   Laptop,
-  Package,
+  Luggage,
+  Bike,
+  Wrench,
+  PartyPopper,
+  Tent,
+  Dumbbell,
+  Music,
+  Camera,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import { supabase } from '../lib/supabaseClient.js'
 
 
 const CATEGORIES = [
   { id: 'clothing', label: 'Clothing', Icon: Shirt },
-  { id: 'sports', label: 'Sports', Icon: Dumbbell },
+  { id: 'drones', label: 'Drones', Icon: Plane },
+  { id: 'electronics', label: 'Electronics', Icon: Laptop },
+  { id: 'suitcases', label: 'Suitcases', Icon: Luggage },
+  { id: 'bicycles', label: 'Bicycles', Icon: Bike },
   { id: 'tools', label: 'Tools', Icon: Wrench },
-  { id: 'tech', label: 'Tech', Icon: Laptop },
-  { id: 'other', label: 'Other', Icon: Package },
+  { id: 'costumes', label: 'Costumes', Icon: PartyPopper },
+  { id: 'camping-equipment', label: 'Camping Equipment', Icon: Tent },
+  { id: 'sports-equipment', label: 'Sports Equipment', Icon: Dumbbell },
+  { id: 'musical-instruments', label: 'Musical Instruments', Icon: Music },
+  { id: 'cameras', label: 'Cameras', Icon: Camera },
 ]
-
-const OWNERS = [
-  { name: 'M. García', verified: true },
-  { name: 'C. Turcios', verified: false },
-  { name: 'A. Molina', verified: true },
-  { name: 'R. Hernández', verified: false },
-  { name: 'D. Alas', verified: true },
-  { name: 'L. Portillo', verified: false },
-  { name: 'S. Cerón', verified: true },
-  { name: 'J. Rivas', verified: false },
-]
-
-const RAW_LISTINGS = [
-  { title: 'Formal navy suit, size 40', category: 'clothing', price: 0, image: 'photo-1594938298603-c8148c4dae35' },
-  { title: 'Red evening gown', category: 'clothing', price: 0, image: 'photo-1595777457583-95e059d581b8' },
-  { title: 'Brown leather jacket', category: 'clothing', price: 0, image: 'photo-1591047139829-d91aecb6caea' },
-  { title: 'Winter coat, size L', category: 'clothing', price: 0, image: 'photo-1551028719-00167b16eac5' },
-  { title: 'Trek mountain bike', category: 'sports', price: 0, image: 'photo-1697423878282-0c4bbc3f821a' },
-  { title: 'Full golf set', category: 'sports', price: 0, image: 'photo-1587174486073-ae5e5cff23aa' },
-  { title: 'Adjustable dumbbell set', category: 'sports', price: 0, image: 'photo-1603077492579-39ff927823db' },
-  { title: 'Tennis racket, pro grade', category: 'sports', price: 0, image: 'photo-1542144582-1ba00456b5e3' },
-  { title: 'Cordless drill, Bosch', category: 'tools', price: 0, image: 'photo-1504148455328-c376907d081c' },
-  { title: 'Full wrench & socket set', category: 'tools', price: 0, image: 'photo-1530088528371-105e6f3b2336' },
-  { title: '6-ft folding ladder', category: 'tools', price: 0, image: 'photo-1549030782-4935f80baeb6' },
-  { title: 'Electric circular saw', category: 'tools', price: 0, image: 'photo-1505855796860-aa05646cbf1f' },
-  { title: 'Canon EOS R6 camera', category: 'tech', price: 0, image: 'photo-1516035069371-29a1b244cc32' },
-  { title: 'Portable HD projector', category: 'tech', price: 0, image: 'photo-1587202372775-e229f172b9d7' },
-  { title: 'PlayStation 5, one controller', category: 'tech', price: 0, image: 'photo-1600861194942-f883de0dfe96' },
-  { title: 'Noise-cancelling headphones', category: 'tech', price: 0, image: 'photo-1600294037681-c80b4cb5b434' },
-  { title: '4-person camping tent', category: 'other', price: 0, image: 'photo-1504851149312-7a075b496cc7' },
-  { title: 'Event table & chairs set', category: 'other', price: 0, image: 'photo-1533090161767-e6ffed986c88' },
-  { title: 'Portable party speaker', category: 'other', price: 0, image: 'photo-1517457373958-b7bdd4587205' },
-  { title: 'Superhero costume, adult M', category: 'other', price: 0, image: 'photo-1601925260368-ae2f83cf8b7f' },
-]
-
-const LISTINGS = RAW_LISTINGS.map((item, index) => ({
-  ...item,
-  id: index + 1,
-  image: `https://images.unsplash.com/${item.image}?w=600&q=80&auto=format&fit=crop`,
-  owner: OWNERS[index % OWNERS.length],
-  rating: (Math.random() * 2 + 3).toFixed(1), // Random rating between 3.0 and 5.0
-}))
 
 export default function Explore() {
   const { user } = useAuth()
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
+  const [listings, setListings] = useState([])
+  useEffect(() => {
+  const fetchListings = async () => {
+    const { data, error } = await supabase
+      .from('items')
+      .select(`
+      id,
+      title,
+      description,
+      price_per_day,
+      is_available,
+      category:categories(
+        id,
+        name,
+        slug
+      ),
+      owner:profiles!items_owner_id_fkey(
+      id,
+      full_name,
+      avatar_url,
+      verification_status,
+      average_rating
+    )
+    `)
+
+    if (error) {
+      console.error('Error loading listings:', error)
+      return
+    }
+
+    console.log('Listings from Supabase:', data)
+    setListings(
+  data.map((item) => ({
+    id: item.id,
+    title: item.title,
+    category: item.category?.slug,
+    price: item.price_per_day,
+    image: null,
+    owner: {
+      name: item.owner?.full_name || 'Unknown',
+      verified: item.owner?.verification_status === 'verified',
+    },
+    rating: item.owner?.average_rating || 0,
+  }))
+)
+  }
+
+  fetchListings()
+}, [])
 
   const firstName = user?.user_metadata?.full_name?.split(' ')[0]
 
@@ -92,15 +112,15 @@ export default function Explore() {
 
   const filteredListings = useMemo(() => {
     if (normalizedSearch) {
-      return LISTINGS.filter((item) =>
+      return listings.filter((item) =>
         item.title.toLowerCase().includes(normalizedSearch)
       )
     }
     if (selectedCategory) {
-      return LISTINGS.filter((item) => item.category === selectedCategory)
+      return listings.filter((item) => item.category === selectedCategory)
     }
-    return LISTINGS
-  }, [normalizedSearch, selectedCategory])
+    return listings
+  }, [normalizedSearch, selectedCategory, listings])
 
   const sectionTitle = normalizedSearch
     ? `Results for "${searchTerm}"`

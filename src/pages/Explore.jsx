@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom'
 import {
   Search,
   Heart,
+  Bell,
   Star,
-  Box,
-  User,
+  Store,
   Shirt,
   Dumbbell,
   Wrench,
@@ -13,7 +13,16 @@ import {
   Package,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import LockerAvatar from '../components/LockerAvatar'
 
+
+const ROUTES = {
+  becomeLender: '/become-lender',
+  lenderDashboard: '/host/dashboard',
+  favorites: '/favorites',
+  notifications: '/notifications',
+  profile: '/dashboard',
+}
 
 const CATEGORIES = [
   { id: 'clothing', label: 'Clothing', Icon: Shirt },
@@ -72,6 +81,11 @@ export default function Explore() {
 
   const firstName = user?.user_metadata?.full_name?.split(' ')[0]
 
+
+  const isHost = false
+  const isVerified = Boolean(user)
+  const hasUnreadNotifications = true
+
   function handleCategoryClick(id) {
     setSearchTerm('')
     setSelectedCategory((prev) => (prev === id ? null : id))
@@ -111,13 +125,14 @@ export default function Explore() {
   return (
     <div className="min-h-screen bg-soft-white">
       {/* ================= HEADER ================= */}
-      <header className="sticky top-0 z-50 border-b border-jet-black/5 bg-soft-white/80 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4 sm:px-10">
+      <header className="sticky top-0 z-50 border-b border-jet-black/5 bg-soft-white/85 shadow-[0_8px_24px_-18px_rgba(67,48,117,0.35)] backdrop-blur-md">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-6 py-4 sm:px-10">
           <Link to="/" className="shrink-0">
             <img src="/logo-lendrop.png" alt="Lendrop" className="h-7 w-auto" />
           </Link>
 
-          <div className="hidden max-w-md flex-1 items-center gap-2 rounded-full border border-jet-black/10 bg-white px-4 py-2.5 shadow-sm transition focus-within:border-lavender focus-within:ring-2 focus-within:ring-lavender/30 sm:flex">
+          {/* Search — desktop */}
+          <div className="hidden max-w-md flex-1 items-center gap-2 rounded-full border border-jet-black/10 bg-white px-4 py-2.5 shadow-sm transition hover:shadow-md focus-within:border-lavender focus-within:shadow-md focus-within:ring-2 focus-within:ring-lavender/30 sm:flex">
             <Search className="h-4 w-4 shrink-0 text-jet-black/35" />
             <input
               type="text"
@@ -128,13 +143,53 @@ export default function Explore() {
             />
           </div>
 
-          <Link
-            to="/dashboard"
-            aria-label="Your account"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-jet-black/10 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple"
-          >
-            <User className="h-4 w-4" />
-          </Link>
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-4">
+            {/* Become a Lender / Lender dashboard */}
+            <Link
+              to={isHost ? ROUTES.lenderDashboard : ROUTES.becomeLender}
+              aria-label={isHost ? 'Lender dashboard' : 'Become a Lender'}
+              className={`flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-semibold transition sm:px-4 ${
+                isHost
+                  ? 'border border-jet-black/10 text-jet-black/70 hover:border-lavender hover:text-deep-purple'
+                  : 'bg-linear-to-r from-deep-purple to-lavender text-soft-white shadow-sm hover:shadow-md hover:brightness-105'
+              }`}
+            >
+              <Store className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">
+                {isHost ? 'Lender dashboard' : 'Become a Lender'}
+              </span>
+            </Link>
+
+            {/* Favorites */}
+            <Link
+              to={ROUTES.favorites}
+              aria-label="Saved items"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-jet-black/10 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple"
+            >
+              <Heart className="h-4 w-4" />
+            </Link>
+
+            {/* Notifications */}
+            <Link
+              to={ROUTES.notifications}
+              aria-label="Notifications"
+              className="relative flex h-9 w-9 items-center justify-center rounded-full border border-jet-black/10 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple"
+            >
+              <Bell className="h-4 w-4" />
+              {hasUnreadNotifications && (
+                <span className="absolute right-2 top-2 h-1.5 w-1.5 animate-pulse rounded-full bg-lavender ring-2 ring-soft-white" />
+              )}
+            </Link>
+
+            {/* Profile */}
+            <Link
+              to={ROUTES.profile}
+              aria-label="Your account"
+              className="rounded-6px transition hover:ring-2 hover:ring-lavender/40"
+            >
+              <LockerAvatar label={firstName} verified={isVerified} size="md" />
+            </Link>
+          </div>
         </div>
 
         {/* Search bar, mobile only */}
@@ -162,7 +217,7 @@ export default function Explore() {
 
       {/* ================= CATEGORIES ================= */}
       <section className="mx-auto max-w-6xl px-6 sm:px-10">
-        <div className="mt-6 flex gap-50 overflow-x-auto border-b border-jet-black/5 pb-4 align-items-center">
+        <div className="mt-6 flex gap-55 overflow-x-auto border-b border-jet-black/5 pb-4">
           {CATEGORIES.map((cat) => {
             const active = selectedCategory === cat.id
             return (
@@ -246,25 +301,13 @@ function ProductCard({ item }) {
         >
           <Heart className="h-3.5 w-3.5" />
         </button>
-
-        {/* <span className="absolute bottom-2.5 left-2.5 inline-flex items-center gap-1 rounded-full bg-jet-black/70 px-2.5 py-1 font-mono text-[10px] font-medium text-soft-white backdrop-blur">
-          <Box className="h-3 w-3" />
-          Locker {item.locker}
-        </span> */}
       </div>
 
       <div className="mt-3 flex items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold text-jet-black">{item.title}</p>
           <div className="mt-1 flex items-center gap-1.5">
-            {/* "Locker compartment" avatar frame: a rounded-square badge
-                with a seam line, echoing the physical locker doors. */}
-            <span className="relative flex h-5 w-5 items-center justify-center overflow-hidden rounded-6px border border-jet-black/10 bg-lavender/15 font-mono text-[9px] font-bold text-deep-purple after:absolute after:inset-x-0 after:top-1/2 after:h-px after:bg-jet-black/10">
-              {item.owner.name[0]}
-              {item.owner.verified && (
-                <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 animate-pulse rounded-full bg-lavender ring-2 ring-soft-white" />
-              )}
-            </span>
+            <LockerAvatar label={item.owner.name} verified={item.owner.verified} size="sm" />
             <span className="truncate text-xs text-jet-black/50">{item.owner.name}</span>
           </div>
         </div>

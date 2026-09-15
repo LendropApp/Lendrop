@@ -11,6 +11,7 @@ import ResetPassword from './pages/ResetPassword'
 import Dashboard from './pages/Dashboard'
 import Explore from './pages/Explore'
 import BecomeHostEntry from './pages/BecomeHostEntry';
+import PublishItem from './pages/PublishItem'
 
 export default function App() {
   return (
@@ -40,6 +41,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <HostOnboardingWizard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/publish"
+            element={
+              <ProtectedRoute>
+                <PublishItem />
               </ProtectedRoute>
             }
           />

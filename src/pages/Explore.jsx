@@ -6,6 +6,7 @@ import {
   Bell,
   Star,
   Store,
+  Plus,
   Shirt,
   Dumbbell,
   Wrench,
@@ -22,6 +23,7 @@ const ROUTES = {
   favorites: '/favorites',
   notifications: '/notifications',
   profile: '/dashboard',
+  publish: '/publish',
 }
 
 const CATEGORIES = [
@@ -126,13 +128,14 @@ export default function Explore() {
     <div className="min-h-screen bg-soft-white">
       {/* ================= HEADER ================= */}
       <header className="sticky top-0 z-50 border-b border-jet-black/5 bg-soft-white/85 shadow-[0_8px_24px_-18px_rgba(67,48,117,0.35)] backdrop-blur-md">
+        <div className="h-px bg-linear-to-r from-transparent via-lavender/50 to-transparent" />
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-6 py-4 sm:px-10">
           <Link to="/" className="shrink-0">
             <img src="/logo-lendrop.png" alt="Lendrop" className="h-7 w-auto" />
           </Link>
 
           {/* Search — desktop */}
-          <div className="hidden max-w-md flex-1 items-center gap-2 rounded-full border border-jet-black/10 bg-white px-4 py-2.5 shadow-sm transition hover:shadow-md focus-within:border-lavender focus-within:shadow-md focus-within:ring-2 focus-within:ring-lavender/30 sm:flex">
+          <div className="hidden max-w-md flex-1 items-center gap-2 rounded-full border border-jet-black/10 bg-white px-4 py-2.5 shadow-sm transition hover:shadow-md focus-within:border-lavender focus-within:shadow-[0_0_0_1px_rgba(165,140,244,0.4),0_8px_24px_-8px_rgba(165,140,244,0.5)] focus-within:ring-2 focus-within:ring-lavender/30 sm:flex">
             <Search className="h-4 w-4 shrink-0 text-jet-black/35" />
             <input
               type="text"
@@ -144,6 +147,16 @@ export default function Explore() {
           </div>
 
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-4">
+            {/* Publish an item */}
+            <Link
+              to={ROUTES.publish}
+              aria-label="Publish an item"
+              className="flex items-center gap-1.5 rounded-full border border-jet-black/10 px-3 py-2 text-xs font-semibold text-jet-black/70 transition hover:border-lavender hover:text-deep-purple sm:px-4"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Publish</span>
+            </Link>
+
             {/* Become a Lender / Lender dashboard */}
             <Link
               to={isHost ? ROUTES.lenderDashboard : ROUTES.becomeLender}
@@ -151,7 +164,7 @@ export default function Explore() {
               className={`flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-semibold transition sm:px-4 ${
                 isHost
                   ? 'border border-jet-black/10 text-jet-black/70 hover:border-lavender hover:text-deep-purple'
-                  : 'bg-linear-to-r from-deep-purple to-lavender text-soft-white shadow-sm hover:shadow-md hover:brightness-105'
+                  : 'bg-linear-to-r from-deep-purple to-lavender text-soft-white shadow-[0_4px_20px_-4px_rgba(67,48,117,0.5)] hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.6)] hover:brightness-105'
               }`}
             >
               <Store className="h-3.5 w-3.5" />
@@ -207,7 +220,11 @@ export default function Explore() {
 
       {/* ================= GREETING ================= */}
       <section className="mx-auto max-w-6xl px-6 pt-10 sm:px-10">
-        <h1 className="font-display text-2xl font-bold text-jet-black sm:text-3xl">
+        <span className="inline-flex items-center gap-2 rounded-full border border-lavender/30 bg-lavender/10 px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-widest text-deep-purple">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-lavender" />
+          Live inventory · San Salvador
+        </span>
+        <h1 className="mt-3 font-display text-2xl font-bold text-jet-black sm:text-3xl">
           {firstName ? `Welcome back, ${firstName}.` : 'Find what you need, nearby.'}
         </h1>
         <p className="mt-1 text-sm text-jet-black/50">
@@ -217,7 +234,7 @@ export default function Explore() {
 
       {/* ================= CATEGORIES ================= */}
       <section className="mx-auto max-w-6xl px-6 sm:px-10">
-        <div className="mt-6 flex gap-55 overflow-x-auto border-b border-jet-black/5 pb-4">
+        <div className="mt-6 flex gap-2 overflow-x-auto pb-1">
           {CATEGORIES.map((cat) => {
             const active = selectedCategory === cat.id
             return (
@@ -225,13 +242,13 @@ export default function Explore() {
                 key={cat.id}
                 type="button"
                 onClick={() => handleCategoryClick(cat.id)}
-                className={`flex shrink-0 flex-col items-center gap-2 border-b-2 pb-3 text-xs font-medium transition ${
+                className={`flex shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-xs font-semibold transition ${
                   active
-                    ? 'border-jet-black text-jet-black'
-                    : 'border-transparent text-jet-black/40 hover:text-jet-black/70'
+                    ? 'border-transparent bg-linear-to-r from-deep-purple to-lavender text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)]'
+                    : 'border-jet-black/10 text-jet-black/60 hover:border-lavender hover:text-deep-purple'
                 }`}
               >
-                <cat.Icon className="h-5 w-5" strokeWidth={active ? 2 : 1.5} />
+                <cat.Icon className="h-3.5 w-3.5" strokeWidth={active ? 2.25 : 1.75} />
                 {cat.label}
               </button>
             )
@@ -287,12 +304,13 @@ export default function Explore() {
 function ProductCard({ item }) {
   return (
     <article className="group cursor-pointer">
-      <div className="relative overflow-hidden rounded-2xl bg-jet-black/5">
+      <div className="relative overflow-hidden rounded-2xl bg-jet-black/5 shadow-sm transition duration-300 group-hover:shadow-[0_12px_32px_-12px_rgba(165,140,244,0.55)]">
         <img
           src={item.image}
           alt={item.title}
           className="aspect-4/3 w-full object-cover transition duration-300 group-hover:scale-105"
         />
+        <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-jet-black/5 transition group-hover:ring-lavender/50" />
 
         <button
           type="button"

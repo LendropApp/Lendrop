@@ -2,6 +2,8 @@ import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { supabase } from '../../lib/supabaseClient'
+import IntroStep from './IntroStep'
+import ContactCityStep from './ContactCityStep'
 
 const STEPS = ['intro', 'contact', 'coverage', 'categories', 'terms', 'success']
 
@@ -12,7 +14,7 @@ export default function HostOnboardingWizard() {
   const [stepIndex, setStepIndex] = useState(0)
   const [loading, setLoading] = useState(true)
 
-  // Carga el registro de onboarding, o lo crea si es la primera vez que el usuario llega aquí
+  // Loads the onboarding record, or creates it if this is the user's first time here
   useEffect(() => {
     if (!user) return
 
@@ -24,7 +26,7 @@ export default function HostOnboardingWizard() {
         .maybeSingle()
 
       if (error) {
-        console.error('Error cargando host_onboarding:', error)
+        console.error('Error loading host_onboarding:', error)
         setLoading(false)
         return
       }
@@ -38,7 +40,7 @@ export default function HostOnboardingWizard() {
           .insert({ user_id: user.id, current_step: 'intro' })
           .select()
           .single()
-        if (insertError) console.error('Error creando host_onboarding:', insertError)
+        if (insertError) console.error('Error creating host_onboarding:', insertError)
         setRecord(created)
       }
       setLoading(false)
@@ -54,7 +56,7 @@ export default function HostOnboardingWizard() {
         .select()
         .single()
       if (error) {
-        console.error('Error guardando paso:', error)
+        console.error('Error saving step:', error)
         return
       }
       setRecord(data)
@@ -89,10 +91,26 @@ export default function HostOnboardingWizard() {
     setStepIndex(STEPS.length - 1)
   }, [user])
 
+  const renderStep = () => {
+    switch (STEPS[stepIndex]) {
+      case 'intro':
+        return <IntroStep onNext={() => goNext()} />
+      case 'contact':
+        return <ContactCityStep record={record} onNext={(patch) => goNext(patch)} onBack={goBack} />
+      default:
+        // 'coverage', 'categories', 'terms', 'success' are not built yet
+        return (
+          <p className="font-display text-xl text-deep-purple">
+            Step {stepIndex + 1} of {STEPS.length}: {STEPS[stepIndex]}
+          </p>
+        )
+    }
+  }
+
   if (loading || !record) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-soft-white">
-        <div className="animate-pulse font-display text-deep-purple">Cargando…</div>
+        <div className="animate-pulse font-display text-deep-purple">Loading…</div>
       </div>
     )
   }
@@ -103,9 +121,7 @@ export default function HostOnboardingWizard() {
         <ProgressBar current={stepIndex} total={STEPS.length - 2} />
       )}
       <div className="flex-1 flex items-center justify-center px-6 py-10">
-        <p className="font-display text-xl text-deep-purple">
-          Step {stepIndex + 1} of {STEPS.length}: {STEPS[stepIndex]}
-        </p>
+        {renderStep()}
       </div>
     </div>
   )

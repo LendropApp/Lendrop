@@ -5,6 +5,9 @@ import AuthLayout from '../components/AuthLayout'
 import AuthTabs from '../components/AuthTabs'
 import PasswordInput from '../components/PasswordInput'
 import StatusMessage from '../components/StatusMessage'
+import LegalModal from '../components/LegalModal'
+import TermsOfService from '../content/TermsOfService'
+import PrivacyPolicy from '../content/PrivacyPolicy'
 
 const MIN_AGE = 18
 
@@ -41,6 +44,7 @@ export default function Signup() {
   const [status, setStatus] = useState({ type: '', text: '' })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [openLegal, setOpenLegal] = useState(null) // null | 'terms' | 'privacy'
 
   // Nobody can pick a birth date that would make them younger than 18 —
   // this restricts the date picker itself, on top of the submit check below.
@@ -228,11 +232,32 @@ export default function Signup() {
             onChange={(e) => setAgreedToTerms(e.target.checked)}
             className="mt-0.5 h-4 w-4 shrink-0 rounded border-jet-black/20 text-deep-purple focus:ring-lavender/40"
           />
-          {/* Plain text for now, not links — /terms and /privacy don't exist
-              yet. Swap these spans for <Link> once those pages are built. */}
           <span>
-            I agree to the <span className="font-medium text-deep-purple">Terms of Service</span> and{' '}
-            <span className="font-medium text-deep-purple">Privacy Policy</span>.
+            I agree to the{' '}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                setOpenLegal('terms')
+              }}
+              className="font-medium text-deep-purple underline decoration-lavender/50 underline-offset-2 hover:text-lavender"
+            >
+              Terms of Service
+            </button>{' '}
+            and{' '}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                setOpenLegal('privacy')
+              }}
+              className="font-medium text-deep-purple underline decoration-lavender/50 underline-offset-2 hover:text-lavender"
+            >
+              Privacy Policy
+            </button>
+            .
           </span>
         </label>
 
@@ -246,6 +271,13 @@ export default function Signup() {
           {isSubmitting ? 'Creating account…' : 'Create account'}
         </button>
       </form>
+
+      <LegalModal open={openLegal === 'terms'} onClose={() => setOpenLegal(null)} title="Terms of Service">
+        <TermsOfService />
+      </LegalModal>
+      <LegalModal open={openLegal === 'privacy'} onClose={() => setOpenLegal(null)} title="Privacy Policy">
+        <PrivacyPolicy />
+      </LegalModal>
     </AuthLayout>
   )
   }

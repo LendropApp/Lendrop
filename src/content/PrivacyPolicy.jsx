@@ -96,7 +96,7 @@ export default function PrivacyPolicy() {
       <Section title="10. Contact">
         <p>
           Questions about your data? Reach us at{' '}
-          <span className="font-medium text-deep-purple">privacidad@lendrop.sv</span>.
+          <span className="font-medium text-deep-purple">lendrop2026@gmail.com</span>.
         </p>
       </Section>
     </div>

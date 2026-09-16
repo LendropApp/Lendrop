@@ -134,7 +134,7 @@ export default function TermsOfService() {
       <Section title="15. Contact">
         <p>
           Questions about these terms? Reach us at{' '}
-          <span className="font-medium text-deep-purple">soporte@lendrop.sv</span>.
+          <span className="font-medium text-deep-purple">lendrop2026@gmail.com</span>.
         </p>
       </Section>
     </div>

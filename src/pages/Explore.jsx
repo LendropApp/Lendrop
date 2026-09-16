@@ -28,7 +28,7 @@ const ROUTES = {
   lenderDashboard: '/host/dashboard',
   favorites: '/favorites',
   notifications: '/notifications',
-  profile: '/dashboard',
+  profile: '/profile',
 }
 
 const CATEGORIES = [
@@ -50,58 +50,81 @@ export default function Explore() {
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [listings, setListings] = useState([])
-  useEffect(() => {
-  const fetchListings = async () => {
-    const { data, error } = await supabase
-      .from('items')
-      .select(`
-      id,
-      title,
-      description,
-      price_per_day,
-      is_available,
-      category:categories(
-        id,
-        name,
-        slug
-      ),
-      owner:profiles!items_owner_id_fkey(
-      id,
-      full_name,
-      avatar_url,
-      verification_status,
-      average_rating
-    )
-    `)
+  const [avatarUrl, setAvatarUrl] = useState('')
 
-    if (error) {
-      console.error('Error loading listings:', error)
-      return
+  useEffect(() => {
+    const fetchListings = async () => {
+      const { data, error } = await supabase
+        .from('items')
+        .select(`
+          id,
+          title,
+          description,
+          price_per_day,
+          is_available,
+          category:categories(
+            id,
+            name,
+            slug
+          ),
+          owner:profiles!items_owner_id_fkey(
+            id,
+            full_name,
+            avatar_url,
+            verification_status,
+            average_rating
+          )
+        `)
+
+      if (error) {
+        console.error('Error loading listings:', error)
+        return
+      }
+
+      console.log('Listings from Supabase:', data)
+
+      setListings(
+        data.map((item) => ({
+          id: item.id,
+          title: item.title,
+          category: item.category?.slug,
+          price: item.price_per_day,
+          image: null,
+          owner: {
+            name: item.owner?.full_name || 'Unknown',
+            photoUrl: item.owner?.avatar_url || '',
+            verified: item.owner?.verification_status === 'verified',
+          },
+          rating: item.owner?.average_rating || 0,
+        }))
+      )
     }
 
-    console.log('Listings from Supabase:', data)
-    setListings(
-  data.map((item) => ({
-    id: item.id,
-    title: item.title,
-    category: item.category?.slug,
-    price: item.price_per_day,
-    image: null,
-    owner: {
-      name: item.owner?.full_name || 'Unknown',
-      verified: item.owner?.verification_status === 'verified',
-    },
-    rating: item.owner?.average_rating || 0,
-  }))
-)
-  }
+    fetchListings()
+  }, [])
 
-  fetchListings()
-}, [])
+  useEffect(() => {
+    async function loadCurrentProfile() {
+      if (!user) return
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('avatar_url')
+        .eq('id', user.id)
+        .single()
+
+      if (error) {
+        console.error('Error loading current profile avatar:', error)
+        return
+      }
+
+      setAvatarUrl(data?.avatar_url || '')
+    }
+
+    loadCurrentProfile()
+  }, [user])
 
   const firstName = user?.user_metadata?.full_name?.split(' ')[0]
-
-
   const isHost = false
   const isVerified = Boolean(user)
   const hasUnreadNotifications = true
@@ -207,7 +230,12 @@ export default function Explore() {
               aria-label="Your account"
               className="rounded-6px transition hover:ring-2 hover:ring-lavender/40"
             >
-              <LockerAvatar label={firstName} verified={isVerified} size="md" />
+            <LockerAvatar
+              label={firstName}
+              photoUrl={avatarUrl}
+              verified={isVerified}
+              size="md"
+            />
             </Link>
           </div>
         </div>
@@ -302,7 +330,7 @@ export default function Explore() {
       </footer>
     </div>
   )
-}
+
 
 function ProductCard({ item }) {
   return (
@@ -344,4 +372,5 @@ function ProductCard({ item }) {
       </p>
     </article>
   )
+ }
 }

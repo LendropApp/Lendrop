@@ -18,6 +18,12 @@ const SIZES = {
     dot: 'h-2 w-2 -right-0.5 -top-0.5',
     icon: 'h-4 w-4',
   },
+  lg: {
+    frame: 'h-24 w-24',
+    text: 'text-2xl',
+    dot: 'h-3 w-3 -right-1 -top-1',
+    icon: 'h-8 w-8',
+  },
 }
 
 export default function LockerAvatar({
@@ -31,7 +37,7 @@ export default function LockerAvatar({
 
   return (
     <span
-      className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-6px border border-jet-black/10 bg-lavender/15 font-mono font-bold text-deep-purple after:absolute after:inset-x-0 after:top-1/2 after:h-px after:bg-jet-black/10 ${s.frame} ${s.text} ${className}`}
+      className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-full border border-jet-black/10 bg-lavender/15 font-mono font-bold text-deep-purple after:absolute after:inset-x-0 after:top-1/2 after:h-px after:bg-jet-black/10 ${s.frame} ${s.text} ${className}`}
     >
       {photoUrl ? (
         <img src={photoUrl} alt={label || 'Avatar'} className="h-full w-full object-cover" />

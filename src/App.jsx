@@ -10,6 +10,8 @@ import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import Dashboard from './pages/Dashboard'
 import Explore from './pages/Explore'
+import EditProfile from './pages/EditProfile'
+import PublicProfile from './pages/PublicProfile'
 import BecomeHostEntry from './pages/BecomeHostEntry';
 
 export default function App() {
@@ -24,6 +26,7 @@ export default function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/explore" element={<Explore />} />
+          <Route path="/profile" element={<PublicProfile />} />
           <Route path="/become-host" element={<BecomeHostEntry />} />
 
           {/* Protected routes */}
@@ -42,6 +45,14 @@ export default function App() {
                 <HostOnboardingWizard />
               </ProtectedRoute>
             }
+          />
+          <Route
+            path="/edit-profile"
+            element={
+              <ProtectedRoute>
+                <EditProfile />
+              </ProtectedRoute>
+          }
           />
 
           {/* Unknown routes fall back to the landing page */}

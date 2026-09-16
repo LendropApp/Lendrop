@@ -1,8 +1,8 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext";
-import ProtectedRoute from "./components/ProtectedRoute";
-
-import HostOnboardingWizard from "./pages/host-onboarding/HostOnboardingWizard";
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { AuthProvider } from './context/AuthContext'
+import ProtectedRoute from './components/ProtectedRoute'
+import HostRoute from './components/HostRoute'
+import HostOnboardingWizard from './pages/host-onboarding/HostOnboardingWizard';
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -42,7 +42,7 @@ export default function App() {
           />
 
           <Route
-            path="/earnings-dashboard"
+             path="/earnings-dashboard"
             element={<EarningsDashboard />}
           />
 
@@ -73,9 +73,9 @@ export default function App() {
           <Route
             path="/publish"
             element={
-              <ProtectedRoute>
+              <HostRoute>
                 <PublishItem />
-              </ProtectedRoute>
+              </HostRoute>
             }
           />
 

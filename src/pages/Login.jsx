@@ -61,7 +61,7 @@ export default function Login() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
-            className="w-full rounded-xl border border-jet-black/10 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+            className="w-full rounded-xl border border-lavender/20 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
           />
         </div>
 
@@ -91,7 +91,7 @@ export default function Login() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full rounded-xl bg-deep-purple py-2.5 text-sm font-semibold text-soft-white transition hover:bg-deep-purple/90 disabled:opacity-50"
+          className="w-full rounded-xl bg-linear-to-r from-deep-purple to-lavender py-2.5 text-sm font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)] transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 disabled:opacity-50"
         >
           {isSubmitting ? 'Logging in…' : 'Log in'}
         </button>

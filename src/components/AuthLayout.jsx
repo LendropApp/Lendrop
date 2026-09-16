@@ -1,4 +1,5 @@
 import LockerWallBg from '../components/background/LockerWallBg'
+import AuroraBlobs from '../components/background/AuroraBlobs'
 import { Link } from 'react-router-dom'
 
 
@@ -6,19 +7,12 @@ export default function AuthLayout({ eyebrow = 'Smart locker network', children 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-jet-black px-4 py-12">
       {/* Grid pattern, on-brand lavender lines at low opacity */}
-      {/* Grid pattern, on-brand lavender lines at low opacity */}
-        <LockerWallBg className="pointer-events-none absolute inset-0" />
-      {/* Ambient glows */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -left-24 -top-32 h-96 w-96 rounded-full bg-lavender/20 blur-3xl"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -bottom-32 -right-24 h-96 w-96 rounded-full bg-deep-purple/50 blur-3xl"
-      />
+      <LockerWallBg className="pointer-events-none absolute inset-0" />
+      <AuroraBlobs className="opacity-80" />
 
-      <div className="relative w-full max-w-sm rounded-3xl border border-white/10 bg-white p-8 shadow-2xl shadow-lavender/10">
+      <div className="relative w-full max-w-sm overflow-hidden rounded-3xl border border-white/10 bg-white/90 p-8 shadow-2xl shadow-lavender/20 backdrop-blur-xl">
+        <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-lavender to-transparent" />
+
         <div className="mb-8 text-center">
           <Link to="/" className="font-display text-2xl font-bold text-deep-purple">
             Lendrop

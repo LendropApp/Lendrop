@@ -35,3 +35,28 @@
     letter-spacing: 0.05em;
   }
 }
+
+@layer utilities {
+  /* Slow ambient drift for the aurora gradient blobs (AuroraBlobs.jsx) —
+     kept as a shared keyframe since the same effect is reused behind the
+     Home hero, Explore header, and the auth screens. */
+  @keyframes aurora-drift {
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
+    50% {
+      transform: translate(4%, -5%) scale(1.08);
+    }
+  }
+
+  .animate-aurora {
+    animation: aurora-drift 16s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-aurora {
+      animation: none;
+    }
+  }
+}

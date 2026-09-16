@@ -5,6 +5,7 @@ import StatusMessage from '../components/StatusMessage'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import { getCategoryIcon } from '../lib/categoryIcons'
+import AuroraBlobs from '../components/background/AuroraBlobs'
 
 const MAX_PHOTOS = 6
 
@@ -170,7 +171,8 @@ export default function PublishItem() {
   if (published) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-soft-white px-6">
-        <div className="w-full max-w-md rounded-2xl border border-jet-black/10 bg-white p-8 text-center shadow-[0_16px_48px_-16px_rgba(67,48,117,0.35)]">
+        <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-lavender/15 bg-white p-8 text-center shadow-[0_16px_48px_-16px_rgba(67,48,117,0.35)]">
+          <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-lavender to-transparent" />
           <div className="mx-auto mb-4 h-16 w-16 overflow-hidden rounded-xl bg-jet-black/5 shadow-[0_0_0_3px_rgba(165,140,244,0.25)]">
             {published.coverUrl && (
               <img src={published.coverUrl} alt="" className="h-full w-full object-cover" />
@@ -190,7 +192,7 @@ export default function PublishItem() {
             <button
               type="button"
               onClick={() => navigate('/explore')}
-              className="w-full rounded-xl border border-jet-black/10 py-2.5 text-sm font-semibold text-jet-black transition hover:bg-jet-black/5"
+              className="w-full rounded-xl border border-lavender/15 py-2.5 text-sm font-semibold text-jet-black transition hover:bg-jet-black/5"
             >
               Go to Explore
             </button>
@@ -215,7 +217,7 @@ export default function PublishItem() {
           <Link
             to="/explore"
             aria-label="Back to Explore"
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-jet-black/10 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-lavender/15 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple"
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
@@ -230,7 +232,9 @@ export default function PublishItem() {
         </div>
       </header>
 
-      <form onSubmit={handleSubmit} className="mx-auto max-w-2xl space-y-8 px-6 pt-8 sm:px-10">
+      <div className="relative isolate overflow-hidden">
+        <AuroraBlobs className="opacity-30" />
+      <form onSubmit={handleSubmit} className="relative mx-auto max-w-2xl space-y-8 px-6 pt-8 sm:px-10">
         {/* ================= PHOTOS ================= */}
         <section>
           <label className="mb-2 block text-sm font-medium text-jet-black">
@@ -268,7 +272,7 @@ export default function PublishItem() {
             ))}
 
             {canAddMorePhotos && (
-              <label className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-jet-black/15 text-jet-black/40 transition hover:border-lavender hover:bg-lavender/5 hover:text-deep-purple hover:shadow-[0_0_0_4px_rgba(165,140,244,0.12)]">
+              <label className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-lavender/25 text-jet-black/40 transition hover:border-lavender hover:bg-lavender/5 hover:text-deep-purple hover:shadow-[0_0_0_4px_rgba(165,140,244,0.12)]">
                 <ImagePlus className="h-5 w-5" />
                 <span className="text-[11px] font-medium">Add photo</span>
                 <input
@@ -305,7 +309,7 @@ export default function PublishItem() {
                     className={`flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-xs font-medium transition ${
                       active
                         ? 'border-transparent bg-linear-to-r from-deep-purple to-lavender text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)]'
-                        : 'border-jet-black/10 text-jet-black/70 hover:border-lavender hover:text-deep-purple'
+                        : 'border-lavender/15 text-jet-black/70 hover:border-lavender hover:text-deep-purple'
                     }`}
                   >
                     <Icon className="h-3.5 w-3.5" strokeWidth={active ? 2.25 : 1.75} />
@@ -330,7 +334,7 @@ export default function PublishItem() {
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Canon EOS R6 camera, with 2 lenses"
               maxLength={80}
-              className="w-full rounded-xl border border-jet-black/10 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+              className="w-full rounded-xl border border-lavender/15 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
             />
           </div>
 
@@ -347,7 +351,7 @@ export default function PublishItem() {
               onChange={(e) => setDescription(e.target.value.slice(0, 500))}
               placeholder="Condition, what's included, pickup notes…"
               rows={4}
-              className="w-full resize-none rounded-xl border border-jet-black/10 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+              className="w-full resize-none rounded-xl border border-lavender/15 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
             />
           </div>
         </section>
@@ -368,7 +372,7 @@ export default function PublishItem() {
                   className={`rounded-xl border py-2.5 text-xs font-semibold transition ${
                     active
                       ? 'border-lavender bg-lavender/10 text-deep-purple shadow-[0_0_0_1px_rgba(165,140,244,0.4)_inset]'
-                      : 'border-jet-black/10 text-jet-black/60 hover:border-lavender hover:text-deep-purple'
+                      : 'border-lavender/15 text-jet-black/60 hover:border-lavender hover:text-deep-purple'
                   }`}
                 >
                   {c.label}
@@ -384,7 +388,7 @@ export default function PublishItem() {
             <label htmlFor="pricePerDay" className="mb-1 block text-sm font-medium text-jet-black">
               Price per day
             </label>
-            <div className="flex items-center rounded-xl border border-jet-black/10 px-4 py-2.5 transition focus-within:border-lavender focus-within:ring-2 focus-within:ring-lavender/30">
+            <div className="flex items-center rounded-xl border border-lavender/15 px-4 py-2.5 transition focus-within:border-lavender focus-within:ring-2 focus-within:ring-lavender/30">
               <span className="font-mono text-sm text-jet-black/40">$</span>
               <input
                 id="pricePerDay"
@@ -403,7 +407,7 @@ export default function PublishItem() {
             <label htmlFor="depositAmount" className="mb-1 block text-sm font-medium text-jet-black">
               Deposit <span className="font-normal text-jet-black/40">(optional)</span>
             </label>
-            <div className="flex items-center rounded-xl border border-jet-black/10 px-4 py-2.5 transition focus-within:border-lavender focus-within:ring-2 focus-within:ring-lavender/30">
+            <div className="flex items-center rounded-xl border border-lavender/15 px-4 py-2.5 transition focus-within:border-lavender focus-within:ring-2 focus-within:ring-lavender/30">
               <span className="font-mono text-sm text-jet-black/40">$</span>
               <input
                 id="depositAmount"
@@ -430,7 +434,7 @@ export default function PublishItem() {
             value={locationCity}
             onChange={(e) => setLocationCity(e.target.value)}
             placeholder="San Salvador"
-            className="w-full rounded-xl border border-jet-black/10 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+            className="w-full rounded-xl border border-lavender/15 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
           />
         </section>
 
@@ -438,7 +442,7 @@ export default function PublishItem() {
         {(photos[0] || title || pricePerDay) && (
           <section>
             <p className="mb-2 text-sm font-medium text-jet-black">Preview</p>
-            <div className="flex items-center gap-3 rounded-2xl border border-jet-black/10 bg-white p-3">
+            <div className="flex items-center gap-3 rounded-2xl border border-lavender/15 bg-white p-3">
               <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-jet-black/5">
                 {photos[0] && (
                   <img
@@ -485,6 +489,7 @@ export default function PublishItem() {
           {isSubmitting ? 'Publishing…' : 'Publish item'}
         </button>
       </form>
+      </div>
     </div>
   )
 }

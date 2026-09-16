@@ -61,7 +61,7 @@ export default function EditProfile() {
       const ext = avatarFile.name.split('.').pop()
       const path = `${user.id}/avatar-${Date.now()}.${ext}`
       const { error: uploadError } = await supabase.storage
-        .from('avatars')
+        .from('profile-avatars')
         .upload(path, avatarFile, { contentType: avatarFile.type })
 
       if (uploadError) {
@@ -69,7 +69,7 @@ export default function EditProfile() {
         setStatus({ type: 'error', text: 'Could not upload your photo. Please try again.' })
         return
       }
-      avatarUrl = supabase.storage.from('avatars').getPublicUrl(path).data.publicUrl
+      avatarUrl = supabase.storage.from('profile-avatars').getPublicUrl(path).data.publicUrl
     }
 
     const { error } = await supabase

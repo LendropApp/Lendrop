@@ -50,6 +50,7 @@ create policy "item_reviews_delete_own" on public.item_reviews
 create or replace function public.refresh_owner_rating(target_owner uuid)
 returns void
 language plpgsql
+set search_path = public
 as $$
 begin
   update public.profiles
@@ -83,6 +84,7 @@ $$;
 create or replace function public.update_profile_rating()
 returns trigger
 language plpgsql
+set search_path = public
 as $$
 begin
   perform public.refresh_owner_rating(new.reviewee_id);
@@ -93,6 +95,7 @@ $$;
 create or replace function public.on_item_review_change()
 returns trigger
 language plpgsql
+set search_path = public
 as $$
 declare
   target_owner uuid;
@@ -115,39 +118,49 @@ create trigger on_item_review_change
 
 
 -- ── Avatars bucket ──────────────────────────────────────────────────
--- Public read (avatars show up next to public listings/reviews),
--- owner-only write, same path convention as item-photos: {auth.uid()}/...
+-- "profile-avatars" already exists on the live project (created by hand
+-- in the dashboard, public, no size/mime limits set there); on_conflict
+-- do nothing so this is also correct for a brand new project. Either
+-- way, this brings its policies in line with the item-photos convention:
+-- owner-only write, scoped by the {auth.uid()}/... folder, instead of the
+-- pre-existing policies which let ANY authenticated user overwrite ANY
+-- other user's avatar.
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (
-  'avatars',
-  'avatars',
+  'profile-avatars',
+  'profile-avatars',
   true,
   2097152, -- 2 MB
   array['image/jpeg', 'image/png', 'image/webp']
 )
 on conflict (id) do nothing;
 
-create policy "avatars_bucket_insert_own"
+drop policy if exists "Users can upload profile avatars 80b85y_0" on storage.objects;
+drop policy if exists "Users can view profile avatars 80b85y_0" on storage.objects;
+drop policy if exists "Users can update profile avatars 80b85y_1" on storage.objects;
+drop policy if exists "Users can update profile avatars 80b85y_0" on storage.objects;
+
+create policy "profile_avatars_bucket_insert_own"
   on storage.objects for insert
   with check (
-    bucket_id = 'avatars'
+    bucket_id = 'profile-avatars'
     and (storage.foldername(name))[1] = auth.uid()::text
   );
 
-create policy "avatars_bucket_update_own"
+create policy "profile_avatars_bucket_update_own"
   on storage.objects for update
   using (
-    bucket_id = 'avatars'
+    bucket_id = 'profile-avatars'
     and (storage.foldername(name))[1] = auth.uid()::text
   );
 
-create policy "avatars_bucket_delete_own"
+create policy "profile_avatars_bucket_delete_own"
   on storage.objects for delete
   using (
-    bucket_id = 'avatars'
+    bucket_id = 'profile-avatars'
     and (storage.foldername(name))[1] = auth.uid()::text
   );
 
-create policy "avatars_bucket_select_all"
+create policy "profile_avatars_bucket_select_all"
   on storage.objects for select
-  using (bucket_id = 'avatars');
+  using (bucket_id = 'profile-avatars');

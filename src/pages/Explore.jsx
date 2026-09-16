@@ -1,21 +1,10 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import {
-  Search,
-  Heart,
-  Bell,
-  Star,
-  Store,
-  Plus,
-  Shirt,
-  Dumbbell,
-  Wrench,
-  Laptop,
-  Package,
-} from 'lucide-react'
+import { Search, Heart, Bell, Star, Store, Plus, MapPin } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import { supabase } from '../lib/supabaseClient'
+import { getCategoryIcon } from '../lib/categoryIcons'
 import LockerAvatar from '../components/LockerAvatar'
-
 
 const ROUTES = {
   becomeLender: '/become-lender',
@@ -26,102 +15,113 @@ const ROUTES = {
   publish: '/publish',
 }
 
-const CATEGORIES = [
-  { id: 'clothing', label: 'Clothing', Icon: Shirt },
-  { id: 'sports', label: 'Sports', Icon: Dumbbell },
-  { id: 'tools', label: 'Tools', Icon: Wrench },
-  { id: 'tech', label: 'Tech', Icon: Laptop },
-  { id: 'other', label: 'Other', Icon: Package },
-]
-
-const OWNERS = [
-  { name: 'M. García', verified: true },
-  { name: 'C. Turcios', verified: false },
-  { name: 'A. Molina', verified: true },
-  { name: 'R. Hernández', verified: false },
-  { name: 'D. Alas', verified: true },
-  { name: 'L. Portillo', verified: false },
-  { name: 'S. Cerón', verified: true },
-  { name: 'J. Rivas', verified: false },
-]
-
-const RAW_LISTINGS = [
-  { title: 'Formal navy suit, size 40', category: 'clothing', price: 0, image: 'photo-1594938298603-c8148c4dae35' },
-  { title: 'Red evening gown', category: 'clothing', price: 0, image: 'photo-1595777457583-95e059d581b8' },
-  { title: 'Brown leather jacket', category: 'clothing', price: 0, image: 'photo-1591047139829-d91aecb6caea' },
-  { title: 'Winter coat, size L', category: 'clothing', price: 0, image: 'photo-1551028719-00167b16eac5' },
-  { title: 'Trek mountain bike', category: 'sports', price: 0, image: 'photo-1697423878282-0c4bbc3f821a' },
-  { title: 'Full golf set', category: 'sports', price: 0, image: 'photo-1587174486073-ae5e5cff23aa' },
-  { title: 'Adjustable dumbbell set', category: 'sports', price: 0, image: 'photo-1603077492579-39ff927823db' },
-  { title: 'Tennis racket, pro grade', category: 'sports', price: 0, image: 'photo-1542144582-1ba00456b5e3' },
-  { title: 'Cordless drill, Bosch', category: 'tools', price: 0, image: 'photo-1504148455328-c376907d081c' },
-  { title: 'Full wrench & socket set', category: 'tools', price: 0, image: 'photo-1530088528371-105e6f3b2336' },
-  { title: '6-ft folding ladder', category: 'tools', price: 0, image: 'photo-1549030782-4935f80baeb6' },
-  { title: 'Electric circular saw', category: 'tools', price: 0, image: 'photo-1505855796860-aa05646cbf1f' },
-  { title: 'Canon EOS R6 camera', category: 'tech', price: 0, image: 'photo-1516035069371-29a1b244cc32' },
-  { title: 'Portable HD projector', category: 'tech', price: 0, image: 'photo-1587202372775-e229f172b9d7' },
-  { title: 'PlayStation 5, one controller', category: 'tech', price: 0, image: 'photo-1600861194942-f883de0dfe96' },
-  { title: 'Noise-cancelling headphones', category: 'tech', price: 0, image: 'photo-1600294037681-c80b4cb5b434' },
-  { title: '4-person camping tent', category: 'other', price: 0, image: 'photo-1504851149312-7a075b496cc7' },
-  { title: 'Event table & chairs set', category: 'other', price: 0, image: 'photo-1533090161767-e6ffed986c88' },
-  { title: 'Portable party speaker', category: 'other', price: 0, image: 'photo-1517457373958-b7bdd4587205' },
-  { title: 'Superhero costume, adult M', category: 'other', price: 0, image: 'photo-1601925260368-ae2f83cf8b7f' },
-]
-
-const LISTINGS = RAW_LISTINGS.map((item, index) => ({
-  ...item,
-  id: index + 1,
-  image: `https://images.unsplash.com/${item.image}?w=600&q=80&auto=format&fit=crop`,
-  owner: OWNERS[index % OWNERS.length],
-  rating: (Math.random() * 2 + 3).toFixed(1), // Random rating between 3.0 and 5.0
-}))
+function coverUrlFor(photos) {
+  if (!photos?.length) return null
+  const [cover] = [...photos].sort((a, b) => a.display_order - b.display_order)
+  return supabase.storage.from('item-photos').getPublicUrl(cover.storage_path).data.publicUrl
+}
 
 export default function Explore() {
   const { user } = useAuth()
+
+  const [categories, setCategories] = useState([])
+  const [items, setItems] = useState([])
+  const [itemsLoading, setItemsLoading] = useState(true)
+  const [itemsError, setItemsError] = useState('')
+
   const [selectedCategory, setSelectedCategory] = useState(null)
+  const [selectedCity, setSelectedCity] = useState(null)
+  const [onlyAvailable, setOnlyAvailable] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
 
   const firstName = user?.user_metadata?.full_name?.split(' ')[0]
-
 
   const isHost = false
   const isVerified = Boolean(user)
   const hasUnreadNotifications = true
 
-  function handleCategoryClick(id) {
-    setSearchTerm('')
-    setSelectedCategory((prev) => (prev === id ? null : id))
+  useEffect(() => {
+    let cancelled = false
+    supabase
+      .from('categories')
+      .select('id, name, slug')
+      .eq('is_active', true)
+      .order('display_order')
+      .then(({ data }) => {
+        if (!cancelled) setCategories(data ?? [])
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    supabase
+      .from('items')
+      .select(`
+        id, title, description, price_per_day, location_city, is_available, created_at,
+        category:categories(id, name, slug),
+        photos:item_photos(storage_path, display_order),
+        owner:profiles(id, full_name, avatar_url, verification_status, average_rating, total_reviews)
+      `)
+      .order('created_at', { ascending: false })
+      .then(({ data, error }) => {
+        if (cancelled) return
+        if (error) {
+          setItemsError('Could not load listings. Please refresh.')
+        } else {
+          setItems(data ?? [])
+        }
+        setItemsLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const cities = useMemo(
+    () => [...new Set(items.map((item) => item.location_city))].sort(),
+    [items]
+  )
+
+  function handleCategoryClick(slug) {
+    setSelectedCategory((prev) => (prev === slug ? null : slug))
   }
 
   function handleSearchChange(e) {
-    setSelectedCategory(null)
     setSearchTerm(e.target.value)
   }
 
   function clearFilters() {
     setSelectedCategory(null)
+    setSelectedCity(null)
+    setOnlyAvailable(true)
     setSearchTerm('')
   }
 
   const normalizedSearch = searchTerm.trim().toLowerCase()
-  const isFiltering = Boolean(normalizedSearch || selectedCategory)
+  const isFiltering = Boolean(
+    normalizedSearch || selectedCategory || selectedCity || !onlyAvailable
+  )
 
   const filteredListings = useMemo(() => {
-    if (normalizedSearch) {
-      return LISTINGS.filter((item) =>
-        item.title.toLowerCase().includes(normalizedSearch)
-      )
-    }
-    if (selectedCategory) {
-      return LISTINGS.filter((item) => item.category === selectedCategory)
-    }
-    return LISTINGS
-  }, [normalizedSearch, selectedCategory])
+    return items.filter((item) => {
+      if (onlyAvailable && !item.is_available) return false
+      if (selectedCategory && item.category?.slug !== selectedCategory) return false
+      if (selectedCity && item.location_city !== selectedCity) return false
+      if (normalizedSearch) {
+        const haystack = `${item.title} ${item.description}`.toLowerCase()
+        if (!haystack.includes(normalizedSearch)) return false
+      }
+      return true
+    })
+  }, [items, onlyAvailable, selectedCategory, selectedCity, normalizedSearch])
 
   const sectionTitle = normalizedSearch
     ? `Results for "${searchTerm}"`
     : selectedCategory
-      ? CATEGORIES.find((c) => c.id === selectedCategory)?.label
+      ? categories.find((c) => c.slug === selectedCategory)?.name
       : 'Recommended for you'
 
   return (
@@ -235,24 +235,58 @@ export default function Explore() {
       {/* ================= CATEGORIES ================= */}
       <section className="mx-auto max-w-6xl px-6 sm:px-10">
         <div className="mt-6 flex gap-2 overflow-x-auto pb-1">
-          {CATEGORIES.map((cat) => {
-            const active = selectedCategory === cat.id
+          {categories.map((cat) => {
+            const active = selectedCategory === cat.slug
+            const Icon = getCategoryIcon(cat.slug)
             return (
               <button
                 key={cat.id}
                 type="button"
-                onClick={() => handleCategoryClick(cat.id)}
+                onClick={() => handleCategoryClick(cat.slug)}
                 className={`flex shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-xs font-semibold transition ${
                   active
                     ? 'border-transparent bg-linear-to-r from-deep-purple to-lavender text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)]'
                     : 'border-jet-black/10 text-jet-black/60 hover:border-lavender hover:text-deep-purple'
                 }`}
               >
-                <cat.Icon className="h-3.5 w-3.5" strokeWidth={active ? 2.25 : 1.75} />
-                {cat.label}
+                <Icon className="h-3.5 w-3.5" strokeWidth={active ? 2.25 : 1.75} />
+                {cat.name}
               </button>
             )
           })}
+        </div>
+
+        {/* City + availability filters */}
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          {cities.length > 1 && (
+            <div className="flex items-center gap-1.5 rounded-full border border-jet-black/10 px-3 py-1.5">
+              <MapPin className="h-3.5 w-3.5 text-jet-black/40" />
+              <select
+                value={selectedCity ?? ''}
+                onChange={(e) => setSelectedCity(e.target.value || null)}
+                className="bg-transparent text-xs font-medium text-jet-black/70 outline-none"
+              >
+                <option value="">All cities</option>
+                {cities.map((city) => (
+                  <option key={city} value={city}>
+                    {city}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <button
+            type="button"
+            onClick={() => setOnlyAvailable((prev) => !prev)}
+            className={`rounded-full border px-3.5 py-1.5 text-xs font-semibold transition ${
+              onlyAvailable
+                ? 'border-lavender/40 bg-lavender/10 text-deep-purple'
+                : 'border-jet-black/10 text-jet-black/50 hover:border-lavender hover:text-deep-purple'
+            }`}
+          >
+            {onlyAvailable ? 'Available now' : 'Showing all'}
+          </button>
         </div>
       </section>
 
@@ -273,7 +307,11 @@ export default function Explore() {
           )}
         </div>
 
-        {filteredListings.length > 0 ? (
+        {itemsError ? (
+          <p className="py-20 text-center text-sm text-red-600">{itemsError}</p>
+        ) : itemsLoading ? (
+          <p className="py-20 text-center text-sm text-jet-black/40">Loading listings…</p>
+        ) : filteredListings.length > 0 ? (
           <div className="grid grid-cols-2 gap-x-5 gap-y-8 sm:grid-cols-3 lg:grid-cols-4">
             {filteredListings.map((item) => (
               <ProductCard key={item.id} item={item} />
@@ -302,14 +340,19 @@ export default function Explore() {
 }
 
 function ProductCard({ item }) {
+  const coverUrl = coverUrlFor(item.photos)
+  const hasReviews = (item.owner?.total_reviews ?? 0) > 0
+
   return (
     <article className="group cursor-pointer">
       <div className="relative overflow-hidden rounded-2xl bg-jet-black/5 shadow-sm transition duration-300 group-hover:shadow-[0_12px_32px_-12px_rgba(165,140,244,0.55)]">
-        <img
-          src={item.image}
-          alt={item.title}
-          className="aspect-4/3 w-full object-cover transition duration-300 group-hover:scale-105"
-        />
+        {coverUrl && (
+          <img
+            src={coverUrl}
+            alt={item.title}
+            className="aspect-4/3 w-full object-cover transition duration-300 group-hover:scale-105"
+          />
+        )}
         <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-jet-black/5 transition group-hover:ring-lavender/50" />
 
         <button
@@ -325,19 +368,34 @@ function ProductCard({ item }) {
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold text-jet-black">{item.title}</p>
           <div className="mt-1 flex items-center gap-1.5">
-            <LockerAvatar label={item.owner.name} verified={item.owner.verified} size="sm" />
-            <span className="truncate text-xs text-jet-black/50">{item.owner.name}</span>
+            <LockerAvatar
+              label={item.owner?.full_name}
+              photoUrl={item.owner?.avatar_url}
+              verified={item.owner?.verification_status === 'verified'}
+              size="sm"
+            />
+            <span className="truncate text-xs text-jet-black/50">{item.owner?.full_name}</span>
           </div>
         </div>
 
         <div className="flex shrink-0 items-center gap-1 pt-0.5">
-          <Star className="h-3.5 w-3.5 fill-jet-black text-jet-black" />
-          <span className="font-mono text-xs font-medium text-jet-black">{item.rating}</span>
+          {hasReviews ? (
+            <>
+              <Star className="h-3.5 w-3.5 fill-jet-black text-jet-black" />
+              <span className="font-mono text-xs font-medium text-jet-black">
+                {Number(item.owner.average_rating).toFixed(1)}
+              </span>
+            </>
+          ) : (
+            <span className="rounded-full bg-lavender/15 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-deep-purple">
+              New
+            </span>
+          )}
         </div>
       </div>
 
       <p className="mt-1.5 font-mono text-sm font-semibold text-jet-black">
-        ${item.price}
+        ${item.price_per_day}
         <span className="font-body font-normal text-jet-black/45"> / day</span>
       </p>
     </article>

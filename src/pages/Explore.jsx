@@ -31,10 +31,12 @@ export default function Explore() {
   const [searchTerm, setSearchTerm] = useState('')
   const [favoriteIds, setFavoriteIds] = useState(new Set())
 
+  const [unreadNotifications, setUnreadNotifications] = useState(0)
+
   const firstName = user?.user_metadata?.full_name?.split(' ')[0]
 
   const isVerified = Boolean(user)
-  const hasUnreadNotifications = true
+  const hasUnreadNotifications = unreadNotifications > 0
 
   useEffect(() => {
     let cancelled = false
@@ -88,6 +90,25 @@ export default function Explore() {
       .eq('user_id', user.id)
       .then(({ data }) => {
         if (!cancelled) setFavoriteIds(new Set((data ?? []).map((f) => f.item_id)))
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [user])
+
+  useEffect(() => {
+    if (!user) {
+      setUnreadNotifications(0)
+      return
+    }
+    let cancelled = false
+    supabase
+      .from('notifications')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .eq('is_read', false)
+      .then(({ count }) => {
+        if (!cancelled) setUnreadNotifications(count ?? 0)
       })
     return () => {
       cancelled = true
@@ -221,15 +242,13 @@ export default function Explore() {
             </Link>
 
             {/* Messages */}
-            {user && (
-              <Link
-                to={ROUTES.messages}
-                aria-label="Messages"
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-jet-black/10 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple"
-              >
-                <MessageCircle className="h-4 w-4" />
-              </Link>
-            )}
+            <Link
+              to={ROUTES.messages}
+              aria-label="Messages"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-jet-black/10 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple"
+            >
+              <MessageCircle className="h-4 w-4" />
+            </Link>
 
             {/* Notifications */}
             <Link

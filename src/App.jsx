@@ -22,6 +22,7 @@ import RentalTracking from "./pages/RentalTracking";
 import OwnerDeliveryReturn from "./pages/ownerdelivery";
 import EarningsDashboard from "./pages/earningdashboard";
 import Messages from "./pages/Messages";
+import Notifications from "./pages/Notifications";
 import Conversation from "./pages/Conversation";
 import History from "./pages/History";
 import Verification from "./pages/Verification";
@@ -131,6 +132,15 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Conversation />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/notifications"
+            element={
+              <ProtectedRoute>
+                <Notifications />
               </ProtectedRoute>
             }
           />

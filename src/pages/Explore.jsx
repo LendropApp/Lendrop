@@ -5,9 +5,10 @@ import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import { getCategoryIcon } from '../lib/categoryIcons'
 import LockerAvatar from '../components/LockerAvatar'
+import AuroraBlobs from '../components/background/AuroraBlobs'
 
 const ROUTES = {
-  becomeLender: '/become-lender',
+  becomeLender: '/become-host',
   lenderDashboard: '/host/dashboard',
   favorites: '/favorites',
   notifications: '/notifications',
@@ -22,7 +23,7 @@ function coverUrlFor(photos) {
 }
 
 export default function Explore() {
-  const { user } = useAuth()
+  const { user, isHost } = useAuth()
 
   const [categories, setCategories] = useState([])
   const [items, setItems] = useState([])
@@ -36,7 +37,6 @@ export default function Explore() {
 
   const firstName = user?.user_metadata?.full_name?.split(' ')[0]
 
-  const isHost = false
   const isVerified = Boolean(user)
   const hasUnreadNotifications = true
 
@@ -63,7 +63,7 @@ export default function Explore() {
         id, title, description, price_per_day, location_city, is_available, created_at,
         category:categories(id, name, slug),
         photos:item_photos(storage_path, display_order),
-        owner:profiles(id, full_name, avatar_url, verification_status, average_rating, total_reviews)
+        owner:profiles!items_owner_id_fkey(id, full_name, avatar_url, verification_status, average_rating, total_reviews)
       `)
       .order('created_at', { ascending: false })
       .then(({ data, error }) => {
@@ -219,17 +219,20 @@ export default function Explore() {
       </header>
 
       {/* ================= GREETING ================= */}
-      <section className="mx-auto max-w-6xl px-6 pt-10 sm:px-10">
-        <span className="inline-flex items-center gap-2 rounded-full border border-lavender/30 bg-lavender/10 px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-widest text-deep-purple">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-lavender" />
-          Live inventory · San Salvador
-        </span>
-        <h1 className="mt-3 font-display text-2xl font-bold text-jet-black sm:text-3xl">
-          {firstName ? `Welcome back, ${firstName}.` : 'Find what you need, nearby.'}
-        </h1>
-        <p className="mt-1 text-sm text-jet-black/50">
-          Every listing below is verified and ready to pick up from a locker near you.
-        </p>
+      <section className="relative isolate overflow-hidden">
+        <AuroraBlobs className="opacity-40" />
+        <div className="relative mx-auto max-w-6xl px-6 pt-10 sm:px-10">
+          <span className="inline-flex items-center gap-2 rounded-full border border-lavender/30 bg-lavender/10 px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-widest text-deep-purple">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-lavender" />
+            Live inventory · San Salvador
+          </span>
+          <h1 className="mt-3 font-display text-2xl font-bold text-jet-black sm:text-3xl">
+            {firstName ? `Welcome back, ${firstName}.` : 'Find what you need, nearby.'}
+          </h1>
+          <p className="mt-1 text-sm text-jet-black/50">
+            Every listing below is verified and ready to pick up from a locker near you.
+          </p>
+        </div>
       </section>
 
       {/* ================= CATEGORIES ================= */}
@@ -344,8 +347,8 @@ function ProductCard({ item }) {
   const hasReviews = (item.owner?.total_reviews ?? 0) > 0
 
   return (
-    <article className="group cursor-pointer">
-      <div className="relative overflow-hidden rounded-2xl bg-jet-black/5 shadow-sm transition duration-300 group-hover:shadow-[0_12px_32px_-12px_rgba(165,140,244,0.55)]">
+    <article className="group cursor-pointer transition duration-300 hover:-translate-y-1">
+      <div className="relative overflow-hidden rounded-2xl bg-jet-black/5 shadow-sm transition duration-300 group-hover:shadow-[0_16px_36px_-14px_rgba(165,140,244,0.6)]">
         {coverUrl && (
           <img
             src={coverUrl}

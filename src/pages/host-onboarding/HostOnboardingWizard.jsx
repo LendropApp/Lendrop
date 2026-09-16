@@ -1,18 +1,22 @@
 import { useEffect, useState, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { supabase } from '../../lib/supabaseClient'
+import AuroraBlobs from '../../components/background/AuroraBlobs'
 import IntroStep from './IntroStep'
 import ContactCityStep from './ContactCityStep'
+import CoverageStep from './CoverageStep'
+import CategoriesStep from './CategoriesStep'
+import TermsStep from './TermsStep'
+import SuccessStep from './SuccessStep'
 
 const STEPS = ['intro', 'contact', 'coverage', 'categories', 'terms', 'success']
 
 export default function HostOnboardingWizard() {
-  const { user } = useAuth()
-  const navigate = useNavigate()
+  const { user, refreshProfile } = useAuth()
   const [record, setRecord] = useState(null)
   const [stepIndex, setStepIndex] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [finishing, setFinishing] = useState(false)
 
   // Loads the onboarding record, or creates it if this is the user's first time here
   useEffect(() => {
@@ -77,19 +81,29 @@ export default function HostOnboardingWizard() {
     setStepIndex((i) => Math.max(i - 1, 0))
   }, [])
 
-  const finish = useCallback(async () => {
-    await supabase
-      .from('host_onboarding')
-      .update({ completed_at: new Date().toISOString(), current_step: 'success' })
-      .eq('user_id', user.id)
+  const finish = useCallback(
+    async (patch = {}) => {
+      setFinishing(true)
 
-    await supabase
-      .from('profiles')
-      .update({ is_host: true, host_activated_at: new Date().toISOString() })
-      .eq('id', user.id)
+      await persist({ ...patch, current_step: 'terms' })
 
-    setStepIndex(STEPS.length - 1)
-  }, [user])
+      await supabase
+        .from('host_onboarding')
+        .update({ completed_at: new Date().toISOString(), current_step: 'success' })
+        .eq('user_id', user.id)
+
+      await supabase
+        .from('profiles')
+        .update({ is_host: true, host_activated_at: new Date().toISOString() })
+        .eq('id', user.id)
+
+      await refreshProfile()
+
+      setFinishing(false)
+      setStepIndex(STEPS.length - 1)
+    },
+    [user, persist, refreshProfile]
+  )
 
   const renderStep = () => {
     switch (STEPS[stepIndex]) {
@@ -97,13 +111,16 @@ export default function HostOnboardingWizard() {
         return <IntroStep onNext={() => goNext()} />
       case 'contact':
         return <ContactCityStep record={record} onNext={(patch) => goNext(patch)} onBack={goBack} />
+      case 'coverage':
+        return <CoverageStep record={record} onNext={(patch) => goNext(patch)} onBack={goBack} />
+      case 'categories':
+        return <CategoriesStep record={record} onNext={(patch) => goNext(patch)} onBack={goBack} />
+      case 'terms':
+        return <TermsStep onNext={(patch) => finish(patch)} onBack={goBack} submitting={finishing} />
+      case 'success':
+        return <SuccessStep />
       default:
-        // 'coverage', 'categories', 'terms', 'success' are not built yet
-        return (
-          <p className="font-display text-xl text-deep-purple">
-            Step {stepIndex + 1} of {STEPS.length}: {STEPS[stepIndex]}
-          </p>
-        )
+        return null
     }
   }
 
@@ -116,11 +133,12 @@ export default function HostOnboardingWizard() {
   }
 
   return (
-    <div className="min-h-screen bg-soft-white flex flex-col">
+    <div className="relative isolate min-h-screen overflow-hidden bg-soft-white flex flex-col">
+      <AuroraBlobs className="opacity-30" />
       {stepIndex > 0 && stepIndex < STEPS.length - 1 && (
         <ProgressBar current={stepIndex} total={STEPS.length - 2} />
       )}
-      <div className="flex-1 flex items-center justify-center px-6 py-10">
+      <div className="relative flex-1 flex items-center justify-center px-6 py-10">
         {renderStep()}
       </div>
     </div>
@@ -130,8 +148,11 @@ export default function HostOnboardingWizard() {
 function ProgressBar({ current, total }) {
   const pct = Math.round((current / total) * 100)
   return (
-    <div className="h-1 w-full bg-lavender/20">
-      <div className="h-1 bg-deep-purple transition-all duration-300" style={{ width: `${pct}%` }} />
+    <div className="relative h-1 w-full bg-lavender/20">
+      <div
+        className="h-1 bg-linear-to-r from-deep-purple to-lavender transition-all duration-300"
+        style={{ width: `${pct}%` }}
+      />
     </div>
   )
 }

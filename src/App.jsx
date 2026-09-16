@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
+import HostRoute from './components/HostRoute'
 import HostOnboardingWizard from './pages/host-onboarding/HostOnboardingWizard';
 
 import Home from './pages/Home'
@@ -47,9 +48,9 @@ export default function App() {
           <Route
             path="/publish"
             element={
-              <ProtectedRoute>
+              <HostRoute>
                 <PublishItem />
-              </ProtectedRoute>
+              </HostRoute>
             }
           />
 

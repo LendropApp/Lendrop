@@ -1,44 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import {
-  ArrowLeft,
-  ImagePlus,
-  X,
-  Star,
-  Shirt,
-  Wrench,
-  Camera,
-  Bot,
-  Music,
-  Bike,
-  Dumbbell,
-  Laptop,
-  Tent,
-  Luggage,
-  Drama,
-  Package,
-} from 'lucide-react'
+import { ArrowLeft, ImagePlus, X, Star } from 'lucide-react'
 import StatusMessage from '../components/StatusMessage'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
+import { getCategoryIcon } from '../lib/categoryIcons'
 
 const MAX_PHOTOS = 6
-
-// `categories.icon` isn't populated in the seed data, so slugs are mapped to
-// an icon locally. Falls back to Package for any category added later.
-const ICONS_BY_SLUG = {
-  ropa: Shirt,
-  herramientas: Wrench,
-  camaras: Camera,
-  drones: Bot,
-  'instrumentos-musicales': Music,
-  bicicletas: Bike,
-  'equipo-deportivo': Dumbbell,
-  electronicos: Laptop,
-  'equipo-camping': Tent,
-  maletas: Luggage,
-  disfraces: Drama,
-}
 
 const CONDITIONS = [
   { value: 'new', label: 'New' },
@@ -328,7 +296,7 @@ export default function PublishItem() {
             <div className="flex flex-wrap gap-2">
               {categories.map((cat) => {
                 const active = categorySlug === cat.slug
-                const Icon = ICONS_BY_SLUG[cat.slug] ?? Package
+                const Icon = getCategoryIcon(cat.slug)
                 return (
                   <button
                     key={cat.id}
@@ -488,7 +456,7 @@ export default function PublishItem() {
                   {selectedCategory && (
                     <>
                       {(() => {
-                        const Icon = ICONS_BY_SLUG[selectedCategory.slug] ?? Package
+                        const Icon = getCategoryIcon(selectedCategory.slug)
                         return <Icon className="h-3 w-3" />
                       })()}
                       <span>{selectedCategory.name}</span>

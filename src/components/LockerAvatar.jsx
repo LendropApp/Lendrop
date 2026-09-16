@@ -18,6 +18,12 @@ const SIZES = {
     dot: 'h-2 w-2 -right-0.5 -top-0.5',
     icon: 'h-4 w-4',
   },
+  lg: {
+    frame: 'h-20 w-20',
+    text: 'text-2xl',
+    dot: 'h-3.5 w-3.5 -right-1 -top-1',
+    icon: 'h-8 w-8',
+  },
 }
 
 export default function LockerAvatar({

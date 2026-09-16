@@ -13,6 +13,10 @@ import Dashboard from "./pages/Dashboard";
 import Explore from "./pages/Explore";
 import BecomeHostEntry from "./pages/BecomeHostEntry";
 import PublishItem from "./pages/PublishItem";
+import ItemDetail from "./pages/ItemDetail";
+import Favorites from "./pages/Favorites";
+import Profile from "./pages/Profile";
+import EditProfile from "./pages/EditProfile";
 
 import RentalTracking from "./pages/RentalTracking";
 import OwnerDeliveryReturn from "./pages/ownerdelivery";
@@ -30,6 +34,7 @@ export default function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/explore" element={<Explore />} />
+          <Route path="/item/:itemId" element={<ItemDetail />} />
 
           <Route
             path="/rental-tracking"
@@ -76,6 +81,33 @@ export default function App() {
               <HostRoute>
                 <PublishItem />
               </HostRoute>
+            }
+          />
+
+          <Route
+            path="/favorites"
+            element={
+              <ProtectedRoute>
+                <Favorites />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/profile/edit"
+            element={
+              <ProtectedRoute>
+                <EditProfile />
+              </ProtectedRoute>
             }
           />
 

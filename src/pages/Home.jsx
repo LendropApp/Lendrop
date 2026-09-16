@@ -155,7 +155,13 @@ export default function Home() {
             ))}
           </nav>
 
-          <div className="hidden items-center gap-3 md:flex">
+          <div className="hidden items-center gap-5 md:flex">
+            <Link
+              to="/become-host"
+              className="text-sm font-semibold text-jet-black/70 transition hover:text-deep-purple"
+            >
+              Become a lender
+            </Link>
             <Link
               to="/login"
               className="text-sm font-semibold text-jet-black/70 transition hover:text-deep-purple"
@@ -169,7 +175,6 @@ export default function Home() {
               Get started
             </Link>
           </div>
-
           <button
             type="button"
             onClick={() => setMenuOpen((open) => !open)}

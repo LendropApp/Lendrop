@@ -16,7 +16,8 @@ export default function Login() {
   const [status, setStatus] = useState({ type: '', text: '' })
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const redirectTo = location.state?.from?.pathname || '/explore'
+  const hostRedirect = localStorage.getItem('lendrop_post_auth_redirect')
+  const redirectTo = location.state?.from?.pathname || hostRedirect || '/explore'
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -40,6 +41,7 @@ export default function Login() {
     }
 
     navigate(redirectTo, { replace: true })
+    localStorage.removeItem('lendrop_post_auth_redirect')
   }
 
   return (

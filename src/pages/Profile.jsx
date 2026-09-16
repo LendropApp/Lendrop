@@ -1,12 +1,34 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Edit3, Heart, LogOut, MapPin, Package, ShieldCheck } from 'lucide-react'
+import {
+  ArrowLeft,
+  BarChart3,
+  ChevronRight,
+  CreditCard,
+  Edit3,
+  Heart,
+  LogOut,
+  MapPin,
+  MessageCircle,
+  Package,
+  ShieldCheck,
+  Sparkles,
+} from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import LockerAvatar from '../components/LockerAvatar'
 import StarRating from '../components/StarRating'
 import ProfileCompletion from '../components/ProfileCompletion'
 import AuroraBlobs from '../components/background/AuroraBlobs'
+
+const ACCOUNT_MENU = [
+  { to: '/messages', icon: MessageCircle, label: 'Messages', desc: 'Coordinate pickups and drop-offs' },
+  { to: '/history', icon: Package, label: 'Activity', desc: 'Your rentals and lendings history' },
+  { to: '/verification', icon: ShieldCheck, label: 'Trust & verification', desc: 'Verify your identity' },
+  { to: '/payment-methods', icon: CreditCard, label: 'Payment methods', desc: 'Manage saved cards' },
+  { to: '/earnings-dashboard', icon: BarChart3, label: 'Lender statistics', desc: 'Earnings and ratings' },
+  { to: '/premium', icon: Sparkles, label: 'Lendrop Premium', desc: 'Coming soon', badge: 'Soon' },
+]
 
 export default function Profile() {
   const { user, profile, profileLoading, signOut } = useAuth()
@@ -162,6 +184,35 @@ export default function Profile() {
 
           {/* ================= COMPLETE YOUR PROFILE ================= */}
           <ProfileCompletion user={user} profile={profile} />
+
+          {/* ================= ACCOUNT MENU ================= */}
+          <section className="overflow-hidden rounded-2xl border border-lavender/15 bg-white">
+            {ACCOUNT_MENU.map(({ to, icon: Icon, label, desc, badge }, index) => (
+              <Link
+                key={to}
+                to={to}
+                className={`flex items-center gap-3 p-4 transition hover:bg-lavender/5 ${
+                  index > 0 ? 'border-t border-jet-black/5' : ''
+                }`}
+              >
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-lavender/15">
+                  <Icon className="h-4.5 w-4.5 text-deep-purple" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-semibold text-jet-black">{label}</p>
+                    {badge && (
+                      <span className="rounded-full bg-lavender/15 px-2 py-0.5 text-[10px] font-semibold text-deep-purple">
+                        {badge}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-jet-black/45">{desc}</p>
+                </div>
+                <ChevronRight className="h-4 w-4 shrink-0 text-jet-black/25" />
+              </Link>
+            ))}
+          </section>
         </div>
       </div>
     </div>

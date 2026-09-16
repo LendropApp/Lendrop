@@ -21,6 +21,12 @@ import EditProfile from "./pages/EditProfile";
 import RentalTracking from "./pages/RentalTracking";
 import OwnerDeliveryReturn from "./pages/ownerdelivery";
 import EarningsDashboard from "./pages/earningdashboard";
+import Messages from "./pages/Messages";
+import Conversation from "./pages/Conversation";
+import History from "./pages/History";
+import Verification from "./pages/Verification";
+import PaymentMethods from "./pages/PaymentMethods";
+import Premium from "./pages/Premium";
 
 export default function App() {
   return (
@@ -107,6 +113,60 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <EditProfile />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/messages"
+            element={
+              <ProtectedRoute>
+                <Messages />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/messages/:conversationId"
+            element={
+              <ProtectedRoute>
+                <Conversation />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/history"
+            element={
+              <ProtectedRoute>
+                <History />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/verification"
+            element={
+              <ProtectedRoute>
+                <Verification />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/payment-methods"
+            element={
+              <ProtectedRoute>
+                <PaymentMethods />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/premium"
+            element={
+              <ProtectedRoute>
+                <Premium />
               </ProtectedRoute>
             }
           />

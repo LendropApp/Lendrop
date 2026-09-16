@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, Heart, MapPin, ShieldCheck, Trash2 } from 'lucide-react'
+import { ArrowLeft, Heart, MapPin, MessageCircle, ShieldCheck, Trash2 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import { getCategoryIcon } from '../lib/categoryIcons'
@@ -33,6 +33,7 @@ export default function ItemDetail() {
 
   const [confirmingDelete, setConfirmingDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [messaging, setMessaging] = useState(false)
 
   const loadItem = useCallback(async () => {
     const { data, error } = await supabase
@@ -111,6 +112,22 @@ export default function ItemDetail() {
     } else {
       setIsFavorited(true)
       await supabase.from('favorites').insert({ user_id: user.id, item_id: itemId })
+    }
+  }
+
+  async function handleMessageOwner() {
+    if (!user) {
+      navigate('/login', { state: { from: { pathname: `/item/${itemId}` } } })
+      return
+    }
+    setMessaging(true)
+    const { data, error } = await supabase.rpc('start_conversation', {
+      other_user_id: item.owner.id,
+      p_item_id: itemId,
+    })
+    setMessaging(false)
+    if (!error && data) {
+      navigate(`/messages/${data}`)
     }
   }
 
@@ -303,6 +320,18 @@ export default function ItemDetail() {
                   <ShieldCheck className="h-4 w-4 shrink-0 text-lavender" />
                 )}
               </div>
+
+              {!isOwner && (
+                <button
+                  type="button"
+                  onClick={handleMessageOwner}
+                  disabled={messaging}
+                  className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-jet-black/10 px-4 py-2.5 text-sm font-semibold text-jet-black/70 transition hover:border-lavender hover:text-deep-purple disabled:opacity-50"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  {messaging ? 'Starting conversation…' : `Message ${item.owner?.full_name?.split(' ')[0] ?? 'lender'}`}
+                </button>
+              )}
 
               <div className="mt-6">
                 <h2 className="font-display text-sm font-semibold text-jet-black">Description</h2>

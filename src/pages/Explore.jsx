@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Search, Heart, Bell, Store, Plus, MapPin } from 'lucide-react'
+import { Search, Heart, Bell, MessageCircle, Store, Plus, MapPin } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import { getCategoryIcon } from '../lib/categoryIcons'
@@ -11,6 +11,7 @@ import AuroraBlobs from '../components/background/AuroraBlobs'
 const ROUTES = {
   becomeLender: '/become-host',
   favorites: '/favorites',
+  messages: '/messages',
   notifications: '/notifications',
   profile: '/profile',
   publish: '/publish',
@@ -218,6 +219,17 @@ export default function Explore() {
             >
               <Heart className="h-4 w-4" />
             </Link>
+
+            {/* Messages */}
+            {user && (
+              <Link
+                to={ROUTES.messages}
+                aria-label="Messages"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-jet-black/10 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple"
+              >
+                <MessageCircle className="h-4 w-4" />
+              </Link>
+            )}
 
             {/* Notifications */}
             <Link

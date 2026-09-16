@@ -1,123 +1,204 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import {
-  Search,
-  Heart,
-  Star,
-  Box,
-  User,
-  Shirt,
-  Dumbbell,
-  Wrench,
-  Laptop,
-  Package,
-} from 'lucide-react'
+import { Search, Heart, Bell, MessageCircle, Store, Plus, MapPin } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import { supabase } from '../lib/supabaseClient'
+import { getCategoryIcon } from '../lib/categoryIcons'
+import LockerAvatar from '../components/LockerAvatar'
+import ProductCard from '../components/ProductCard'
+import AuroraBlobs from '../components/background/AuroraBlobs'
 
-
-const CATEGORIES = [
-  { id: 'clothing', label: 'Clothing', Icon: Shirt },
-  { id: 'sports', label: 'Sports', Icon: Dumbbell },
-  { id: 'tools', label: 'Tools', Icon: Wrench },
-  { id: 'tech', label: 'Tech', Icon: Laptop },
-  { id: 'other', label: 'Other', Icon: Package },
-]
-
-const OWNERS = [
-  { name: 'M. García', verified: true },
-  { name: 'C. Turcios', verified: false },
-  { name: 'A. Molina', verified: true },
-  { name: 'R. Hernández', verified: false },
-  { name: 'D. Alas', verified: true },
-  { name: 'L. Portillo', verified: false },
-  { name: 'S. Cerón', verified: true },
-  { name: 'J. Rivas', verified: false },
-]
-
-const RAW_LISTINGS = [
-  { title: 'Formal navy suit, size 40', category: 'clothing', price: 0, image: 'photo-1594938298603-c8148c4dae35' },
-  { title: 'Red evening gown', category: 'clothing', price: 0, image: 'photo-1595777457583-95e059d581b8' },
-  { title: 'Brown leather jacket', category: 'clothing', price: 0, image: 'photo-1591047139829-d91aecb6caea' },
-  { title: 'Winter coat, size L', category: 'clothing', price: 0, image: 'photo-1551028719-00167b16eac5' },
-  { title: 'Trek mountain bike', category: 'sports', price: 0, image: 'photo-1697423878282-0c4bbc3f821a' },
-  { title: 'Full golf set', category: 'sports', price: 0, image: 'photo-1587174486073-ae5e5cff23aa' },
-  { title: 'Adjustable dumbbell set', category: 'sports', price: 0, image: 'photo-1603077492579-39ff927823db' },
-  { title: 'Tennis racket, pro grade', category: 'sports', price: 0, image: 'photo-1542144582-1ba00456b5e3' },
-  { title: 'Cordless drill, Bosch', category: 'tools', price: 0, image: 'photo-1504148455328-c376907d081c' },
-  { title: 'Full wrench & socket set', category: 'tools', price: 0, image: 'photo-1530088528371-105e6f3b2336' },
-  { title: '6-ft folding ladder', category: 'tools', price: 0, image: 'photo-1549030782-4935f80baeb6' },
-  { title: 'Electric circular saw', category: 'tools', price: 0, image: 'photo-1505855796860-aa05646cbf1f' },
-  { title: 'Canon EOS R6 camera', category: 'tech', price: 0, image: 'photo-1516035069371-29a1b244cc32' },
-  { title: 'Portable HD projector', category: 'tech', price: 0, image: 'photo-1587202372775-e229f172b9d7' },
-  { title: 'PlayStation 5, one controller', category: 'tech', price: 0, image: 'photo-1600861194942-f883de0dfe96' },
-  { title: 'Noise-cancelling headphones', category: 'tech', price: 0, image: 'photo-1600294037681-c80b4cb5b434' },
-  { title: '4-person camping tent', category: 'other', price: 0, image: 'photo-1504851149312-7a075b496cc7' },
-  { title: 'Event table & chairs set', category: 'other', price: 0, image: 'photo-1533090161767-e6ffed986c88' },
-  { title: 'Portable party speaker', category: 'other', price: 0, image: 'photo-1517457373958-b7bdd4587205' },
-  { title: 'Superhero costume, adult M', category: 'other', price: 0, image: 'photo-1601925260368-ae2f83cf8b7f' },
-]
-
-const LISTINGS = RAW_LISTINGS.map((item, index) => ({
-  ...item,
-  id: index + 1,
-  image: `https://images.unsplash.com/${item.image}?w=600&q=80&auto=format&fit=crop`,
-  owner: OWNERS[index % OWNERS.length],
-  rating: (Math.random() * 2 + 3).toFixed(1), // Random rating between 3.0 and 5.0
-}))
+const ROUTES = {
+  becomeLender: '/become-host',
+  favorites: '/favorites',
+  messages: '/messages',
+  notifications: '/notifications',
+  profile: '/profile',
+  publish: '/publish',
+}
 
 export default function Explore() {
-  const { user } = useAuth()
+  const { user, isHost } = useAuth()
+
+  const [categories, setCategories] = useState([])
+  const [items, setItems] = useState([])
+  const [itemsLoading, setItemsLoading] = useState(true)
+  const [itemsError, setItemsError] = useState('')
+
   const [selectedCategory, setSelectedCategory] = useState(null)
+  const [selectedCity, setSelectedCity] = useState(null)
+  const [onlyAvailable, setOnlyAvailable] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [favoriteIds, setFavoriteIds] = useState(new Set())
+
+  const [unreadNotifications, setUnreadNotifications] = useState(0)
 
   const firstName = user?.user_metadata?.full_name?.split(' ')[0]
 
-  function handleCategoryClick(id) {
-    setSearchTerm('')
-    setSelectedCategory((prev) => (prev === id ? null : id))
+  const isVerified = Boolean(user)
+  const hasUnreadNotifications = unreadNotifications > 0
+
+  useEffect(() => {
+    let cancelled = false
+    supabase
+      .from('categories')
+      .select('id, name, slug')
+      .eq('is_active', true)
+      .order('display_order')
+      .then(({ data }) => {
+        if (!cancelled) setCategories(data ?? [])
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    supabase
+      .from('items')
+      .select(`
+        id, title, description, price_per_day, location_city, is_available, created_at,
+        category:categories(id, name, slug),
+        photos:item_photos(storage_path, display_order),
+        owner:profiles!items_owner_id_fkey(id, full_name, avatar_url, verification_status, average_rating, total_reviews)
+      `)
+      .order('created_at', { ascending: false })
+      .then(({ data, error }) => {
+        if (cancelled) return
+        if (error) {
+          setItemsError('Could not load listings. Please refresh.')
+        } else {
+          setItems(data ?? [])
+        }
+        setItemsLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!user) {
+      setFavoriteIds(new Set())
+      return
+    }
+    let cancelled = false
+    supabase
+      .from('favorites')
+      .select('item_id')
+      .eq('user_id', user.id)
+      .then(({ data }) => {
+        if (!cancelled) setFavoriteIds(new Set((data ?? []).map((f) => f.item_id)))
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [user])
+
+  useEffect(() => {
+    if (!user) {
+      setUnreadNotifications(0)
+      return
+    }
+    let cancelled = false
+    supabase
+      .from('notifications')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .eq('is_read', false)
+      .then(({ count }) => {
+        if (!cancelled) setUnreadNotifications(count ?? 0)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [user])
+
+  const cities = useMemo(
+    () => [...new Set(items.map((item) => item.location_city))].sort(),
+    [items]
+  )
+
+  async function handleToggleFavorite(item) {
+    if (!user) return
+    const isFavorited = favoriteIds.has(item.id)
+    if (isFavorited) {
+      setFavoriteIds((prev) => {
+        const next = new Set(prev)
+        next.delete(item.id)
+        return next
+      })
+      await supabase.from('favorites').delete().eq('user_id', user.id).eq('item_id', item.id)
+    } else {
+      setFavoriteIds((prev) => new Set(prev).add(item.id))
+      await supabase.from('favorites').insert({ user_id: user.id, item_id: item.id })
+    }
+  }
+
+  async function handleDeleteItem(item) {
+    const paths = (item.photos || []).map((p) => p.storage_path)
+    if (paths.length > 0) {
+      await supabase.storage.from('item-photos').remove(paths)
+    }
+    const { error } = await supabase.from('items').delete().eq('id', item.id)
+    if (!error) {
+      setItems((prev) => prev.filter((i) => i.id !== item.id))
+    }
+    return { error }
+  }
+
+  function handleCategoryClick(slug) {
+    setSelectedCategory((prev) => (prev === slug ? null : slug))
   }
 
   function handleSearchChange(e) {
-    setSelectedCategory(null)
     setSearchTerm(e.target.value)
   }
 
   function clearFilters() {
     setSelectedCategory(null)
+    setSelectedCity(null)
+    setOnlyAvailable(true)
     setSearchTerm('')
   }
 
   const normalizedSearch = searchTerm.trim().toLowerCase()
-  const isFiltering = Boolean(normalizedSearch || selectedCategory)
+  const isFiltering = Boolean(
+    normalizedSearch || selectedCategory || selectedCity || !onlyAvailable
+  )
 
   const filteredListings = useMemo(() => {
-    if (normalizedSearch) {
-      return LISTINGS.filter((item) =>
-        item.title.toLowerCase().includes(normalizedSearch)
-      )
-    }
-    if (selectedCategory) {
-      return LISTINGS.filter((item) => item.category === selectedCategory)
-    }
-    return LISTINGS
-  }, [normalizedSearch, selectedCategory])
+    return items.filter((item) => {
+      if (onlyAvailable && !item.is_available) return false
+      if (selectedCategory && item.category?.slug !== selectedCategory) return false
+      if (selectedCity && item.location_city !== selectedCity) return false
+      if (normalizedSearch) {
+        const haystack = `${item.title} ${item.description}`.toLowerCase()
+        if (!haystack.includes(normalizedSearch)) return false
+      }
+      return true
+    })
+  }, [items, onlyAvailable, selectedCategory, selectedCity, normalizedSearch])
 
   const sectionTitle = normalizedSearch
     ? `Results for "${searchTerm}"`
     : selectedCategory
-      ? CATEGORIES.find((c) => c.id === selectedCategory)?.label
+      ? categories.find((c) => c.slug === selectedCategory)?.name
       : 'Recommended for you'
 
   return (
     <div className="min-h-screen bg-soft-white">
       {/* ================= HEADER ================= */}
-      <header className="sticky top-0 z-50 border-b border-jet-black/5 bg-soft-white/80 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4 sm:px-10">
+      <header className="sticky top-0 z-50 border-b border-jet-black/5 bg-soft-white/85 shadow-[0_8px_24px_-18px_rgba(67,48,117,0.35)] backdrop-blur-md">
+        <div className="h-px bg-linear-to-r from-transparent via-lavender/50 to-transparent" />
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-6 py-4 sm:px-10">
           <Link to="/" className="shrink-0">
             <img src="/logo-lendrop.png" alt="Lendrop" className="h-7 w-auto" />
           </Link>
 
-          <div className="hidden max-w-md flex-1 items-center gap-2 rounded-full border border-jet-black/10 bg-white px-4 py-2.5 shadow-sm transition focus-within:border-lavender focus-within:ring-2 focus-within:ring-lavender/30 sm:flex">
+          {/* Search — desktop */}
+          <div className="hidden max-w-md flex-1 items-center gap-2 rounded-full border border-jet-black/10 bg-white px-4 py-2.5 shadow-sm transition hover:shadow-md focus-within:border-lavender focus-within:shadow-[0_0_0_1px_rgba(165,140,244,0.4),0_8px_24px_-8px_rgba(165,140,244,0.5)] focus-within:ring-2 focus-within:ring-lavender/30 sm:flex">
             <Search className="h-4 w-4 shrink-0 text-jet-black/35" />
             <input
               type="text"
@@ -128,13 +209,68 @@ export default function Explore() {
             />
           </div>
 
-          <Link
-            to="/dashboard"
-            aria-label="Your account"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-jet-black/10 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple"
-          >
-            <User className="h-4 w-4" />
-          </Link>
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-4">
+            {isHost ? (
+              /* Publish an item — lenders only */
+              <Link
+                to={ROUTES.publish}
+                aria-label="Publish an item"
+                className="flex items-center gap-1.5 rounded-full border border-jet-black/10 px-3 py-2 text-xs font-semibold text-jet-black/70 transition hover:border-lavender hover:text-deep-purple sm:px-4"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Publish</span>
+              </Link>
+            ) : (
+              /* Become a Lender — only for renters who aren't lenders yet */
+              <Link
+                to={ROUTES.becomeLender}
+                aria-label="Become a Lender"
+                className="flex items-center gap-1.5 rounded-full bg-linear-to-r from-deep-purple to-lavender px-3 py-2 text-xs font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(67,48,117,0.5)] transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.6)] hover:brightness-105 sm:px-4"
+              >
+                <Store className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Become a Lender</span>
+              </Link>
+            )}
+
+            {/* Favorites */}
+            <Link
+              to={ROUTES.favorites}
+              aria-label="Saved items"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-jet-black/10 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple"
+            >
+              <Heart className="h-4 w-4" />
+            </Link>
+
+            {/* Messages */}
+            <Link
+              to={ROUTES.messages}
+              aria-label="Messages"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-jet-black/10 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple"
+            >
+              <MessageCircle className="h-4 w-4" />
+            </Link>
+
+            {/* Notifications */}
+            <Link
+              to={ROUTES.notifications}
+              aria-label="Notifications"
+              className="relative flex h-9 w-9 items-center justify-center rounded-full border border-jet-black/10 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple"
+            >
+              <Bell className="h-4 w-4" />
+              {hasUnreadNotifications && (
+                <span className="absolute right-2 top-2 h-1.5 w-1.5 animate-pulse rounded-full bg-lavender ring-2 ring-soft-white" />
+              )}
+            </Link>
+
+            {/* Profile */}
+            <Link
+              to={ROUTES.profile}
+              aria-label="Your account"
+              className="rounded-6px transition hover:ring-2 hover:ring-lavender/40"
+            >
+              <LockerAvatar label={firstName} verified={isVerified} size="md" />
+            </Link>
+          </div>
         </div>
 
         {/* Search bar, mobile only */}
@@ -151,36 +287,77 @@ export default function Explore() {
       </header>
 
       {/* ================= GREETING ================= */}
-      <section className="mx-auto max-w-6xl px-6 pt-10 sm:px-10">
-        <h1 className="font-display text-2xl font-bold text-jet-black sm:text-3xl">
-          {firstName ? `Welcome back, ${firstName}.` : 'Find what you need, nearby.'}
-        </h1>
-        <p className="mt-1 text-sm text-jet-black/50">
-          Every listing below is verified and ready to pick up from a locker near you.
-        </p>
+      <section className="relative isolate overflow-hidden">
+        <AuroraBlobs className="opacity-40" />
+        <div className="relative mx-auto max-w-6xl px-6 pt-10 sm:px-10">
+          <span className="inline-flex items-center gap-2 rounded-full border border-lavender/30 bg-lavender/10 px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-widest text-deep-purple">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-lavender" />
+            Live inventory · San Salvador
+          </span>
+          <h1 className="mt-3 font-display text-2xl font-bold text-jet-black sm:text-3xl">
+            {firstName ? `Welcome back, ${firstName}.` : 'Find what you need, nearby.'}
+          </h1>
+          <p className="mt-1 text-sm text-jet-black/50">
+            Every listing below is verified and ready to pick up from a locker near you.
+          </p>
+        </div>
       </section>
 
       {/* ================= CATEGORIES ================= */}
       <section className="mx-auto max-w-6xl px-6 sm:px-10">
-        <div className="mt-6 flex gap-50 overflow-x-auto border-b border-jet-black/5 pb-4 align-items-center">
-          {CATEGORIES.map((cat) => {
-            const active = selectedCategory === cat.id
+        <div className="mt-6 flex gap-2 overflow-x-auto pb-1">
+          {categories.map((cat) => {
+            const active = selectedCategory === cat.slug
+            const Icon = getCategoryIcon(cat.slug)
             return (
               <button
                 key={cat.id}
                 type="button"
-                onClick={() => handleCategoryClick(cat.id)}
-                className={`flex shrink-0 flex-col items-center gap-2 border-b-2 pb-3 text-xs font-medium transition ${
+                onClick={() => handleCategoryClick(cat.slug)}
+                className={`flex shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-xs font-semibold transition ${
                   active
-                    ? 'border-jet-black text-jet-black'
-                    : 'border-transparent text-jet-black/40 hover:text-jet-black/70'
+                    ? 'border-transparent bg-linear-to-r from-deep-purple to-lavender text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)]'
+                    : 'border-jet-black/10 text-jet-black/60 hover:border-lavender hover:text-deep-purple'
                 }`}
               >
-                <cat.Icon className="h-5 w-5" strokeWidth={active ? 2 : 1.5} />
-                {cat.label}
+                <Icon className="h-3.5 w-3.5" strokeWidth={active ? 2.25 : 1.75} />
+                {cat.name}
               </button>
             )
           })}
+        </div>
+
+        {/* City + availability filters */}
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          {cities.length > 1 && (
+            <div className="flex items-center gap-1.5 rounded-full border border-jet-black/10 px-3 py-1.5">
+              <MapPin className="h-3.5 w-3.5 text-jet-black/40" />
+              <select
+                value={selectedCity ?? ''}
+                onChange={(e) => setSelectedCity(e.target.value || null)}
+                className="bg-transparent text-xs font-medium text-jet-black/70 outline-none"
+              >
+                <option value="">All cities</option>
+                {cities.map((city) => (
+                  <option key={city} value={city}>
+                    {city}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <button
+            type="button"
+            onClick={() => setOnlyAvailable((prev) => !prev)}
+            className={`rounded-full border px-3.5 py-1.5 text-xs font-semibold transition ${
+              onlyAvailable
+                ? 'border-lavender/40 bg-lavender/10 text-deep-purple'
+                : 'border-jet-black/10 text-jet-black/50 hover:border-lavender hover:text-deep-purple'
+            }`}
+          >
+            {onlyAvailable ? 'Available now' : 'Showing all'}
+          </button>
         </div>
       </section>
 
@@ -201,10 +378,21 @@ export default function Explore() {
           )}
         </div>
 
-        {filteredListings.length > 0 ? (
+        {itemsError ? (
+          <p className="py-20 text-center text-sm text-red-600">{itemsError}</p>
+        ) : itemsLoading ? (
+          <p className="py-20 text-center text-sm text-jet-black/40">Loading listings…</p>
+        ) : filteredListings.length > 0 ? (
           <div className="grid grid-cols-2 gap-x-5 gap-y-8 sm:grid-cols-3 lg:grid-cols-4">
             {filteredListings.map((item) => (
-              <ProductCard key={item.id} item={item} />
+              <ProductCard
+                key={item.id}
+                item={item}
+                isOwner={Boolean(user) && item.owner?.id === user.id}
+                isFavorited={favoriteIds.has(item.id)}
+                onDelete={handleDeleteItem}
+                onToggleFavorite={handleToggleFavorite}
+              />
             ))}
           </div>
         ) : (
@@ -226,59 +414,5 @@ export default function Explore() {
         </a>
       </footer>
     </div>
-  )
-}
-
-function ProductCard({ item }) {
-  return (
-    <article className="group cursor-pointer">
-      <div className="relative overflow-hidden rounded-2xl bg-jet-black/5">
-        <img
-          src={item.image}
-          alt={item.title}
-          className="aspect-4/3 w-full object-cover transition duration-300 group-hover:scale-105"
-        />
-
-        <button
-          type="button"
-          aria-label="Save"
-          className="absolute right-2.5 top-2.5 flex h-7 w-7 items-center justify-center rounded-full bg-jet-black/40 text-soft-white backdrop-blur transition hover:bg-jet-black/60"
-        >
-          <Heart className="h-3.5 w-3.5" />
-        </button>
-
-        {/* <span className="absolute bottom-2.5 left-2.5 inline-flex items-center gap-1 rounded-full bg-jet-black/70 px-2.5 py-1 font-mono text-[10px] font-medium text-soft-white backdrop-blur">
-          <Box className="h-3 w-3" />
-          Locker {item.locker}
-        </span> */}
-      </div>
-
-      <div className="mt-3 flex items-start justify-between gap-2">
-        <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-jet-black">{item.title}</p>
-          <div className="mt-1 flex items-center gap-1.5">
-            {/* "Locker compartment" avatar frame: a rounded-square badge
-                with a seam line, echoing the physical locker doors. */}
-            <span className="relative flex h-5 w-5 items-center justify-center overflow-hidden rounded-6px border border-jet-black/10 bg-lavender/15 font-mono text-[9px] font-bold text-deep-purple after:absolute after:inset-x-0 after:top-1/2 after:h-px after:bg-jet-black/10">
-              {item.owner.name[0]}
-              {item.owner.verified && (
-                <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 animate-pulse rounded-full bg-lavender ring-2 ring-soft-white" />
-              )}
-            </span>
-            <span className="truncate text-xs text-jet-black/50">{item.owner.name}</span>
-          </div>
-        </div>
-
-        <div className="flex shrink-0 items-center gap-1 pt-0.5">
-          <Star className="h-3.5 w-3.5 fill-jet-black text-jet-black" />
-          <span className="font-mono text-xs font-medium text-jet-black">{item.rating}</span>
-        </div>
-      </div>
-
-      <p className="mt-1.5 font-mono text-sm font-semibold text-jet-black">
-        ${item.price}
-        <span className="font-body font-normal text-jet-black/45"> / day</span>
-      </p>
-    </article>
   )
 }

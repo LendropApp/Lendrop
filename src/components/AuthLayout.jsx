@@ -1,30 +1,28 @@
+import LockerWallBg from '../components/background/LockerWallBg'
+import AuroraBlobs from '../components/background/AuroraBlobs'
 import { Link } from 'react-router-dom'
 
 
 export default function AuthLayout({ eyebrow = 'Smart locker network', children }) {
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-jet-black px-4 py-12">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-linear-to-br from-[#0d0d0d] via-[#241a42] to-[#0d0d0d] px-4 py-12">
       {/* Grid pattern, on-brand lavender lines at low opacity */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 opacity-90"
-        style={{
-          backgroundImage:
-            'linear-gradient(rgba(165,140,244,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(165,140,244,0.12) 1px, transparent 1px)',
-          backgroundSize: '44px 44px',
-        }}
+      <LockerWallBg
+        className="pointer-events-none absolute inset-0"
+        accentColor="165, 140, 244"
       />
-      {/* Ambient glows */}
+      <AuroraBlobs className="opacity-100" />
+      {/* Extra ambient wash, lighter/wider than AuroraBlobs' two corner blobs,
+          for a brighter, more atmospheric backdrop behind the card. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -left-24 -top-32 h-96 w-96 rounded-full bg-lavender/20 blur-3xl"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -bottom-32 -right-24 h-96 w-96 rounded-full bg-deep-purple/50 blur-3xl"
+        className="animate-aurora pointer-events-none absolute left-1/2 top-1/3 h-[36rem] w-[36rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-lavender/20 blur-[100px]"
+        style={{ animationDelay: '-4s' }}
       />
 
-      <div className="relative w-full max-w-sm rounded-3xl border border-white/10 bg-white p-8 shadow-2xl shadow-lavender/10">
+      <div className="relative w-full max-w-sm overflow-hidden rounded-3xl border border-white/10 bg-white/80 p-8 shadow-2xl shadow-lavender/25 backdrop-blur-xl sm:max-w-md lg:max-w-xl lg:p-10">
+        <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-lavender to-transparent" />
+
         <div className="mb-8 text-center">
           <Link to="/" className="font-display text-2xl font-bold text-deep-purple">
             Lendrop

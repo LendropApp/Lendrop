@@ -17,6 +17,7 @@ import {
   Menu,
   X,
 } from 'lucide-react'
+import AuroraBlobs from '../components/background/AuroraBlobs'
 
 const INITIAL_LOCKERS = [
   { id: 'A1', item: 'Canon EOS R6 Camera', status: 'available' },
@@ -138,6 +139,7 @@ export default function Home() {
     <div className="min-h-screen bg-soft-white">
       {/* ================= HEADER ================= */}
       <header className="sticky top-0 z-50 border-b border-jet-black/5 bg-soft-white/80 backdrop-blur">
+        <div className="h-px bg-linear-to-r from-transparent via-lavender/50 to-transparent" />
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 sm:px-10">
           <Link to="/" className="flex items-center">
             <img src="/logo-lendrop.png" alt="Lendrop" className="h-7 w-auto" />
@@ -155,7 +157,13 @@ export default function Home() {
             ))}
           </nav>
 
-          <div className="hidden items-center gap-3 md:flex">
+          <div className="hidden items-center gap-5 md:flex">
+            <Link
+              to="/become-host"
+              className="text-sm font-semibold text-jet-black/70 transition hover:text-deep-purple"
+            >
+              Become a lender
+            </Link>
             <Link
               to="/login"
               className="text-sm font-semibold text-jet-black/70 transition hover:text-deep-purple"
@@ -164,12 +172,11 @@ export default function Home() {
             </Link>
             <Link
               to="/signup"
-              className="rounded-full bg-deep-purple px-5 py-2.5 text-sm font-semibold text-soft-white transition hover:bg-deep-purple/90"
+              className="rounded-full bg-linear-to-r from-deep-purple to-lavender px-5 py-2.5 text-sm font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)] transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105"
             >
               Get started
             </Link>
           </div>
-
           <button
             type="button"
             onClick={() => setMenuOpen((open) => !open)}
@@ -201,7 +208,7 @@ export default function Home() {
               </Link>
               <Link
                 to="/signup"
-                className="rounded-full bg-deep-purple px-5 py-2.5 text-center text-sm font-semibold text-soft-white"
+                className="rounded-full bg-linear-to-r from-deep-purple to-lavender px-5 py-2.5 text-center text-sm font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)]"
               >
                 Get started
               </Link>
@@ -210,7 +217,9 @@ export default function Home() {
         )}
       </header>
 
-      <main className="mx-auto grid max-w-6xl gap-12 px-6 py-16 sm:px-10 lg:grid-cols-2 lg:items-center lg:py-24">
+      <div className="relative isolate overflow-hidden">
+        <AuroraBlobs className="opacity-60" />
+        <main className="relative mx-auto grid max-w-6xl gap-12 px-6 py-16 sm:px-10 lg:grid-cols-2 lg:items-center lg:py-24">
         <div>
           <span className="inline-flex items-center gap-2 rounded-full border border-lavender/30 bg-lavender/10 px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-widest text-deep-purple">
             <span className="h-1.5 w-1.5 rounded-full bg-lavender" />
@@ -235,14 +244,14 @@ export default function Home() {
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Link
               to="/signup"
-              className="inline-flex items-center gap-2 rounded-full bg-deep-purple px-6 py-3 text-sm font-semibold text-soft-white transition hover:bg-deep-purple/90"
+              className="inline-flex items-center gap-2 rounded-full bg-linear-to-r from-deep-purple to-lavender px-6 py-3 text-sm font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)] transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105"
             >
               Explore items
               <ArrowRight className="h-4 w-4" />
             </Link>
             <a
               href="#how-it-works"
-              className="rounded-full border border-jet-black/15 px-6 py-3 text-sm font-semibold text-jet-black transition hover:bg-jet-black/5"
+              className="rounded-full border border-lavender/30 px-6 py-3 text-sm font-semibold text-jet-black transition hover:border-lavender hover:bg-lavender/5"
             >
               How it works
             </a>
@@ -266,7 +275,8 @@ export default function Home() {
 
         {/* ================= TERMINAL WIDGET ================= */}
         <div className="flex justify-center lg:justify-end">
-          <div className="w-full max-w-md rounded-3xl border border-white/10 bg-jet-black p-5 shadow-2xl shadow-deep-purple/20">
+          <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/10 bg-jet-black p-5 shadow-2xl shadow-deep-purple/30">
+            <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-lavender to-transparent" />
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <div className="flex items-center gap-2">
                 <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
@@ -344,7 +354,8 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </main>
+        </main>
+      </div>
 
       {/* ================= CATEGORIES ================= */}
       <section id="categories" className="border-t border-jet-black/5 bg-white px-6 py-20 sm:px-10 lg:py-28">
@@ -368,9 +379,11 @@ export default function Home() {
                 <Link
                   key={category.id}
                   to="/signup"
-                  className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-jet-black/10 bg-white px-3 py-7 text-center transition hover:-translate-y-0.5 hover:border-lavender hover:shadow-md"
+                  className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-lavender/15 bg-white px-3 py-7 text-center transition hover:-translate-y-0.5 hover:border-lavender hover:shadow-[0_12px_32px_-16px_rgba(165,140,244,0.6)]"
                 >
-                  <Icon className="h-6 w-6 text-deep-purple" />
+                  <span className="flex h-11 w-11 items-center justify-center rounded-full bg-lavender/15">
+                    <Icon className="h-5 w-5 text-deep-purple" />
+                  </span>
                   <span className="text-xs font-semibold text-jet-black">{category.name}</span>
                 </Link>
               )
@@ -378,7 +391,7 @@ export default function Home() {
 
             <Link
               to="/signup"
-              className="flex flex-col items-center justify-center gap-1 rounded-2xl bg-deep-purple px-3 py-7 text-center text-xs font-semibold text-soft-white transition hover:bg-deep-purple/90"
+              className="flex flex-col items-center justify-center gap-1 rounded-2xl bg-linear-to-br from-deep-purple to-lavender px-3 py-7 text-center text-xs font-semibold text-soft-white shadow-[0_12px_32px_-16px_rgba(165,140,244,0.7)] transition hover:brightness-105"
             >
               View full
               <br />
@@ -403,12 +416,14 @@ export default function Home() {
               return (
                 <div
                   key={step.step}
-                  className="flex flex-col gap-3 rounded-2xl border border-jet-black/10 bg-white p-6"
+                  className="flex flex-col gap-3 rounded-2xl border border-lavender/15 bg-white p-6 transition hover:-translate-y-0.5 hover:border-lavender hover:shadow-[0_12px_32px_-16px_rgba(165,140,244,0.6)]"
                 >
                   <span className="font-mono text-[11px] font-semibold uppercase tracking-wide text-lavender">
                     {step.step}
                   </span>
-                  <Icon className="h-6 w-6 text-deep-purple" />
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-lavender/15">
+                    <Icon className="h-5 w-5 text-deep-purple" />
+                  </span>
                   <h3 className="font-display text-base font-semibold text-jet-black">
                     {step.title}
                   </h3>
@@ -421,8 +436,12 @@ export default function Home() {
       </section>
 
       {/* ================= SECURITY ================= */}
-      <section id="security" className="bg-deep-purple px-6 py-20 text-soft-white sm:px-10 lg:py-28">
-        <div className="mx-auto max-w-6xl">
+      <section id="security" className="relative isolate overflow-hidden bg-deep-purple px-6 py-20 text-soft-white sm:px-10 lg:py-28">
+        <div
+          aria-hidden="true"
+          className="animate-aurora pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-lavender/25 blur-3xl"
+        />
+        <div className="relative mx-auto max-w-6xl">
           <div className="max-w-xl">
             <span className="text-[11px] font-mono font-semibold uppercase tracking-widest text-lavender">
               Security first
@@ -442,7 +461,7 @@ export default function Home() {
               return (
                 <div
                   key={feature.title}
-                  className="rounded-2xl border border-white/10 bg-jet-black/30 p-6"
+                  className="rounded-2xl border border-white/10 bg-jet-black/30 p-6 backdrop-blur-sm transition hover:border-lavender/40 hover:bg-jet-black/40"
                 >
                   <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-lavender/15">
                     <Icon className="h-5 w-5 text-lavender" />
@@ -469,7 +488,7 @@ export default function Home() {
           </div>
           <Link
             to="/signup"
-            className="inline-flex shrink-0 items-center gap-2 rounded-full bg-deep-purple px-6 py-3 text-sm font-semibold text-soft-white transition hover:bg-deep-purple/90"
+            className="inline-flex shrink-0 items-center gap-2 rounded-full bg-linear-to-r from-deep-purple to-lavender px-6 py-3 text-sm font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)] transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105"
           >
             Get started now
             <ArrowRight className="h-4 w-4" />

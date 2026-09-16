@@ -1,48 +1,91 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import HostRoute from "./components/HostRoute";
 
+import HostOnboardingWizard from "./pages/host-onboarding/HostOnboardingWizard";
+
+import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import Explore from "./pages/Explore";
+import BecomeHostEntry from "./pages/BecomeHostEntry";
+import PublishItem from "./pages/PublishItem";
+import ItemDetail from "./pages/ItemDetail";
+import Favorites from "./pages/Favorites";
+import Profile from "./pages/Profile";
+import EditProfile from "./pages/EditProfile";
+
 import RentalTracking from "./pages/RentalTracking";
 import OwnerDeliveryReturn from "./pages/ownerdelivery";
 import EarningsDashboard from "./pages/earningdashboard";
 import LockerCoverage from "./pages/locker-coverage";
 import Categories from "./pages/categories";
 
+import Messages from "./pages/Messages";
+import Notifications from "./pages/Notifications";
+import Conversation from "./pages/Conversation";
+import History from "./pages/History";
+import Verification from "./pages/Verification";
+import PaymentMethods from "./pages/PaymentMethods";
+import Premium from "./pages/Premium";
+
 export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <Routes>
+
           {/* Public Routes */}
+          <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
-<Route path="/signup" element={<Signup />} />
-<Route path="/forgot-password" element={<ForgotPassword />} />
-<Route path="/reset-password" element={<ResetPassword />} />
-<Route path="/explore" element={<Explore />} />
-<Route path="/rental-tracking" element={<RentalTracking />} />
-          <Route path="/owner-delivery" element={<OwnerDeliveryReturn />} />
-          <Route path="/earnings-dashboard" element={<EarningsDashboard />} />
-          <Route path="/locker-coverage" element={<LockerCoverage />} />
-          <Route path="/help" element={<RentalTracking />} />
-          <Route path="/categories" element={<Categories />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/explore" element={<Explore />} />
+          <Route path="/item/:itemId" element={<ItemDetail />} />
+
           <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
+            path="/rental-tracking"
+            element={<RentalTracking />}
           />
 
-          <Route path="/" element={<LockerCoverage />} />
+          <Route
+            path="/owner-delivery"
+            element={<OwnerDeliveryReturn />}
+          />
 
-          {/* Protected Route */}
+          <Route
+            path="/earnings-dashboard"
+            element={<EarningsDashboard />}
+          />
+
+          <Route
+            path="/locker-coverage"
+            element={<LockerCoverage />}
+          />
+
+          <Route
+            path="/categories"
+            element={<Categories />}
+          />
+
+          <Route
+            path="/help"
+            element={<RentalTracking />}
+          />
+
+          <Route
+            path="/become-host"
+            element={<BecomeHostEntry />}
+          />
+
+          {/* Protected Routes */}
+
           <Route
             path="/dashboard"
             element={
@@ -52,11 +95,120 @@ export default function App() {
             }
           />
 
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/profile/edit"
+            element={
+              <ProtectedRoute>
+                <EditProfile />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/favorites"
+            element={
+              <ProtectedRoute>
+                <Favorites />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/messages"
+            element={
+              <ProtectedRoute>
+                <Messages />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/messages/:conversationId"
+            element={
+              <ProtectedRoute>
+                <Conversation />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/notifications"
+            element={
+              <ProtectedRoute>
+                <Notifications />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/history"
+            element={
+              <ProtectedRoute>
+                <History />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/verification"
+            element={
+              <ProtectedRoute>
+                <Verification />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/payment-methods"
+            element={
+              <ProtectedRoute>
+                <PaymentMethods />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/premium"
+            element={
+              <ProtectedRoute>
+                <Premium />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/become-host/onboarding"
+            element={
+              <ProtectedRoute>
+                <HostOnboardingWizard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/publish"
+            element={
+              <HostRoute>
+                <PublishItem />
+              </HostRoute>
+            }
+          />
+
           {/* Fallback */}
           <Route
             path="*"
-            element={<Navigate to="/locker-coverage" replace />}
+            element={<Navigate to="/" replace />}
           />
+
         </Routes>
       </AuthProvider>
     </BrowserRouter>

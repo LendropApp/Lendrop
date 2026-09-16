@@ -1,10 +1,13 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import AuthLayout from '../components/AuthLayout'
 import AuthTabs from '../components/AuthTabs'
 import PasswordInput from '../components/PasswordInput'
 import StatusMessage from '../components/StatusMessage'
+import LegalModal from '../components/LegalModal'
+import TermsOfService from '../content/TermsOfService'
+import PrivacyPolicy from '../content/PrivacyPolicy'
 
 const MIN_AGE = 18
 
@@ -29,7 +32,8 @@ function isAdult(dateString) {
 
 export default function Signup() {
   const { signUp } = useAuth()
-
+  const [searchParams] = useSearchParams()
+  const intent = searchParams.get('intent')
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [dui, setDui] = useState('')
@@ -40,6 +44,7 @@ export default function Signup() {
   const [status, setStatus] = useState({ type: '', text: '' })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [openLegal, setOpenLegal] = useState(null) // null | 'terms' | 'privacy'
 
   // Nobody can pick a birth date that would make them younger than 18 —
   // this restricts the date picker itself, on top of the submit check below.
@@ -73,12 +78,14 @@ export default function Signup() {
       setStatus({ type: 'error', text: 'You need to accept the Terms of Service and Privacy Policy.' })
       return
     }
-
+    if(intent === 'host') {
+      localStorage.setItem('lendrop_post_auth_redirect', '/become-host/onboarding')
+    }
     setIsSubmitting(true)
     const { error } = await signUp({ email, password, fullName, dui, dateOfBirth, agreedToTerms })
     setIsSubmitting(false)
 
-    if (error) {
+        if (error) {
       setStatus({
         type: 'error',
         text:
@@ -95,7 +102,6 @@ export default function Signup() {
     // we show a "check your inbox" state in the same card.
     setSubmitted(true)
   }
-
   if (submitted) {
     return (
       <AuthLayout>
@@ -135,7 +141,7 @@ export default function Signup() {
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             placeholder="Diego Martínez"
-            className="w-full rounded-xl border border-jet-black/10 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+            className="w-full rounded-xl border border-lavender/20 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
           />
         </div>
 
@@ -151,7 +157,7 @@ export default function Signup() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
-            className="w-full rounded-xl border border-jet-black/10 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+            className="w-full rounded-xl border border-lavender/20 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
           />
         </div>
 
@@ -169,7 +175,7 @@ export default function Signup() {
               onChange={(e) => setDui(formatDui(e.target.value))}
               placeholder="12345678-9"
               maxLength={10}
-              className="locker-code w-full rounded-xl border border-jet-black/10 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+              className="locker-code w-full rounded-xl border border-lavender/20 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
             />
           </div>
 
@@ -184,7 +190,7 @@ export default function Signup() {
               max={maxBirthDate}
               value={dateOfBirth}
               onChange={(e) => setDateOfBirth(e.target.value)}
-              className="w-full rounded-xl border border-jet-black/10 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+              className="w-full rounded-xl border border-lavender/20 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
             />
           </div>
         </div>
@@ -226,11 +232,32 @@ export default function Signup() {
             onChange={(e) => setAgreedToTerms(e.target.checked)}
             className="mt-0.5 h-4 w-4 shrink-0 rounded border-jet-black/20 text-deep-purple focus:ring-lavender/40"
           />
-          {/* Plain text for now, not links — /terms and /privacy don't exist
-              yet. Swap these spans for <Link> once those pages are built. */}
           <span>
-            I agree to the <span className="font-medium text-deep-purple">Terms of Service</span> and{' '}
-            <span className="font-medium text-deep-purple">Privacy Policy</span>.
+            I agree to the{' '}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                setOpenLegal('terms')
+              }}
+              className="font-medium text-deep-purple underline decoration-lavender/50 underline-offset-2 hover:text-lavender"
+            >
+              Terms of Service
+            </button>{' '}
+            and{' '}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                setOpenLegal('privacy')
+              }}
+              className="font-medium text-deep-purple underline decoration-lavender/50 underline-offset-2 hover:text-lavender"
+            >
+              Privacy Policy
+            </button>
+            .
           </span>
         </label>
 
@@ -239,11 +266,21 @@ export default function Signup() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full rounded-xl bg-deep-purple py-2.5 text-sm font-semibold text-soft-white transition hover:bg-deep-purple/90 disabled:opacity-50"
+          className="w-full rounded-xl bg-linear-to-r from-deep-purple to-lavender py-2.5 text-sm font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)] transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 disabled:opacity-50"
         >
           {isSubmitting ? 'Creating account…' : 'Create account'}
         </button>
       </form>
+
+      <LegalModal open={openLegal === 'terms'} onClose={() => setOpenLegal(null)} title="Terms of Service">
+        <TermsOfService />
+      </LegalModal>
+      <LegalModal open={openLegal === 'privacy'} onClose={() => setOpenLegal(null)} title="Privacy Policy">
+        <PrivacyPolicy />
+      </LegalModal>
     </AuthLayout>
   )
-}
+  }
+
+
+

@@ -1,24 +1,19 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Search, Heart, Bell, Star, Store, Plus, MapPin, Trash2 } from 'lucide-react'
+import { Search, Heart, Bell, Store, Plus, MapPin } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import { getCategoryIcon } from '../lib/categoryIcons'
 import LockerAvatar from '../components/LockerAvatar'
+import ProductCard from '../components/ProductCard'
 import AuroraBlobs from '../components/background/AuroraBlobs'
 
 const ROUTES = {
   becomeLender: '/become-host',
   favorites: '/favorites',
   notifications: '/notifications',
-  profile: '/dashboard',
+  profile: '/profile',
   publish: '/publish',
-}
-
-function coverUrlFor(photos) {
-  if (!photos?.length) return null
-  const [cover] = [...photos].sort((a, b) => a.display_order - b.display_order)
-  return supabase.storage.from('item-photos').getPublicUrl(cover.storage_path).data.publicUrl
 }
 
 export default function Explore() {
@@ -33,6 +28,7 @@ export default function Explore() {
   const [selectedCity, setSelectedCity] = useState(null)
   const [onlyAvailable, setOnlyAvailable] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [favoriteIds, setFavoriteIds] = useState(new Set())
 
   const firstName = user?.user_metadata?.full_name?.split(' ')[0]
 
@@ -79,10 +75,44 @@ export default function Explore() {
     }
   }, [])
 
+  useEffect(() => {
+    if (!user) {
+      setFavoriteIds(new Set())
+      return
+    }
+    let cancelled = false
+    supabase
+      .from('favorites')
+      .select('item_id')
+      .eq('user_id', user.id)
+      .then(({ data }) => {
+        if (!cancelled) setFavoriteIds(new Set((data ?? []).map((f) => f.item_id)))
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [user])
+
   const cities = useMemo(
     () => [...new Set(items.map((item) => item.location_city))].sort(),
     [items]
   )
+
+  async function handleToggleFavorite(item) {
+    if (!user) return
+    const isFavorited = favoriteIds.has(item.id)
+    if (isFavorited) {
+      setFavoriteIds((prev) => {
+        const next = new Set(prev)
+        next.delete(item.id)
+        return next
+      })
+      await supabase.from('favorites').delete().eq('user_id', user.id).eq('item_id', item.id)
+    } else {
+      setFavoriteIds((prev) => new Set(prev).add(item.id))
+      await supabase.from('favorites').insert({ user_id: user.id, item_id: item.id })
+    }
+  }
 
   async function handleDeleteItem(item) {
     const paths = (item.photos || []).map((p) => p.storage_path)
@@ -328,7 +358,9 @@ export default function Explore() {
                 key={item.id}
                 item={item}
                 isOwner={Boolean(user) && item.owner?.id === user.id}
+                isFavorited={favoriteIds.has(item.id)}
                 onDelete={handleDeleteItem}
+                onToggleFavorite={handleToggleFavorite}
               />
             ))}
           </div>
@@ -351,129 +383,5 @@ export default function Explore() {
         </a>
       </footer>
     </div>
-  )
-}
-
-function ProductCard({ item, isOwner, onDelete }) {
-  const coverUrl = coverUrlFor(item.photos)
-  const hasReviews = (item.owner?.total_reviews ?? 0) > 0
-
-  const [confirming, setConfirming] = useState(false)
-  const [deleting, setDeleting] = useState(false)
-  const [deleteError, setDeleteError] = useState('')
-
-  async function handleConfirmDelete(e) {
-    e.preventDefault()
-    e.stopPropagation()
-    setDeleting(true)
-    setDeleteError('')
-    const { error } = await onDelete(item)
-    if (error) {
-      setDeleting(false)
-      setDeleteError('Could not delete. Try again.')
-    }
-  }
-
-  return (
-    <article className="group cursor-pointer transition duration-300 hover:-translate-y-1">
-      <div className="relative aspect-4/3 w-full overflow-hidden rounded-2xl bg-jet-black/5 shadow-sm transition duration-300 group-hover:shadow-[0_16px_36px_-14px_rgba(165,140,244,0.6)]">
-        {coverUrl && (
-          <img
-            src={coverUrl}
-            alt={item.title}
-            className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-          />
-        )}
-        <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-jet-black/5 transition group-hover:ring-lavender/50" />
-
-        {isOwner ? (
-          <button
-            type="button"
-            aria-label="Delete listing"
-            onClick={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              setConfirming(true)
-            }}
-            className="absolute right-2.5 top-2.5 flex h-7 w-7 items-center justify-center rounded-full bg-jet-black/40 text-soft-white backdrop-blur transition hover:bg-red-500/80"
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-          </button>
-        ) : (
-          <button
-            type="button"
-            aria-label="Save"
-            className="absolute right-2.5 top-2.5 flex h-7 w-7 items-center justify-center rounded-full bg-jet-black/40 text-soft-white backdrop-blur transition hover:bg-jet-black/60"
-          >
-            <Heart className="h-3.5 w-3.5" />
-          </button>
-        )}
-
-        {confirming && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-2xl bg-jet-black/75 p-3 text-center backdrop-blur-sm">
-            <p className="text-xs font-medium text-white">Delete this listing?</p>
-            {deleteError && <p className="text-[11px] text-red-300">{deleteError}</p>}
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  setConfirming(false)
-                  setDeleteError('')
-                }}
-                disabled={deleting}
-                className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-white/20 disabled:opacity-50"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleConfirmDelete}
-                disabled={deleting}
-                className="rounded-full bg-red-500 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-red-600 disabled:opacity-50"
-              >
-                {deleting ? 'Deleting…' : 'Delete'}
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div className="mt-3 flex items-start justify-between gap-2">
-        <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-jet-black">{item.title}</p>
-          <div className="mt-1 flex items-center gap-1.5">
-            <LockerAvatar
-              label={item.owner?.full_name}
-              photoUrl={item.owner?.avatar_url}
-              verified={item.owner?.verification_status === 'verified'}
-              size="sm"
-            />
-            <span className="truncate text-xs text-jet-black/50">{item.owner?.full_name}</span>
-          </div>
-        </div>
-
-        <div className="flex shrink-0 items-center gap-1 pt-0.5">
-          {hasReviews ? (
-            <>
-              <Star className="h-3.5 w-3.5 fill-jet-black text-jet-black" />
-              <span className="font-mono text-xs font-medium text-jet-black">
-                {Number(item.owner.average_rating).toFixed(1)}
-              </span>
-            </>
-          ) : (
-            <span className="rounded-full bg-lavender/15 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-deep-purple">
-              New
-            </span>
-          )}
-        </div>
-      </div>
-
-      <p className="mt-1.5 font-mono text-sm font-semibold text-jet-black">
-        ${item.price_per_day}
-        <span className="font-body font-normal text-jet-black/45"> / day</span>
-      </p>
-    </article>
   )
 }

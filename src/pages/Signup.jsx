@@ -266,7 +266,7 @@ export default function Signup() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full rounded-xl bg-linear-to-r from-deep-purple to-lavender py-2.5 text-sm font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)] transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 disabled:opacity-50"
+          className="w-full rounded-xl border border-white/40 bg-deep-purple/70 backdrop-blur-md py-2.5 text-sm font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)] transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 disabled:opacity-50"
         >
           {isSubmitting ? 'Creating account…' : 'Create account'}
         </button>

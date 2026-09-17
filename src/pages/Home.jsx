@@ -264,7 +264,7 @@ export default function Home() {
 
             <Link
               to="/signup"
-              className="rounded-full bg-deep-purple px-5 py-2.5 text-sm font-semibold text-soft-white transition hover:bg-deep-purple/90"
+              className="rounded-full border border-white/40 bg-deep-purple/70 backdrop-blur-md px-5 py-2.5 text-sm font-semibold text-soft-white shadow-[0_8px_28px_-10px_rgba(67,48,117,0.55)] transition hover:bg-deep-purple/80"
             >
               Get started
             </Link>
@@ -311,7 +311,7 @@ export default function Home() {
 
               <Link
                 to="/signup"
-                className="rounded-full bg-deep-purple px-5 py-2.5 text-center text-sm font-semibold text-soft-white"
+                className="rounded-full border border-white/40 bg-deep-purple/70 backdrop-blur-md px-5 py-2.5 text-center text-sm font-semibold text-soft-white shadow-[0_8px_28px_-10px_rgba(67,48,117,0.55)]"
               >
                 Get started
               </Link>
@@ -363,7 +363,7 @@ export default function Home() {
 
             <Link
               to="/signup"
-              className="inline-flex items-center gap-2 rounded-full bg-deep-purple px-6 py-3 text-sm font-semibold text-soft-white transition hover:bg-deep-purple/90"
+              className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-deep-purple/70 backdrop-blur-md px-6 py-3 text-sm font-semibold text-soft-white shadow-[0_8px_28px_-10px_rgba(67,48,117,0.55)] transition hover:bg-deep-purple/80"
             >
               Explore items
               <ArrowRight className="h-4 w-4" />
@@ -680,7 +680,7 @@ export default function Home() {
                         displayedLocker.status !==
                         'available'
                       }
-                      className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-deep-purple px-3 py-2 font-mono text-[9px] font-bold uppercase tracking-wider text-white transition hover:bg-deep-purple/90 disabled:cursor-not-allowed disabled:bg-jet-black/10 disabled:text-jet-black/30"
+                      className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-white/40 bg-deep-purple/70 backdrop-blur-md px-3 py-2 font-mono text-[9px] font-bold uppercase tracking-wider text-white shadow-[0_6px_20px_-8px_rgba(67,48,117,0.55)] transition hover:bg-deep-purple/80 disabled:cursor-not-allowed disabled:border-transparent disabled:bg-jet-black/10 disabled:text-jet-black/30"
                     >
                       {displayedLocker.status ===
                       'available'
@@ -795,7 +795,7 @@ export default function Home() {
 
             <Link
               to="/signup"
-              className="flex flex-col items-center justify-center gap-1 rounded-2xl bg-deep-purple px-3 py-7 text-center text-xs font-semibold text-soft-white transition hover:bg-deep-purple/90"
+              className="flex flex-col items-center justify-center gap-1 rounded-2xl border border-white/40 bg-deep-purple/70 backdrop-blur-md px-3 py-7 text-center text-xs font-semibold text-soft-white shadow-[0_8px_28px_-10px_rgba(67,48,117,0.55)] transition hover:bg-deep-purple/80"
             >
               View full
               <br />
@@ -940,7 +940,7 @@ export default function Home() {
 
           <Link
             to="/signup"
-            className="inline-flex shrink-0 items-center gap-2 rounded-full bg-deep-purple px-6 py-3 text-sm font-semibold text-soft-white transition hover:bg-deep-purple/90"
+            className="inline-flex shrink-0 items-center gap-2 rounded-full border border-white/40 bg-deep-purple/70 backdrop-blur-md px-6 py-3 text-sm font-semibold text-soft-white shadow-[0_8px_28px_-10px_rgba(67,48,117,0.55)] transition hover:bg-deep-purple/80"
           >
             Get started now
             <ArrowRight className="h-4 w-4" />

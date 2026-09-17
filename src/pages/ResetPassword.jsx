@@ -82,7 +82,7 @@ export default function ResetPassword() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full rounded-xl bg-deep-purple py-2.5 text-sm font-semibold text-soft-white transition hover:bg-deep-purple/90 disabled:opacity-50"
+          className="w-full rounded-xl border border-white/40 bg-deep-purple/70 backdrop-blur-md py-2.5 text-sm font-semibold text-soft-white shadow-[0_8px_28px_-10px_rgba(67,48,117,0.55)] transition hover:bg-deep-purple/80 disabled:opacity-50"
         >
           {isSubmitting ? 'Saving…' : 'Save password'}
         </button>

@@ -76,7 +76,7 @@ export default function Verification() {
               <button
                 type="button"
                 onClick={() => setSubmitted(true)}
-                className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-deep-purple px-5 py-3 text-sm font-semibold text-white transition hover:bg-deep-purple/90"
+                className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl border border-white/40 bg-deep-purple/70 backdrop-blur-md px-5 py-3 text-sm font-semibold text-white shadow-[0_8px_28px_-10px_rgba(67,48,117,0.55)] transition hover:bg-deep-purple/80"
               >
                 <Upload className="h-4 w-4" />
                 Start verification (DUI + selfie)

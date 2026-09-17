@@ -4,6 +4,7 @@ import { Search, Heart, Bell, MessageCircle, Store, Plus, MapPin, UserCircle2 } 
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import { getCategoryIcon } from '../lib/categoryIcons'
+import { getExploreHeroImage } from '../lib/exploreHero'
 import LockerAvatar from '../components/LockerAvatar'
 import ProductCard from '../components/ProductCard'
 import AuroraBlobs from '../components/background/AuroraBlobs'
@@ -39,6 +40,7 @@ export default function Explore() {
 
   const isVerified = Boolean(user)
   const hasUnreadNotifications = unreadNotifications > 0
+  const heroImage = useMemo(() => getExploreHeroImage(), [])
 
   useEffect(() => {
     let cancelled = false
@@ -325,8 +327,8 @@ export default function Explore() {
 
           <div className="relative aspect-4/3 overflow-hidden rounded-3xl shadow-[0_24px_60px_-24px_rgba(67,48,117,0.45)]">
             <img
-              src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=800&q=80"
-              alt="Camera ready for pickup"
+              src={heroImage.src}
+              alt={heroImage.alt}
               className="h-full w-full object-cover"
             />
             <div className="absolute inset-0 bg-linear-to-t from-jet-black/45 via-transparent to-transparent" />

@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
+import { rerollExploreHeroImage } from '../lib/exploreHero'
 
 
 
@@ -24,10 +25,16 @@ export function AuthProvider({ children }) {
     // 2. Subscribe to future session changes.
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session)
       setUser(session?.user ?? null)
       setLoading(false)
+      // Explore's welcome banner picks a new photo each time someone
+      // actually logs in — not on a token refresh or the initial
+      // session restore on page load.
+      if (event === 'SIGNED_IN') {
+        rerollExploreHeroImage()
+      }
     })
 
     // Cleanup: stop listening if the component unmounts.

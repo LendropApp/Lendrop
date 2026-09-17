@@ -240,7 +240,7 @@ export default function Explore() {
               <Link
                 to={ROUTES.becomeLender}
                 aria-label="Become a Lender"
-                className="flex items-center gap-1.5 rounded-full bg-linear-to-r from-deep-purple to-lavender px-3 py-2 text-xs font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(67,48,117,0.5)] transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.6)] hover:brightness-105 sm:px-4"
+                className="flex items-center gap-1.5 rounded-full border border-white/40 bg-deep-purple/70 backdrop-blur-md px-3 py-2 text-xs font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(67,48,117,0.5)] transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.6)] hover:brightness-105 sm:px-4"
               >
                 <Store className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">Become a Lender</span>
@@ -307,19 +307,33 @@ export default function Explore() {
       </header>
 
       {/* ================= GREETING ================= */}
-      <section className="relative isolate overflow-hidden">
+      <section className="relative isolate overflow-hidden border-b border-jet-black/5">
         <AuroraBlobs className="opacity-40" />
-        <div className="relative mx-auto max-w-6xl px-6 pt-10 sm:px-10">
-          <span className="inline-flex items-center gap-2 rounded-full border border-lavender/30 bg-lavender/10 px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-widest text-deep-purple">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-lavender" />
-            Live inventory · San Salvador
-          </span>
-          <h1 className="mt-3 font-display text-2xl font-bold text-jet-black sm:text-3xl">
-            {firstName ? `Welcome back, ${firstName}.` : 'Find what you need, nearby.'}
-          </h1>
-          <p className="mt-1 text-sm text-jet-black/50">
-            Every listing below is verified and ready to pick up from a locker near you.
-          </p>
+        <div className="relative mx-auto grid max-w-6xl gap-8 px-6 pt-10 pb-12 sm:px-10 sm:pt-14 sm:pb-16 lg:grid-cols-[1.3fr_1fr] lg:items-center lg:gap-12">
+          <div>
+            <span className="inline-flex items-center gap-2 rounded-full border border-lavender/30 bg-lavender/10 px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-widest text-deep-purple">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-lavender" />
+              Live inventory · San Salvador
+            </span>
+            <h1 className="mt-3 font-display text-2xl font-bold text-jet-black sm:text-3xl">
+              {firstName ? `Welcome back, ${firstName}.` : 'Find what you need, nearby.'}
+            </h1>
+            <p className="mt-3 max-w-md text-sm leading-relaxed text-jet-black/50">
+              Every listing below is verified and ready to pick up from a locker near you.
+            </p>
+          </div>
+
+          <div className="relative aspect-4/3 overflow-hidden rounded-3xl shadow-[0_24px_60px_-24px_rgba(67,48,117,0.45)]">
+            <img
+              src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=800&q=80"
+              alt="Camera ready for pickup"
+              className="h-full w-full object-cover"
+            />
+            <div className="absolute inset-0 bg-linear-to-t from-jet-black/45 via-transparent to-transparent" />
+            <span className="absolute bottom-4 left-4 rounded-full border border-white/30 bg-white/20 px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-white backdrop-blur-md">
+              Ready for pickup
+            </span>
+          </div>
         </div>
       </section>
 
@@ -340,7 +354,7 @@ export default function Explore() {
             </div>
             <Link
               to="/profile/edit"
-              className="shrink-0 rounded-full bg-deep-purple px-4 py-2 text-xs font-semibold text-soft-white transition hover:bg-deep-purple/90"
+              className="shrink-0 rounded-full border border-white/40 bg-deep-purple/70 backdrop-blur-md px-4 py-2 text-xs font-semibold text-soft-white shadow-[0_8px_28px_-10px_rgba(67,48,117,0.55)] transition hover:bg-deep-purple/80"
             >
               Complete profile
             </Link>
@@ -361,7 +375,7 @@ export default function Explore() {
                 onClick={() => handleCategoryClick(cat.slug)}
                 className={`flex shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-xs font-semibold transition ${
                   active
-                    ? 'border-transparent bg-linear-to-r from-deep-purple to-lavender text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)]'
+                    ? 'border border-white/40 bg-deep-purple/70 backdrop-blur-md text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)]'
                     : 'border-jet-black/10 text-jet-black/60 hover:border-lavender hover:text-deep-purple'
                 }`}
               >

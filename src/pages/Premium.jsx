@@ -44,7 +44,7 @@ export default function Premium() {
               type="button"
               disabled={joined}
               onClick={() => setJoined(true)}
-              className="mt-4 w-full rounded-xl bg-deep-purple px-5 py-3 text-sm font-semibold text-white transition hover:bg-deep-purple/90 disabled:cursor-default disabled:bg-jet-black/10 disabled:text-jet-black/40"
+              className="mt-4 w-full rounded-xl border border-white/40 bg-deep-purple/70 backdrop-blur-md px-5 py-3 text-sm font-semibold text-white shadow-[0_8px_28px_-10px_rgba(67,48,117,0.55)] transition hover:bg-deep-purple/80 disabled:cursor-default disabled:border-transparent disabled:bg-jet-black/10 disabled:text-jet-black/40"
             >
               {joined ? "You're on the waitlist ✓" : 'Join the waitlist'}
             </button>

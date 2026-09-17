@@ -108,7 +108,7 @@ export default function ProductCard({ item, isOwner, isFavorited, isCurrentlyRen
                 type="button"
                 onClick={handleConfirmDelete}
                 disabled={deleting}
-                className="rounded-full bg-red-500 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-red-600 disabled:opacity-50"
+                className="rounded-full border border-white/30 bg-red-500/80 backdrop-blur-md px-3 py-1.5 text-xs font-semibold text-white shadow-[0_8px_24px_-10px_rgba(239,68,68,0.55)] transition hover:bg-red-500/90 disabled:opacity-50"
               >
                 {deleting ? 'Deleting…' : 'Delete'}
               </button>

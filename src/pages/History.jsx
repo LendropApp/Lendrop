@@ -29,6 +29,10 @@ function formatDateRange(start, end) {
   return `${new Date(start).toLocaleDateString([], opts)} – ${new Date(end).toLocaleDateString([], opts)}`
 }
 
+function toISODate(date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+}
+
 export default function History() {
   const { user } = useAuth()
   const [tab, setTab] = useState('rentals')
@@ -36,6 +40,8 @@ export default function History() {
   const [lendings, setLendings] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [confirmCancelId, setConfirmCancelId] = useState(null)
+  const [cancelling, setCancelling] = useState(false)
 
   useEffect(() => {
     if (!user) {
@@ -100,6 +106,20 @@ export default function History() {
   }, [user])
 
   const rows = tab === 'rentals' ? rentals : lendings
+  const todayIso = toISODate(new Date())
+
+  function canCancel(row) {
+    return tab === 'rentals' && (row.status === 'pending' || row.status === 'confirmed') && row.startDate >= todayIso
+  }
+
+  async function handleConfirmCancel(id) {
+    setCancelling(true)
+    const { error } = await supabase.from('reservations').update({ status: 'cancelled' }).eq('id', id)
+    setCancelling(false)
+    if (error) return
+    setRentals((prev) => prev.map((r) => (r.id === id ? { ...r, status: 'cancelled' } : r)))
+    setConfirmCancelId(null)
+  }
 
   return (
     <div className="min-h-screen bg-soft-white pb-16">
@@ -156,6 +176,40 @@ export default function History() {
                       ${row.totalPrice.toFixed(2)}
                     </span>
                   </div>
+
+                  {canCancel(row) && (
+                    <div className="mt-3 border-t border-jet-black/5 pt-3">
+                      {confirmCancelId === row.id ? (
+                        <div className="flex items-center justify-end gap-2">
+                          <span className="mr-auto text-xs text-jet-black/60">Cancel this reservation?</span>
+                          <button
+                            type="button"
+                            onClick={() => setConfirmCancelId(null)}
+                            disabled={cancelling}
+                            className="rounded-full border border-jet-black/10 px-3 py-1 text-xs font-semibold text-jet-black/70 hover:bg-jet-black/5"
+                          >
+                            Keep it
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleConfirmCancel(row.id)}
+                            disabled={cancelling}
+                            className="rounded-full bg-red-500 px-3 py-1 text-xs font-semibold text-white hover:bg-red-600 disabled:opacity-50"
+                          >
+                            {cancelling ? 'Cancelling…' : 'Confirm cancel'}
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setConfirmCancelId(row.id)}
+                          className="text-xs font-semibold text-red-500 hover:text-red-600"
+                        >
+                          Cancel reservation
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

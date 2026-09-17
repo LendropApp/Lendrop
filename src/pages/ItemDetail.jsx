@@ -496,6 +496,13 @@ export default function ItemDetail() {
                 </div>
               )}
 
+              {isOwner && (
+                <div className="mt-6">
+                  <h2 className="mb-2 font-display text-sm font-semibold text-jet-black">Your booking calendar</h2>
+                  <AvailabilityCalendar bookedRanges={bookedRanges} readOnly />
+                </div>
+              )}
+
               <div className="mt-6">
                 <h2 className="font-display text-sm font-semibold text-jet-black">Description</h2>
                 <p className="mt-2 whitespace-pre-line text-sm leading-6 text-jet-black/60">

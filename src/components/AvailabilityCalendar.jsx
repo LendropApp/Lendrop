@@ -28,7 +28,7 @@ function buildBookedSet(bookedRanges) {
   return set
 }
 
-export default function AvailabilityCalendar({ bookedRanges = [], selectedRange, onSelectRange }) {
+export default function AvailabilityCalendar({ bookedRanges = [], selectedRange, onSelectRange, readOnly = false }) {
   const today = startOfDay(new Date())
   const [viewDate, setViewDate] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1))
 
@@ -65,7 +65,7 @@ export default function AvailabilityCalendar({ bookedRanges = [], selectedRange,
   }
 
   function handleDayClick(date) {
-    if (date < today || bookedSet.has(toISODate(date))) return
+    if (readOnly || date < today || bookedSet.has(toISODate(date))) return
 
     const hasCompleteRange = selectedRange?.start && selectedRange?.end
     if (!selectedRange?.start || hasCompleteRange) {
@@ -124,11 +124,13 @@ export default function AvailabilityCalendar({ bookedRanges = [], selectedRange,
             (toISODate(date) === toISODate(selectedRange.start) ||
               (selectedRange.end && toISODate(date) === toISODate(selectedRange.end)))
 
+          const isDisabled = readOnly || isPast || isBooked
+
           return (
             <button
               key={toISODate(date)}
               type="button"
-              disabled={isPast || isBooked}
+              disabled={isDisabled}
               onClick={() => handleDayClick(date)}
               className={`aspect-square rounded-lg text-xs font-medium transition ${
                 isPast || isBooked
@@ -137,7 +139,9 @@ export default function AvailabilityCalendar({ bookedRanges = [], selectedRange,
                     ? 'bg-deep-purple text-white'
                     : isSelected
                       ? 'bg-lavender/25 text-deep-purple'
-                      : 'text-jet-black/70 hover:bg-lavender/10'
+                      : readOnly
+                        ? 'cursor-default text-jet-black/70'
+                        : 'text-jet-black/70 hover:bg-lavender/10'
               }`}
             >
               {date.getDate()}
@@ -147,9 +151,11 @@ export default function AvailabilityCalendar({ bookedRanges = [], selectedRange,
       </div>
 
       <div className="mt-3 flex items-center gap-3 text-[11px] text-jet-black/45">
-        <span className="flex items-center gap-1">
-          <span className="h-2.5 w-2.5 rounded-full bg-deep-purple" /> Selected
-        </span>
+        {!readOnly && (
+          <span className="flex items-center gap-1">
+            <span className="h-2.5 w-2.5 rounded-full bg-deep-purple" /> Selected
+          </span>
+        )}
         <span className="flex items-center gap-1">
           <span className="h-2.5 w-2.5 rounded-full bg-jet-black/15" /> Already booked
         </span>

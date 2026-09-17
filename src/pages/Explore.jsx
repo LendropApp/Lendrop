@@ -31,6 +31,7 @@ export default function Explore() {
   const [onlyAvailable, setOnlyAvailable] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [favoriteIds, setFavoriteIds] = useState(new Set())
+  const [rentedItemIds, setRentedItemIds] = useState(new Set())
 
   const [unreadNotifications, setUnreadNotifications] = useState(0)
 
@@ -74,6 +75,16 @@ export default function Explore() {
         }
         setItemsLoading(false)
       })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    supabase.rpc('get_currently_rented_item_ids').then(({ data }) => {
+      if (!cancelled) setRentedItemIds(new Set((data ?? []).map((row) => row.item_id)))
+    })
     return () => {
       cancelled = true
     }
@@ -424,6 +435,7 @@ export default function Explore() {
                 item={item}
                 isOwner={Boolean(user) && item.owner?.id === user.id}
                 isFavorited={favoriteIds.has(item.id)}
+                isCurrentlyRented={rentedItemIds.has(item.id)}
                 onDelete={handleDeleteItem}
                 onToggleFavorite={handleToggleFavorite}
               />

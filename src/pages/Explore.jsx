@@ -354,7 +354,7 @@ export default function Explore() {
             </div>
             <Link
               to="/profile/edit"
-              className="shrink-0 rounded-full bg-deep-purple px-4 py-2 text-xs font-semibold text-soft-white transition hover:bg-deep-purple/90"
+              className="shrink-0 rounded-full bg-linear-to-r from-deep-purple to-lavender px-4 py-2 text-xs font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)] transition hover:brightness-105"
             >
               Complete profile
             </Link>

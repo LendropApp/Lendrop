@@ -88,7 +88,7 @@ export default function CategoriesStep({ record, onNext, onBack }) {
                   onClick={() => toggleCategory(cat.slug)}
                   className={`flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-xs font-medium transition ${
                     active
-                      ? "border border-white/40 bg-deep-purple/70 backdrop-blur-md text-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)]"
+                      ? "border-transparent bg-linear-to-r from-deep-purple to-lavender text-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)]"
                       : "border-lavender/40 text-jet-black/70 hover:border-lavender hover:text-deep-purple"
                   }`}
                 >
@@ -112,7 +112,7 @@ export default function CategoriesStep({ record, onNext, onBack }) {
           </button>
           <button
             type="submit"
-            className="flex-1 flex items-center justify-center gap-2 border border-white/40 bg-deep-purple/70 backdrop-blur-md text-white font-medium text-base py-3.5 rounded-xl shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)] transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-deep-purple focus-visible:ring-offset-2"
+            className="flex-1 flex items-center justify-center gap-2 bg-linear-to-r from-deep-purple to-lavender text-white font-medium text-base py-3.5 rounded-xl shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)] transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-deep-purple focus-visible:ring-offset-2"
           >
             Continue
             <ArrowRight className="w-4 h-4" />

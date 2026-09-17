@@ -435,7 +435,7 @@ export default function ItemDetail() {
                     <button
                       type="button"
                       onClick={handleStartBooking}
-                      className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/40 bg-deep-purple/70 backdrop-blur-md px-4 py-2.5 text-sm font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)] transition hover:brightness-105"
+                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-deep-purple to-lavender px-4 py-2.5 text-sm font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)] transition hover:brightness-105"
                     >
                       <CalendarDays className="h-4 w-4" />
                       Rent
@@ -484,7 +484,7 @@ export default function ItemDetail() {
                         type="button"
                         onClick={handleConfirmBooking}
                         disabled={!selectedRange.end || booking}
-                        className="w-full rounded-xl border border-white/40 bg-deep-purple/70 backdrop-blur-md px-4 py-2.5 text-sm font-semibold text-white shadow-[0_8px_28px_-10px_rgba(67,48,117,0.55)] transition hover:bg-deep-purple/80 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="w-full rounded-xl bg-deep-purple px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-deep-purple/90 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         {booking ? 'Processing…' : 'Pay in Advance'}
                       </button>
@@ -527,7 +527,7 @@ export default function ItemDetail() {
                         type="button"
                         onClick={handleDelete}
                         disabled={deleting}
-                        className="rounded-full border border-white/30 bg-red-500/80 backdrop-blur-md px-3 py-1.5 text-xs font-semibold text-white shadow-[0_8px_24px_-10px_rgba(239,68,68,0.55)] transition hover:bg-red-500/90 disabled:opacity-50"
+                        className="rounded-full bg-red-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-600 disabled:opacity-50"
                       >
                         {deleting ? 'Deleting…' : 'Confirm delete'}
                       </button>
@@ -572,7 +572,7 @@ export default function ItemDetail() {
                   <button
                     type="submit"
                     disabled={submittingReview}
-                    className="ml-auto shrink-0 rounded-full border border-white/40 bg-deep-purple/70 backdrop-blur-md px-4 py-2 text-xs font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)] transition hover:brightness-105 disabled:opacity-50"
+                    className="ml-auto shrink-0 rounded-full bg-linear-to-r from-deep-purple to-lavender px-4 py-2 text-xs font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)] transition hover:brightness-105 disabled:opacity-50"
                   >
                     {submittingReview ? 'Saving…' : 'Post review'}
                   </button>

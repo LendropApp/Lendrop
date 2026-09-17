@@ -225,7 +225,7 @@ export default function PaymentMethods() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="flex-1 rounded-xl border border-white/40 bg-deep-purple/70 backdrop-blur-md px-4 py-2.5 text-sm font-semibold text-white shadow-[0_8px_28px_-10px_rgba(67,48,117,0.55)] transition hover:bg-deep-purple/80 disabled:opacity-60"
+                  className="flex-1 rounded-xl bg-deep-purple px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-deep-purple/90 disabled:opacity-60"
                 >
                   {saving ? 'Saving…' : 'Save card'}
                 </button>

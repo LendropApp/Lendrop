@@ -30,7 +30,7 @@ export default function TermsStep({ onNext, onBack, submitting }) {
       <h1 className="font-display text-2xl sm:text-3xl text-deep-purple leading-snug mb-2">
         Host terms
       </h1>
-      <p className="text-gray-600 text-sm leading-relaxed mb-6">
+      <p className="text-jet-black/60 text-sm leading-relaxed mb-6">
         A quick summary before you start listing items on Lendrop.
       </p>
 
@@ -38,10 +38,10 @@ export default function TermsStep({ onNext, onBack, submitting }) {
         {[
           "You confirm you're the legal owner of items you list, or have permission to rent them out.",
           "Items are handed off and returned only through Lendrop lockers, never in person.",
-          "You must accurately describe each item's condition and take photo evidence at drop-off.",
+          "You must accurately describe each item's condition and take photo evidence at drop off.",
           "Lendrop may hold your security deposit funds during a dispute until it's resolved.",
         ].map((text, i) => (
-          <li key={i} className="flex items-start gap-2.5 text-sm text-gray-700 leading-relaxed">
+          <li key={i} className="flex items-start gap-2.5 text-sm text-jet-black/70 leading-relaxed">
             <ShieldCheck className="w-4 h-4 mt-0.5 shrink-0 text-deep-purple" strokeWidth={2} />
             {text}
           </li>
@@ -59,7 +59,7 @@ export default function TermsStep({ onNext, onBack, submitting }) {
             }}
             className="mt-0.5 h-4 w-4 rounded border-lavender/60 text-deep-purple focus:ring-deep-purple"
           />
-          <span className="text-sm text-gray-700 leading-relaxed">
+          <span className="text-sm text-jet-black/70 leading-relaxed">
             I have read and accept Lendrop's Host Terms.
           </span>
         </label>

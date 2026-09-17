@@ -21,7 +21,7 @@ export default function PrivacyPolicy() {
           <li><span className="font-medium text-jet-black">Contact info:</span> email and, if you become a lender, a phone number.</li>
           <li><span className="font-medium text-jet-black">Listings and transaction data:</span> items you list or rent, photos, prices, reservations, and payment records.</li>
           <li><span className="font-medium text-jet-black">Locker activity:</span> which locker and compartment was opened, by whom, and when.</li>
-          <li><span className="font-medium text-jet-black">Photo evidence:</span> item condition photos taken at drop-off and pickup.</li>
+          <li><span className="font-medium text-jet-black">Photo evidence:</span> item condition photos taken at drop off and pickup.</li>
         </ul>
       </Section>
 
@@ -30,7 +30,7 @@ export default function PrivacyPolicy() {
           <li>To verify your identity and eligibility to use Lendrop.</li>
           <li>To operate rentals: bookings, payments, locker access, and notifications.</li>
           <li>To resolve disputes, using photo evidence and locker logs tied to the specific reservation.</li>
-          <li>To keep the marketplace safe — detecting fraud, fake listings, and abuse.</li>
+          <li>To keep the marketplace safe, detecting fraud, fake listings, and abuse.</li>
           <li>To show you a public profile and reputation other users can see before renting with you.</li>
         </ul>
       </Section>
@@ -39,7 +39,7 @@ export default function PrivacyPolicy() {
         <p>
           Your DUI number and date of birth are stored separately from your public profile and
           are only accessible to you and, where legally required, to Lendrop for verification and
-          dispute purposes. Other users only ever see your name, avatar, and rental reputation —
+          dispute purposes. Other users only ever see your name, avatar, and rental reputation,
           never your national ID or birth date.
         </p>
       </Section>
@@ -48,7 +48,7 @@ export default function PrivacyPolicy() {
         <ul className="list-disc space-y-1.5 pl-5">
           <li>The other party in a reservation sees only what's needed to complete it (your public profile, item, and pickup/return details).</li>
           <li>Our payment processor, to process rental charges and security deposits.</li>
-          <li>Authorities, only if legally required — for example, in response to a valid court order.</li>
+          <li>Authorities, only if legally required, for example in response to a valid court order.</li>
         </ul>
         <p>We do not sell your personal data to third parties.</p>
       </Section>
@@ -56,7 +56,7 @@ export default function PrivacyPolicy() {
       <Section title="5. How we protect it">
         <p>
           Access to your data is controlled at the database level: sensitive fields like your DUI
-          and date of birth live in a separate, owner-only record that only your account can read,
+          and date of birth live in a separate, owner only record that only your account can read,
           independent from your public profile. Photo evidence and locker logs are similarly
           restricted to the people involved in that specific reservation.
         </p>
@@ -65,7 +65,7 @@ export default function PrivacyPolicy() {
       <Section title="6. How long we keep it">
         <p>
           We keep account and transaction data for as long as your account is active, and for a
-          reasonable period after to meet legal, tax, and dispute-resolution obligations. You can
+          reasonable period after to meet legal, tax, and dispute resolution obligations. You can
           request deletion of your account at any time; verification data tied to a completed
           transaction may be retained where required by law.
         </p>

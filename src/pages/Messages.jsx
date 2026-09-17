@@ -59,7 +59,7 @@ export default function Messages() {
         <div className="relative mx-auto max-w-3xl px-6 py-8 sm:px-10">
           <h1 className="font-display text-2xl font-bold text-jet-black">Messages</h1>
           <p className="mt-1 text-sm text-jet-black/50">
-            Coordinate pickups and drop-offs with quick replies — no need to type it all out.
+            Coordinate pickups and drop offs with quick replies, no need to type it all out.
           </p>
 
           {error ? (
@@ -97,7 +97,7 @@ export default function Messages() {
                       </div>
                       {c.item?.title && <p className="truncate text-xs text-jet-black/45">{c.item.title}</p>}
                       <p className="mt-0.5 truncate text-sm text-jet-black/55">
-                        {lastMessage?.body ?? 'No messages yet — say hi!'}
+                        {lastMessage?.body ?? 'No messages yet, say hi!'}
                       </p>
                     </div>
                   </Link>

@@ -139,7 +139,7 @@ export default function Categories() {
   };
 
   return (
-    <div className="min-h-screen bg-[#faf9fc] text-gray-900 font-[Manrope] overflow-hidden">
+    <div className="min-h-screen bg-[#faf9fc] text-jet-black font-[Manrope] overflow-hidden">
       {/* Decorative background */}
       <div className="absolute top-[-180px] right-[-140px] w-[420px] h-[420px] rounded-full bg-[#433075]/[0.06] blur-3xl" />
       <div className="absolute bottom-[-180px] left-[-140px] w-[400px] h-[400px] rounded-full bg-[#433075]/[0.04] blur-3xl" />
@@ -203,11 +203,11 @@ export default function Categories() {
             <span className="text-[#433075]">in renting?</span>
           </h1>
 
-          <p className="text-gray-500 text-base lg:text-lg leading-relaxed">
+          <p className="text-jet-black/50 text-base lg:text-lg leading-relaxed">
             From a camera for the weekend to the perfect costume for tonight.
           </p>
 
-          <p className="text-sm text-gray-400 mt-3">
+          <p className="text-sm text-jet-black/40 mt-3">
             Choose one or more categories to personalize your experience.
           </p>
         </div>
@@ -225,13 +225,13 @@ export default function Categories() {
                 className={`group relative text-left rounded-3xl p-6 min-h-[190px] transition-all duration-300 ${
                   isSelected
                     ? "bg-[#433075] border-4 border-[#3d179c] shadow-2xl shadow-[#433075]/40 -translate-y-1.5"
-                    : "bg-white border-2 border-gray-300 hover:border-[#433075] hover:-translate-y-1.5 shadow-md shadow-gray-200/80 hover:shadow-xl hover:shadow-[#433075]/20"
+                    : "bg-white border-2 border-jet-black/15 hover:border-[#433075] hover:-translate-y-1.5 shadow-md shadow-jet-black/10 hover:shadow-xl hover:shadow-[#433075]/20"
                 }`}
               >
                 {/* Number */}
                 <span
                   className={`absolute top-5 right-5 text-xs font-semibold ${
-                    isSelected ? "text-white/50" : "text-gray-300"
+                    isSelected ? "text-white/50" : "text-jet-black/25"
                   }`}
                 >
                   0{index + 1}
@@ -251,7 +251,7 @@ export default function Categories() {
                 {/* Text */}
                 <h2
                   className={`text-lg font-bold mb-2 ${
-                    isSelected ? "text-white" : "text-gray-900"
+                    isSelected ? "text-white" : "text-jet-black"
                   }`}
                 >
                   {category.name}
@@ -259,7 +259,7 @@ export default function Categories() {
 
                 <p
                   className={`text-sm leading-relaxed pr-5 ${
-                    isSelected ? "text-white/65" : "text-gray-400"
+                    isSelected ? "text-white/65" : "text-jet-black/40"
                   }`}
                 >
                   {category.description}
@@ -270,7 +270,7 @@ export default function Categories() {
                   className={`absolute bottom-6 right-6 w-6 h-6 rounded-full border flex items-center justify-center transition-all ${
                     isSelected
                       ? "bg-white border-white"
-                      : "border-gray-200 group-hover:border-[#433075]"
+                      : "border-jet-black/10 group-hover:border-[#433075]"
                   }`}
                 >
                   {isSelected && (
@@ -294,7 +294,7 @@ export default function Categories() {
 
         {/* Bottom section */}
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-between gap-5">
-          <div className="text-sm text-gray-400">
+          <div className="text-sm text-jet-black/40">
             {selected.length === 0 ? (
               "Select at least one category"
             ) : (
@@ -311,7 +311,7 @@ export default function Categories() {
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="px-6 py-3.5 rounded-xl text-sm font-semibold text-gray-500 hover:text-gray-900 transition"
+              className="px-6 py-3.5 rounded-xl text-sm font-semibold text-jet-black/50 hover:text-jet-black transition"
             >
               Back
             </button>
@@ -323,7 +323,7 @@ export default function Categories() {
               className={`group px-7 py-3.5 rounded-xl text-sm font-bold flex items-center gap-3 transition-all ${
                 selected.length > 0
                   ? "bg-[#433075] text-white hover:shadow-xl hover:shadow-[#433075]/20 hover:-translate-y-0.5"
-                  : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  : "bg-jet-black/10 text-jet-black/40 cursor-not-allowed"
               }`}
             >
               Continue

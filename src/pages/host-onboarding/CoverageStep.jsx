@@ -84,7 +84,7 @@ export default function CoverageStep({ record, onNext, onBack }) {
       <h1 className="font-display text-2xl sm:text-3xl text-deep-purple leading-snug mb-2">
         Where can you drop off items?
       </h1>
-      <p className="text-gray-600 text-sm leading-relaxed mb-8">
+      <p className="text-jet-black/60 text-sm leading-relaxed mb-8">
         Pick the lockers you can get to. Renters will pick up and return your items there.
       </p>
 
@@ -92,9 +92,9 @@ export default function CoverageStep({ record, onNext, onBack }) {
         {loadError ? (
           <p className="text-sm text-red-500">{loadError}</p>
         ) : loading ? (
-          <p className="text-sm text-gray-400">Loading lockers…</p>
+          <p className="text-sm text-jet-black/40">Loading lockers…</p>
         ) : lockers.length === 0 ? (
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-jet-black/50">
             No lockers are set up yet. You can still continue and pick one later.
           </p>
         ) : (
@@ -120,10 +120,10 @@ export default function CoverageStep({ record, onNext, onBack }) {
                       {active ? <Check className="w-4 h-4" /> : <MapPin className="w-4 h-4" />}
                     </span>
                     <span className="min-w-0">
-                      <span className="block text-sm font-medium text-gray-900 truncate">
+                      <span className="block text-sm font-medium text-jet-black truncate">
                         {locker.name}
                       </span>
-                      <span className="block text-xs text-gray-500 truncate">
+                      <span className="block text-xs text-jet-black/50 truncate">
                         {locker.address} · {locker.city}
                       </span>
                     </span>

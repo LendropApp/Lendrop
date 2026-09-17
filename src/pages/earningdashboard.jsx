@@ -94,7 +94,7 @@ export default function EarningsDashboard() {
     {
       icon: Star,
       label: 'Average rating',
-      value: hasReviews ? Number(profile.average_rating).toFixed(1) : '—',
+      value: hasReviews ? Number(profile.average_rating).toFixed(1) : 'N/A',
       hint: hasReviews ? `From ${profile.total_reviews} reviews` : 'No reviews yet',
     },
   ]
@@ -176,7 +176,7 @@ export default function EarningsDashboard() {
                   </div>
                 ) : (
                   <p className="py-6 text-center text-sm text-jet-black/40">
-                    No payments yet — they'll show up here once a renter pays for one of your listings.
+                    No payments yet. They'll show up here once a renter pays for one of your listings.
                   </p>
                 )}
               </div>

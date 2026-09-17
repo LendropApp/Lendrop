@@ -86,7 +86,7 @@ export default function Verification() {
             {verificationStatus === 'pending' && (
               <div className="mt-6 flex items-center gap-2 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-700">
                 <Clock className="h-4 w-4" />
-                We're reviewing your documents — this usually takes less than 24 hours.
+                We're reviewing your documents. This usually takes less than 24 hours.
               </div>
             )}
           </section>

@@ -26,16 +26,16 @@ export default function TermsOfService() {
           You must be at least 18 years old and hold a valid Salvadoran DUI (national ID) to
           create an account. The name, DUI number, and date of birth you provide at signup are
           used only to verify your identity for rentals and are stored separately from your
-          public profile — they are never shown to other users.
+          public profile, and they are never shown to other users.
         </p>
       </Section>
 
       <Section title="3. What Lendrop is">
         <p>
-          Lendrop is a peer-to-peer marketplace that lets people list items for other people to
+          Lendrop is a peer to peer marketplace that lets people list items for other people to
           rent, and lets renters book and pay for those items, all inside the app. Lendrop is not
           the owner of listed items and is not a party to the rental agreement between a lender
-          and a renter — we provide the platform, identity checks, smart-locker logistics, and
+          and a renter. We provide the platform, identity checks, smart locker logistics, and
           payment processing that make that agreement possible.
         </p>
       </Section>
@@ -44,16 +44,16 @@ export default function TermsOfService() {
         <ul className="list-disc space-y-1.5 pl-5">
           <li>Lenders must accurately describe an item's condition, features, and price.</li>
           <li>Lenders must only list items they legally own or have explicit permission to rent out.</li>
-          <li>An item's availability is determined by the app from actual confirmed reservations, not by a lender's manual claim — once a date range is booked, it cannot be booked again for the same item, and a "Currently rented" status is shown automatically while a rental is in progress.</li>
+          <li>An item's availability is determined by the app from actual confirmed reservations, not by a lender's manual claim. Once a date range is booked, it cannot be booked again for the same item, and a "Currently rented" status is shown automatically while a rental is in progress.</li>
           <li>Renters must return items in the condition they received them, normal wear excepted.</li>
-          <li>Every drop-off and pickup is documented with photo evidence, timestamped and tied to both parties' accounts, to protect both sides in a dispute.</li>
+          <li>Every drop off and pickup is documented with photo evidence, timestamped and tied to both parties' accounts, to protect both sides in a dispute.</li>
         </ul>
       </Section>
 
       <Section title="5. Smart lockers">
         <p>
-          Items change hands exclusively through Lendrop's network of smart lockers — never
-          through in-person meetups. Each pickup or drop-off requires a unique access code tied
+          Items change hands exclusively through Lendrop's network of smart lockers, never
+          through in person meetups. Each pickup or drop off requires a unique access code tied
           to your reservation, and every locker event (opened, by whom, when) is logged for
           traceability and dispute resolution.
         </p>
@@ -63,7 +63,7 @@ export default function TermsOfService() {
         <p>
           Rental fees are charged through the app at the time of booking ("Pay in Advance"),
           before pickup. Certain items require a refundable security deposit, held until the item
-          is returned and confirmed to be in the agreed-upon condition. If photo evidence shows
+          is returned and confirmed to be in the agreed upon condition. If photo evidence shows
           damage the renter is responsible for, the deposit may be withheld in part or in full to
           cover the cost, and the matter can be escalated as a dispute.
         </p>
@@ -79,7 +79,7 @@ export default function TermsOfService() {
         <p>
           Reservations can be cancelled from the app before the rental period begins, subject to
           the cancellation window shown at checkout. Cancellations after that window, or
-          no-shows, may not be eligible for a full refund.
+          missed pickups, may not be eligible for a full refund.
         </p>
       </Section>
 

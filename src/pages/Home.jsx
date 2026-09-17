@@ -126,7 +126,7 @@ const steps = [
   {
     step: 'Step 03',
     title: 'Pick up & go',
-    desc: 'Type your password, open the locker, and check the item — already verified by our AI.',
+    desc: 'Type your password, open the locker, and check the item. Already verified by our AI.',
     icon: Box,
   },
   {
@@ -145,7 +145,7 @@ const securityFeatures = [
   },
   {
     title: 'Photo evidence',
-    desc: 'We keep photos of the item’s condition at every drop-off and pickup, backing up every transaction.',
+    desc: 'We keep photos of the item’s condition at every drop off and pickup, backing up every transaction.',
     icon: Camera,
   },
   {
@@ -355,7 +355,7 @@ export default function Home() {
 
           <p className="mt-6 max-w-lg text-lg leading-relaxed text-jet-black/60">
             Cameras, tools, drones, bikes, and more. Reserve, pay, and pick
-            them up from a smart locker near you — no messages, no waiting,
+            them up from a smart locker near you. No messages, no waiting,
             no strangers.
           </p>
 
@@ -415,13 +415,13 @@ export default function Home() {
 
         <div className="flex justify-center lg:justify-end">
 
-          <div className="relative w-full max-w-md overflow-hidden rounded-[28px] border border-[#E9D5FF] bg-[#FAF7FF] p-5 shadow-2xl shadow-[#7C3AED]/15">
+          <div className="relative w-full max-w-md overflow-hidden rounded-[28px] border border-lavender/25 bg-white p-5 shadow-2xl shadow-lavender/20">
 
-            <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-[#9333EA] to-transparent" />
+            <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-lavender/60 to-transparent" />
 
             {/* TERMINAL HEADER */}
 
-            <div className="flex items-center justify-between border-b border-[#E9D5FF] pb-4">
+            <div className="flex items-center justify-between border-b border-lavender/25 pb-4">
 
               <div className="flex items-center gap-2.5">
 
@@ -435,11 +435,11 @@ export default function Home() {
 
                 <div>
 
-                  <p className="font-mono text-[10px] font-bold tracking-[0.18em] text-[#7C3AED]">
+                  <p className="font-mono text-[10px] font-bold tracking-[0.18em] text-deep-purple">
                     SYSTEM ONLINE
                   </p>
 
-                  <p className="mt-0.5 text-[9px] text-[#806B91]">
+                  <p className="mt-0.5 text-[9px] text-jet-black/45">
                     SMART LOCKER NETWORK
                   </p>
 
@@ -447,7 +447,7 @@ export default function Home() {
 
               </div>
 
-              <span className="rounded-md border border-[#E9D5FF] bg-white px-2 py-1 font-mono text-[9px] font-semibold text-[#7C3AED] shadow-sm">
+              <span className="rounded-md border border-lavender/25 bg-white px-2 py-1 font-mono text-[9px] font-semibold text-deep-purple shadow-sm">
                 LD-14
               </span>
 
@@ -459,17 +459,17 @@ export default function Home() {
 
               <div>
 
-                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#9333EA]">
+                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-deep-purple">
                   Available nearby
                 </p>
 
-                <p className="mt-1 font-display text-base font-semibold text-[#2E1A47]">
+                <p className="mt-1 font-display text-base font-semibold text-jet-black">
                   Downtown San Salvador
                 </p>
 
               </div>
 
-              <span className="font-mono text-[9px] font-medium text-[#9C8AA8]">
+              <span className="font-mono text-[9px] font-medium text-jet-black/40">
                 09 ITEMS
               </span>
 
@@ -511,11 +511,11 @@ export default function Home() {
                     }
                     className={`group relative overflow-hidden rounded-xl border p-2 text-left transition-all duration-300 ${
                       isActive
-                        ? 'border-[#9333EA] bg-[#F3E8FF] shadow-[0_8px_25px_-10px_rgba(124,58,237,0.55)]'
-                        : 'border-[#E9D5FF] bg-white hover:border-[#C084FC] hover:bg-[#FCF9FF]'
+                        ? 'border-deep-purple bg-lavender/15 shadow-[0_8px_25px_-10px_rgba(165,140,244,0.55)]'
+                        : 'border-lavender/25 bg-white hover:border-lavender hover:bg-lavender/5'
                     } ${
                       isFlashing
-                        ? 'ring-2 ring-[#C084FC]/50'
+                        ? 'ring-2 ring-lavender/50'
                         : ''
                     }`}
                   >
@@ -525,8 +525,8 @@ export default function Home() {
                       <span
                         className={`font-mono text-[9px] font-bold tracking-widest ${
                           isActive
-                            ? 'text-[#7C3AED]'
-                            : 'text-[#806B91]'
+                            ? 'text-deep-purple'
+                            : 'text-jet-black/45'
                         }`}
                       >
                         {locker.id}
@@ -536,13 +536,13 @@ export default function Home() {
                         className={`h-1.5 w-1.5 rounded-full ${
                           isAvailable
                             ? 'bg-emerald-400'
-                            : 'bg-[#C4B5FD]'
+                            : 'bg-jet-black/20'
                         }`}
                       />
 
                     </div>
 
-                    <div className="relative aspect-[1.15] overflow-hidden rounded-lg border border-[#E9D5FF] bg-[#F3E8FF]">
+                    <div className="relative aspect-[1.15] overflow-hidden rounded-lg border border-lavender/25 bg-lavender/15">
 
                       <img
                         src={locker.image}
@@ -558,12 +558,12 @@ export default function Home() {
                         }`}
                       />
 
-                      <div className="absolute inset-0 bg-linear-to-t from-[#2E1A47]/35 via-transparent to-transparent" />
+                      <div className="absolute inset-0 bg-linear-to-t from-jet-black/35 via-transparent to-transparent" />
 
                       {!isAvailable && (
                         <div className="absolute inset-0 flex items-center justify-center">
 
-                          <span className="rounded-full border border-white/60 bg-[#2E1A47]/75 px-2 py-1 font-mono text-[7px] uppercase tracking-wider text-white backdrop-blur">
+                          <span className="rounded-full border border-white/60 bg-jet-black/75 px-2 py-1 font-mono text-[7px] uppercase tracking-wider text-white backdrop-blur">
                             Rented
                           </span>
 
@@ -577,8 +577,8 @@ export default function Home() {
                       <p
                         className={`truncate text-[10px] font-semibold ${
                           isActive
-                            ? 'text-[#5B21B6]'
-                            : 'text-[#403754]'
+                            ? 'text-deep-purple'
+                            : 'text-jet-black/70'
                         }`}
                       >
                         {locker.shortName}
@@ -588,7 +588,7 @@ export default function Home() {
                         className={`mt-0.5 font-mono text-[8px] uppercase tracking-wide ${
                           isAvailable
                             ? 'text-emerald-500'
-                            : 'text-[#9C8AA8]'
+                            : 'text-jet-black/40'
                         }`}
                       >
                         {isAvailable
@@ -601,8 +601,8 @@ export default function Home() {
                     <div
                       className={`absolute right-1 top-1/2 h-8 w-0.5 -translate-y-1/2 rounded-full transition ${
                         isActive
-                          ? 'bg-[#7C3AED] shadow-[0_0_8px_rgba(124,58,237,0.55)]'
-                          : 'bg-[#E9D5FF]'
+                          ? 'bg-deep-purple shadow-[0_0_8px_rgba(165,140,244,0.55)]'
+                          : 'bg-lavender/25'
                       }`}
                     />
 
@@ -614,13 +614,13 @@ export default function Home() {
 
             {/* PREVIEW */}
 
-            <div className="mt-4 overflow-hidden rounded-2xl border border-[#E9D5FF] bg-white shadow-sm">
+            <div className="mt-4 overflow-hidden rounded-2xl border border-lavender/25 bg-white shadow-sm">
 
               {displayedLocker ? (
 
                 <div className="flex min-h-[150px]">
 
-                  <div className="relative w-[42%] shrink-0 overflow-hidden bg-[#F3E8FF]">
+                  <div className="relative w-[42%] shrink-0 overflow-hidden bg-lavender/15">
 
                     <img
                       src={displayedLocker.image}
@@ -630,7 +630,7 @@ export default function Home() {
 
                     <div className="absolute inset-0 bg-linear-to-r from-transparent to-white/80" />
 
-                    <span className="absolute left-2.5 top-2.5 rounded-md border border-white/70 bg-white/90 px-2 py-1 font-mono text-[8px] font-bold tracking-widest text-[#7C3AED] shadow-sm">
+                    <span className="absolute left-2.5 top-2.5 rounded-md border border-white/70 bg-white/90 px-2 py-1 font-mono text-[8px] font-bold tracking-widest text-deep-purple shadow-sm">
                       {displayedLocker.id}
                     </span>
 
@@ -642,7 +642,7 @@ export default function Home() {
 
                       <div className="flex items-center justify-between gap-2">
 
-                        <span className="font-mono text-[8px] uppercase tracking-[0.15em] text-[#9333EA]">
+                        <span className="font-mono text-[8px] uppercase tracking-[0.15em] text-deep-purple">
                           Item preview
                         </span>
 
@@ -650,8 +650,8 @@ export default function Home() {
                           className={`rounded-full px-2 py-1 font-mono text-[7px] uppercase tracking-wide ${
                             displayedLocker.status ===
                             'available'
-                              ? 'bg-[#F3E8FF] text-[#7C3AED]'
-                              : 'bg-[#F3F0F7] text-[#928AA2]'
+                              ? 'bg-lavender/15 text-deep-purple'
+                              : 'bg-jet-black/10 text-jet-black/50'
                           }`}
                         >
                           {displayedLocker.status}
@@ -659,15 +659,15 @@ export default function Home() {
 
                       </div>
 
-                      <h3 className="mt-2 line-clamp-2 font-display text-sm font-semibold leading-snug text-[#2E1A47]">
+                      <h3 className="mt-2 line-clamp-2 font-display text-sm font-semibold leading-snug text-jet-black">
                         {displayedLocker.item}
                       </h3>
 
-                      <p className="mt-2 text-[9px] leading-relaxed text-[#806B91]">
+                      <p className="mt-2 text-[9px] leading-relaxed text-jet-black/45">
                         Smart locker {displayedLocker.id}
                       </p>
 
-                      <p className="mt-0.5 text-[9px] text-[#6B6380]">
+                      <p className="mt-0.5 text-[9px] text-jet-black/40">
                         {displayedLocker.location}
                       </p>
 
@@ -680,7 +680,7 @@ export default function Home() {
                         displayedLocker.status !==
                         'available'
                       }
-                      className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-[#7C3AED] px-3 py-2 font-mono text-[9px] font-bold uppercase tracking-wider text-white transition hover:bg-[#6D28D9] disabled:cursor-not-allowed disabled:bg-[#F0ECF5] disabled:text-[#A49BAF]"
+                      className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-deep-purple px-3 py-2 font-mono text-[9px] font-bold uppercase tracking-wider text-white transition hover:bg-deep-purple/90 disabled:cursor-not-allowed disabled:bg-jet-black/10 disabled:text-jet-black/30"
                     >
                       {displayedLocker.status ===
                       'available'
@@ -703,17 +703,17 @@ export default function Home() {
 
                   <div>
 
-                    <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full border border-[#E9D5FF] bg-[#F3E8FF]">
+                    <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full border border-lavender/25 bg-lavender/15">
 
-                      <Box className="h-4 w-4 text-[#A78BFA]" />
+                      <Box className="h-4 w-4 text-lavender" />
 
                     </div>
 
-                    <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.15em] text-[#806B91]">
+                    <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.15em] text-jet-black/45">
                       Select a compartment
                     </p>
 
-                    <p className="mt-1 text-[9px] text-[#A39BAF]">
+                    <p className="mt-1 text-[9px] text-jet-black/35">
                       Hover or tap an item to preview
                     </p>
 
@@ -727,11 +727,11 @@ export default function Home() {
 
             {/* TERMINAL FOOTER */}
 
-            <div className="mt-3 flex items-center justify-between font-mono text-[8px] uppercase tracking-wider text-[#9C8AA8]">
+            <div className="mt-3 flex items-center justify-between font-mono text-[8px] uppercase tracking-wider text-jet-black/40">
 
               <span>Secure access</span>
 
-              <span className="text-[#9333EA]">
+              <span className="text-deep-purple">
                 AI verified
               </span>
 

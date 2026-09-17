@@ -240,7 +240,7 @@ export default function Explore() {
               <Link
                 to={ROUTES.becomeLender}
                 aria-label="Become a Lender"
-                className="flex items-center gap-1.5 rounded-full border border-white/40 bg-deep-purple/70 backdrop-blur-md px-3 py-2 text-xs font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(67,48,117,0.5)] transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.6)] hover:brightness-105 sm:px-4"
+                className="flex items-center gap-1.5 rounded-full bg-linear-to-r from-deep-purple to-lavender px-3 py-2 text-xs font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(67,48,117,0.5)] transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.6)] hover:brightness-105 sm:px-4"
               >
                 <Store className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">Become a Lender</span>
@@ -354,7 +354,7 @@ export default function Explore() {
             </div>
             <Link
               to="/profile/edit"
-              className="shrink-0 rounded-full border border-white/40 bg-deep-purple/70 backdrop-blur-md px-4 py-2 text-xs font-semibold text-soft-white shadow-[0_8px_28px_-10px_rgba(67,48,117,0.55)] transition hover:bg-deep-purple/80"
+              className="shrink-0 rounded-full bg-deep-purple px-4 py-2 text-xs font-semibold text-soft-white transition hover:bg-deep-purple/90"
             >
               Complete profile
             </Link>
@@ -375,7 +375,7 @@ export default function Explore() {
                 onClick={() => handleCategoryClick(cat.slug)}
                 className={`flex shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-xs font-semibold transition ${
                   active
-                    ? 'border border-white/40 bg-deep-purple/70 backdrop-blur-md text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)]'
+                    ? 'border-transparent bg-linear-to-r from-deep-purple to-lavender text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)]'
                     : 'border-jet-black/10 text-jet-black/60 hover:border-lavender hover:text-deep-purple'
                 }`}
               >

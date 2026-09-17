@@ -124,7 +124,7 @@ export default function EditProfile() {
               <LockerAvatar label={fullName} photoUrl={avatarPreview} size="lg" />
               <label
                 htmlFor="avatar"
-                className="absolute -bottom-1 -right-1 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border border-white/40 bg-deep-purple/70 backdrop-blur-md text-soft-white shadow-[0_4px_12px_-2px_rgba(165,140,244,0.7)]"
+                className="absolute -bottom-1 -right-1 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-linear-to-r from-deep-purple to-lavender text-soft-white shadow-[0_4px_12px_-2px_rgba(165,140,244,0.7)]"
               >
                 <Camera className="h-3.5 w-3.5" />
               </label>
@@ -202,7 +202,7 @@ export default function EditProfile() {
           <button
             type="submit"
             disabled={saving}
-            className="w-full rounded-xl border border-white/40 bg-deep-purple/70 backdrop-blur-md py-3 text-sm font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)] transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 disabled:opacity-50"
+            className="w-full rounded-xl bg-linear-to-r from-deep-purple to-lavender py-3 text-sm font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)] transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 disabled:opacity-50"
           >
             {saving ? 'Saving…' : 'Save changes'}
           </button>

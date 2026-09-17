@@ -39,7 +39,7 @@ export default function IntroStep({ onNext }) {
       <button
         type="button"
         onClick={onNext}
-        className="w-full flex items-center justify-center gap-2 border border-white/40 bg-deep-purple/70 backdrop-blur-md text-white font-medium text-base py-3.5 rounded-xl shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)] transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-deep-purple focus-visible:ring-offset-2"
+        className="w-full flex items-center justify-center gap-2 bg-linear-to-r from-deep-purple to-lavender text-white font-medium text-base py-3.5 rounded-xl shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)] transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-deep-purple focus-visible:ring-offset-2"
       >
         Start registration
         <ArrowRight className="w-4 h-4" />

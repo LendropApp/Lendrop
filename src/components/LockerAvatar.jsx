@@ -1,9 +1,7 @@
 import { User } from 'lucide-react'
 
-// Marco "locker compartment": insignia cuadrada redondeada con línea de
-// costura al centro, ecoando las puertas físicas de los lockers.
-// Reutilizado en tarjetas de producto, header, perfil y futuro dashboard
-// de arrendador para que el elemento de marca sea consistente en toda la app.
+// Circular user avatar, reused in product cards, header, profile, and the
+// lender dashboard so the same element is consistent across the app.
 
 const SIZES = {
   sm: {
@@ -37,7 +35,7 @@ export default function LockerAvatar({
 
   return (
     <span
-      className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-6px border border-jet-black/10 bg-lavender/15 font-mono font-bold text-deep-purple after:absolute after:inset-x-0 after:top-1/2 after:h-px after:bg-jet-black/10 ${s.frame} ${s.text} ${className}`}
+      className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-full border border-jet-black/10 bg-lavender/15 font-mono font-bold text-deep-purple ${s.frame} ${s.text} ${className}`}
     >
       {photoUrl ? (
         <img src={photoUrl} alt={label || 'Avatar'} className="h-full w-full object-cover" />

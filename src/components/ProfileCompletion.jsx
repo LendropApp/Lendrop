@@ -4,7 +4,7 @@ import { CheckCircle2, Circle, PartyPopper } from 'lucide-react'
 // Steps needed before a profile is "rental ready" — no schema beyond the
 // existing profiles columns and the auth user's own confirmation status,
 // so this stays a pure client-side checklist rather than a stored flag.
-function buildSteps(user, profile) {
+export function buildSteps(user, profile) {
   return [
     {
       id: 'email',

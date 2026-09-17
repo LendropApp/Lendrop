@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Search, Heart, Bell, MessageCircle, Store, Plus, MapPin } from 'lucide-react'
+import { Search, Heart, Bell, MessageCircle, Store, Plus, MapPin, UserCircle2 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import { getCategoryIcon } from '../lib/categoryIcons'
 import LockerAvatar from '../components/LockerAvatar'
 import ProductCard from '../components/ProductCard'
 import AuroraBlobs from '../components/background/AuroraBlobs'
+import { buildSteps } from '../components/ProfileCompletion'
 
 const ROUTES = {
   becomeLender: '/become-host',
@@ -18,7 +19,7 @@ const ROUTES = {
 }
 
 export default function Explore() {
-  const { user, isHost } = useAuth()
+  const { user, isHost, profile, profileLoading } = useAuth()
 
   const [categories, setCategories] = useState([])
   const [items, setItems] = useState([])
@@ -114,6 +115,9 @@ export default function Explore() {
       cancelled = true
     }
   }, [user])
+
+  const profileSteps = useMemo(() => buildSteps(user, profile), [user, profile])
+  const profileIncomplete = Boolean(user) && !profileLoading && profileSteps.some((s) => !s.done)
 
   const cities = useMemo(
     () => [...new Set(items.map((item) => item.location_city))].sort(),
@@ -266,9 +270,14 @@ export default function Explore() {
             <Link
               to={ROUTES.profile}
               aria-label="Your account"
-              className="rounded-6px transition hover:ring-2 hover:ring-lavender/40"
+              className="rounded-full transition hover:ring-2 hover:ring-lavender/40"
             >
-              <LockerAvatar label={firstName} verified={isVerified} size="md" />
+              <LockerAvatar
+                label={firstName}
+                photoUrl={profile?.avatar_url}
+                verified={isVerified}
+                size="md"
+              />
             </Link>
           </div>
         </div>
@@ -302,6 +311,31 @@ export default function Explore() {
           </p>
         </div>
       </section>
+
+      {/* ================= PROFILE COMPLETION NUDGE ================= */}
+      {profileIncomplete && (
+        <section className="mx-auto max-w-6xl px-6 pt-6 sm:px-10">
+          <div className="flex flex-col items-start gap-3 rounded-2xl border border-lavender/30 bg-lavender/10 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-deep-purple">
+                <UserCircle2 className="h-5 w-5" />
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-jet-black">Finish setting up your profile</p>
+                <p className="text-xs text-jet-black/55">
+                  Renters trust completed profiles more. Add what's missing to keep using Lendrop.
+                </p>
+              </div>
+            </div>
+            <Link
+              to="/profile/edit"
+              className="shrink-0 rounded-full bg-deep-purple px-4 py-2 text-xs font-semibold text-soft-white transition hover:bg-deep-purple/90"
+            >
+              Complete profile
+            </Link>
+          </div>
+        </section>
+      )}
 
       {/* ================= CATEGORIES ================= */}
       <section className="mx-auto max-w-6xl px-6 sm:px-10">

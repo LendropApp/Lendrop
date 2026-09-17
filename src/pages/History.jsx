@@ -1,72 +1,14 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Clock } from 'lucide-react'
+import { useAuth } from '../context/AuthContext'
+import { supabase } from '../lib/supabaseClient'
 import PageHeader from '../components/PageHeader'
 import AuroraBlobs from '../components/background/AuroraBlobs'
 
-// Mock-data-first, shaped like a join of reservations + payments + items
-// so it's a straight swap to a real Supabase query later.
-const MOCK_RENTALS = [
-  {
-    id: 'r1',
-    itemTitle: 'LEGO Millennium Falcon',
-    counterparty: 'Karla Rivas',
-    startDate: '2026-09-10',
-    endDate: '2026-09-14',
-    totalPrice: 45.0,
-    status: 'active',
-  },
-  {
-    id: 'r2',
-    itemTitle: 'Canon EOS R50',
-    counterparty: 'Diego Hernández',
-    startDate: '2026-08-20',
-    endDate: '2026-08-23',
-    totalPrice: 60.0,
-    status: 'completed',
-  },
-  {
-    id: 'r3',
-    itemTitle: 'Camping tent 4p',
-    counterparty: 'Andrea Portillo',
-    startDate: '2026-07-02',
-    endDate: '2026-07-05',
-    totalPrice: 22.5,
-    status: 'cancelled',
-  },
-]
-
-const MOCK_LENDINGS = [
-  {
-    id: 'l1',
-    itemTitle: 'DJI Mini 4 Pro',
-    counterparty: 'Andrea Portillo',
-    startDate: '2026-09-12',
-    endDate: '2026-09-15',
-    totalPrice: 32.5,
-    status: 'active',
-  },
-  {
-    id: 'l2',
-    itemTitle: 'LEGO Technic Ferrari',
-    counterparty: 'Karla Rivas',
-    startDate: '2026-08-01',
-    endDate: '2026-08-03',
-    totalPrice: 28.0,
-    status: 'completed',
-  },
-  {
-    id: 'l3',
-    itemTitle: 'LEGO Star Destroyer',
-    counterparty: 'Diego Hernández',
-    startDate: '2026-07-15',
-    endDate: '2026-07-18',
-    totalPrice: 28.0,
-    status: 'disputed',
-  },
-]
-
 const STATUS_STYLES = {
+  pending: 'bg-jet-black/10 text-jet-black/60',
+  confirmed: 'bg-lavender/15 text-deep-purple',
   active: 'bg-lavender/15 text-deep-purple',
   completed: 'bg-emerald-100 text-emerald-700',
   cancelled: 'bg-jet-black/10 text-jet-black/50',
@@ -74,6 +16,8 @@ const STATUS_STYLES = {
 }
 
 const STATUS_LABELS = {
+  pending: 'Pending',
+  confirmed: 'Confirmed',
   active: 'Active',
   completed: 'Completed',
   cancelled: 'Cancelled',
@@ -86,8 +30,76 @@ function formatDateRange(start, end) {
 }
 
 export default function History() {
+  const { user } = useAuth()
   const [tab, setTab] = useState('rentals')
-  const rows = tab === 'rentals' ? MOCK_RENTALS : MOCK_LENDINGS
+  const [rentals, setRentals] = useState([])
+  const [lendings, setLendings] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (!user) {
+      setLoading(false)
+      return
+    }
+    let cancelled = false
+    setLoading(true)
+
+    Promise.all([
+      supabase
+        .from('reservations')
+        .select(
+          `id, start_date, end_date, status, total_price,
+           item:items(title, owner:profiles!items_owner_id_fkey(full_name))`
+        )
+        .eq('renter_id', user.id)
+        .order('created_at', { ascending: false }),
+      supabase
+        .from('reservations')
+        .select(
+          `id, start_date, end_date, status, total_price,
+           item:items!inner(title, owner_id),
+           renter:profiles!reservations_renter_id_fkey(full_name)`
+        )
+        .eq('item.owner_id', user.id)
+        .order('created_at', { ascending: false }),
+    ]).then(([rentalsRes, lendingsRes]) => {
+      if (cancelled) return
+      if (rentalsRes.error || lendingsRes.error) {
+        setError('Could not load your activity. Please refresh.')
+      } else {
+        setRentals(
+          (rentalsRes.data ?? []).map((r) => ({
+            id: r.id,
+            itemTitle: r.item?.title ?? 'Item',
+            counterparty: r.item?.owner?.full_name ?? 'Lender',
+            startDate: r.start_date,
+            endDate: r.end_date,
+            totalPrice: Number(r.total_price),
+            status: r.status,
+          }))
+        )
+        setLendings(
+          (lendingsRes.data ?? []).map((r) => ({
+            id: r.id,
+            itemTitle: r.item?.title ?? 'Item',
+            counterparty: r.renter?.full_name ?? 'Renter',
+            startDate: r.start_date,
+            endDate: r.end_date,
+            totalPrice: Number(r.total_price),
+            status: r.status,
+          }))
+        )
+      }
+      setLoading(false)
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [user])
+
+  const rows = tab === 'rentals' ? rentals : lendings
 
   return (
     <div className="min-h-screen bg-soft-white pb-16">
@@ -119,7 +131,11 @@ export default function History() {
             ))}
           </div>
 
-          {rows.length > 0 ? (
+          {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+
+          {loading ? (
+            <p className="mt-8 text-center text-sm text-jet-black/40">Loading activity…</p>
+          ) : rows.length > 0 ? (
             <div className="mt-6 space-y-3">
               {rows.map((row) => (
                 <div key={row.id} className="rounded-2xl border border-lavender/15 bg-white p-4">

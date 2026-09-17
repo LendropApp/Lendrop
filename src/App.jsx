@@ -54,8 +54,12 @@ export default function App() {
           />
 
           <Route
-             path="/earnings-dashboard"
-            element={<EarningsDashboard />}
+            path="/earnings-dashboard"
+            element={
+              <ProtectedRoute>
+                <EarningsDashboard />
+              </ProtectedRoute>
+            }
           />
 
           <Route

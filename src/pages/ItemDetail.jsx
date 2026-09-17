@@ -1,16 +1,33 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, Heart, MapPin, MessageCircle, ShieldCheck, Trash2 } from 'lucide-react'
+import { ArrowLeft, CalendarDays, Heart, Lock, MapPin, MessageCircle, ShieldCheck, Trash2 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import { getCategoryIcon } from '../lib/categoryIcons'
+import { calculatePlatformFee } from '../lib/fees'
 import LockerAvatar from '../components/LockerAvatar'
 import StarRating from '../components/StarRating'
 import StatusMessage from '../components/StatusMessage'
+import AvailabilityCalendar from '../components/AvailabilityCalendar'
 import AuroraBlobs from '../components/background/AuroraBlobs'
 
 function photoUrl(photo) {
   return supabase.storage.from('item-photos').getPublicUrl(photo.storage_path).data.publicUrl
+}
+
+function toISODate(date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+}
+
+function rentalDays(start, end) {
+  const ms = startOfDay(end) - startOfDay(start)
+  return Math.round(ms / 86400000) + 1
+}
+
+function startOfDay(date) {
+  const d = new Date(date)
+  d.setHours(0, 0, 0, 0)
+  return d
 }
 
 export default function ItemDetail() {
@@ -35,14 +52,20 @@ export default function ItemDetail() {
   const [deleting, setDeleting] = useState(false)
   const [messaging, setMessaging] = useState(false)
 
+  const [bookedRanges, setBookedRanges] = useState([])
+  const [showBooking, setShowBooking] = useState(false)
+  const [selectedRange, setSelectedRange] = useState({ start: null, end: null })
+  const [booking, setBooking] = useState(false)
+  const [bookingStatus, setBookingStatus] = useState({ type: '', text: '' })
+
   const loadItem = useCallback(async () => {
     const { data, error } = await supabase
       .from('items')
       .select(`
-        id, title, description, price_per_day, deposit_amount, location_city, is_available, condition, created_at,
+        id, title, description, price_per_day, original_price_per_day, deposit_amount, location_city, is_available, condition, created_at,
         category:categories(id, name, slug),
         photos:item_photos(id, storage_path, display_order),
-        owner:profiles!items_owner_id_fkey(id, full_name, avatar_url, bio, verification_status, average_rating, total_reviews)
+        owner:profiles!items_owner_id_fkey(id, full_name, avatar_url, bio, verification_status, average_rating, total_reviews, is_premium)
       `)
       .eq('id', itemId)
       .maybeSingle()
@@ -79,6 +102,15 @@ export default function ItemDetail() {
     loadReviews()
   }, [loadReviews])
 
+  const loadBookedRanges = useCallback(async () => {
+    const { data } = await supabase.rpc('get_item_booked_ranges', { p_item_id: itemId })
+    setBookedRanges(data ?? [])
+  }, [itemId])
+
+  useEffect(() => {
+    loadBookedRanges()
+  }, [loadBookedRanges])
+
   useEffect(() => {
     if (!user) {
       setIsFavorited(false)
@@ -100,6 +132,59 @@ export default function ItemDetail() {
   }, [user, itemId])
 
   const isOwner = Boolean(user) && item?.owner?.id === user.id
+
+  const isCurrentlyRented = useMemo(() => {
+    const todayIso = toISODate(new Date())
+    return bookedRanges.some(
+      (r) => (r.status === 'confirmed' || r.status === 'active') && todayIso >= r.start_date && todayIso <= r.end_date
+    )
+  }, [bookedRanges])
+
+  const days = selectedRange.start && selectedRange.end ? rentalDays(selectedRange.start, selectedRange.end) : 0
+  const subtotal = item ? Number(item.price_per_day) * days : 0
+  const fee = calculatePlatformFee(subtotal, Boolean(item?.owner?.is_premium))
+
+  function handleStartBooking() {
+    if (!user) {
+      navigate('/login', { state: { from: { pathname: `/item/${itemId}` } } })
+      return
+    }
+    setBookingStatus({ type: '', text: '' })
+    setShowBooking((v) => !v)
+  }
+
+  async function handleConfirmBooking() {
+    if (!selectedRange.start || !selectedRange.end || !user) return
+    setBooking(true)
+    setBookingStatus({ type: '', text: '' })
+
+    const { error } = await supabase.from('reservations').insert({
+      item_id: itemId,
+      renter_id: user.id,
+      start_date: toISODate(selectedRange.start),
+      end_date: toISODate(selectedRange.end),
+      status: 'confirmed',
+      total_price: subtotal,
+    })
+
+    setBooking(false)
+
+    if (error) {
+      const overlapping = error.code === '23P01' || error.message?.toLowerCase().includes('exclu')
+      setBookingStatus({
+        type: 'error',
+        text: overlapping
+          ? 'Those dates were just booked by someone else. Please pick different dates.'
+          : 'Could not complete the booking. Please try again.',
+      })
+      await loadBookedRanges()
+      return
+    }
+
+    setBookingStatus({ type: 'success', text: 'Booking confirmed! (Sandbox — no real charge was processed.)' })
+    setSelectedRange({ start: null, end: null })
+    await loadBookedRanges()
+  }
 
   async function handleToggleFavorite() {
     if (!user) {
@@ -274,6 +359,11 @@ export default function ItemDetail() {
                     Unavailable
                   </span>
                 )}
+                {isCurrentlyRented && (
+                  <span className="ml-2 rounded-full bg-lavender/15 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-deep-purple">
+                    Currently rented
+                  </span>
+                )}
               </div>
               <h1 className="mt-1.5 font-display text-2xl font-bold text-jet-black">{item.title}</h1>
 
@@ -281,6 +371,12 @@ export default function ItemDetail() {
                 ${item.price_per_day}
                 <span className="font-body text-sm font-normal text-jet-black/45"> / day</span>
               </p>
+
+              {Number(item.original_price_per_day) !== Number(item.price_per_day) && (
+                <p className="mt-0.5 text-xs text-jet-black/40">
+                  Listed at ${item.original_price_per_day}/day originally
+                </p>
+              )}
 
               {Number(item.deposit_amount) > 0 && (
                 <p className="mt-1 text-xs text-jet-black/45">
@@ -331,6 +427,80 @@ export default function ItemDetail() {
                   <MessageCircle className="h-4 w-4" />
                   {messaging ? 'Starting conversation…' : `Message ${item.owner?.full_name?.split(' ')[0] ?? 'lender'}`}
                 </button>
+              )}
+
+              {!isOwner && (
+                <div className="mt-3">
+                  {!showBooking ? (
+                    <button
+                      type="button"
+                      onClick={handleStartBooking}
+                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-deep-purple to-lavender px-4 py-2.5 text-sm font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)] transition hover:brightness-105"
+                    >
+                      <CalendarDays className="h-4 w-4" />
+                      Rent
+                    </button>
+                  ) : (
+                    <div className="space-y-3 rounded-2xl border border-lavender/15 bg-white p-4">
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-semibold text-jet-black">Pick your dates</p>
+                        <button
+                          type="button"
+                          onClick={() => setShowBooking(false)}
+                          className="text-xs font-semibold text-jet-black/50 hover:text-deep-purple"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+
+                      <AvailabilityCalendar
+                        bookedRanges={bookedRanges}
+                        selectedRange={selectedRange}
+                        onSelectRange={setSelectedRange}
+                      />
+
+                      {days > 0 && (
+                        <div className="space-y-1.5 rounded-xl bg-jet-black/5 p-3 text-xs">
+                          <div className="flex items-center justify-between text-jet-black/70">
+                            <span>
+                              ${item.price_per_day} × {days} day{days > 1 ? 's' : ''}
+                            </span>
+                            <span className="font-mono font-semibold">${subtotal.toFixed(2)}</span>
+                          </div>
+                          <div className="flex items-start gap-1.5 border-t border-jet-black/10 pt-1.5 text-jet-black/50">
+                            <Lock className="mt-0.5 h-3 w-3 shrink-0" />
+                            <span>
+                              {fee.rate > 0
+                                ? `Lendrop's ${Math.round(fee.rate * 100)}% service fee ($${fee.feeAmount.toFixed(2)}) is deducted from the lender's payout once this payment is processed — you still pay $${subtotal.toFixed(2)}.`
+                                : `${item.owner?.full_name?.split(' ')[0] ?? 'This lender'} is Premium — Lendrop charges no service fee on this rental.`}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+
+                      <StatusMessage type={bookingStatus.type} text={bookingStatus.text} />
+
+                      <button
+                        type="button"
+                        onClick={handleConfirmBooking}
+                        disabled={!selectedRange.end || booking}
+                        className="w-full rounded-xl bg-deep-purple px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-deep-purple/90 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        {booking ? 'Processing…' : 'Pay in Advance'}
+                      </button>
+                      <p className="text-center text-[11px] text-jet-black/40">
+                        Sandbox checkout — no real charge is made yet.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {isOwner && (
+                <div className="mt-6">
+                  <h2 className="mb-2 font-display text-sm font-semibold text-jet-black">Your booking calendar</h2>
+                  <AvailabilityCalendar bookedRanges={bookedRanges} readOnly />
+                </div>
               )}
 
               <div className="mt-6">

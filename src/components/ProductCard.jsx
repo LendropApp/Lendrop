@@ -10,7 +10,7 @@ export function coverUrlFor(photos) {
   return supabase.storage.from('item-photos').getPublicUrl(cover.storage_path).data.publicUrl
 }
 
-export default function ProductCard({ item, isOwner, isFavorited, onDelete, onToggleFavorite }) {
+export default function ProductCard({ item, isOwner, isFavorited, isCurrentlyRented, onDelete, onToggleFavorite }) {
   const coverUrl = coverUrlFor(item.photos)
   const hasReviews = (item.owner?.total_reviews ?? 0) > 0
 
@@ -54,6 +54,12 @@ export default function ProductCard({ item, isOwner, isFavorited, onDelete, onTo
           />
         )}
         <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-jet-black/5 transition group-hover:ring-lavender/50" />
+
+        {isCurrentlyRented && (
+          <span className="absolute left-2.5 top-2.5 rounded-full bg-jet-black/70 px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-soft-white backdrop-blur">
+            Currently rented
+          </span>
+        )}
 
         {isOwner ? (
           <button

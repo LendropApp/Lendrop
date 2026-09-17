@@ -44,6 +44,7 @@ export default function TermsOfService() {
         <ul className="list-disc space-y-1.5 pl-5">
           <li>Lenders must accurately describe an item's condition, features, and price.</li>
           <li>Lenders must only list items they legally own or have explicit permission to rent out.</li>
+          <li>An item's availability is determined by the app from actual confirmed reservations, not by a lender's manual claim — once a date range is booked, it cannot be booked again for the same item, and a "Currently rented" status is shown automatically while a rental is in progress.</li>
           <li>Renters must return items in the condition they received them, normal wear excepted.</li>
           <li>Every drop-off and pickup is documented with photo evidence, timestamped and tied to both parties' accounts, to protect both sides in a dispute.</li>
         </ul>
@@ -58,13 +59,19 @@ export default function TermsOfService() {
         </p>
       </Section>
 
-      <Section title="6. Payments and security deposits">
+      <Section title="6. Payments, service fees, and security deposits">
         <p>
-          Rental fees are charged through the app at the time of booking. Certain items require a
-          refundable security deposit, held until the item is returned and confirmed to be in the
-          agreed-upon condition. If photo evidence shows damage the renter is responsible for, the
-          deposit may be withheld in part or in full to cover the cost, and the matter can be
-          escalated as a dispute.
+          Rental fees are charged through the app at the time of booking ("Pay in Advance"),
+          before pickup. Certain items require a refundable security deposit, held until the item
+          is returned and confirmed to be in the agreed-upon condition. If photo evidence shows
+          damage the renter is responsible for, the deposit may be withheld in part or in full to
+          cover the cost, and the matter can be escalated as a dispute.
+        </p>
+        <p>
+          Lendrop charges lenders a service fee, deducted from their payout once a rental's
+          payment is processed, based on the value of the transaction: 5% for transactions up to
+          $100, 10% for transactions up to $300, and 15% for transactions between $300 and the
+          platform's maximum of $700. Lendrop Premium lenders pay no service fee.
         </p>
       </Section>
 

@@ -20,7 +20,7 @@ export default function IntroStep({ onNext }) {
         Become a LENDROP host
       </h1>
  
-      <p className="text-gray-600 text-base leading-relaxed mb-8">
+      <p className="text-jet-black/60 text-base leading-relaxed mb-8">
         Before you can list your items, we need a few details about you and
         your location. We'll ask for them in short steps to keep it quick.
       </p>
@@ -31,7 +31,7 @@ export default function IntroStep({ onNext }) {
             <span className="mt-0.5 shrink-0 w-8 h-8 rounded-full bg-lavender/20 flex items-center justify-center">
               <Icon className="w-4 h-4 text-deep-purple" strokeWidth={2} />
             </span>
-            <span className="text-sm text-gray-700 leading-relaxed">{text}</span>
+            <span className="text-sm text-jet-black/70 leading-relaxed">{text}</span>
           </li>
         ))}
       </ul>

@@ -69,7 +69,7 @@ export default function OwnerDeliveryReturn() {
             Owner Delivery
           </h1>
 
-          <p className="mt-2 text-gray-600">
+          <p className="mt-2 text-jet-black/60">
             Follow these steps to safely deposit your item in the locker.
           </p>
         </div>
@@ -121,7 +121,7 @@ export default function OwnerDeliveryReturn() {
                   Go to the Locker
                 </h3>
 
-                <p className="text-gray-600">
+                <p className="text-jet-black/60">
                   Locate the locker selected by the renter.
                 </p>
               </div>
@@ -141,7 +141,7 @@ export default function OwnerDeliveryReturn() {
                   Enter the Code
                 </h3>
 
-                <p className="text-gray-600">
+                <p className="text-jet-black/60">
                   Use the access code shown above to unlock the compartment.
                 </p>
               </div>
@@ -161,7 +161,7 @@ export default function OwnerDeliveryReturn() {
                   Deposit the Item
                 </h3>
 
-                <p className="text-gray-600">
+                <p className="text-jet-black/60">
                   Place the item inside and close the locker securely.
                 </p>
               </div>

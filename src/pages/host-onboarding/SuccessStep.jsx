@@ -16,7 +16,7 @@ export default function SuccessStep() {
       <h1 className="font-display text-2xl sm:text-3xl text-deep-purple leading-snug mb-3">
         You're a Lendrop host now
       </h1>
-      <p className="text-gray-600 text-sm leading-relaxed mb-10">
+      <p className="text-jet-black/60 text-sm leading-relaxed mb-10">
         You can start listing items for other people to rent. Publish your first one to get it in front of renters.
       </p>
 

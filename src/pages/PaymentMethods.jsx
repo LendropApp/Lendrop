@@ -117,7 +117,7 @@ export default function PaymentMethods() {
         <div className="relative mx-auto max-w-3xl px-6 py-8 sm:px-10">
           <h1 className="font-display text-2xl font-bold text-jet-black">Payment methods</h1>
           <p className="mt-1 text-sm text-jet-black/50">
-            Saved cards are stored as brand, last 4 digits, and expiry only — never the full card number.
+            Saved cards are stored as brand, last 4 digits, and expiry only, never the full card number.
           </p>
 
           {error && <p className="mt-4 text-sm text-red-600">{error}</p>}

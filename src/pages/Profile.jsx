@@ -22,7 +22,7 @@ import ProfileCompletion from '../components/ProfileCompletion'
 import AuroraBlobs from '../components/background/AuroraBlobs'
 
 const ACCOUNT_MENU = [
-  { to: '/messages', icon: MessageCircle, label: 'Messages', desc: 'Coordinate pickups and drop-offs' },
+  { to: '/messages', icon: MessageCircle, label: 'Messages', desc: 'Coordinate pickups and drop offs' },
   { to: '/history', icon: Package, label: 'Activity', desc: 'Your rentals and lendings history' },
   { to: '/verification', icon: ShieldCheck, label: 'Trust & verification', desc: 'Verify your identity' },
   { to: '/payment-methods', icon: CreditCard, label: 'Payment methods', desc: 'Manage saved cards' },

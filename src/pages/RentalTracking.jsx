@@ -83,7 +83,7 @@ export default function RentalTracking() {
             Active Rental Tracking
           </h1>
 
-          <p className="text-gray-600">
+          <p className="text-jet-black/60">
             Track the current status of your rental.
           </p>
         </div>
@@ -99,7 +99,7 @@ export default function RentalTracking() {
           <div className="relative flex items-center justify-between">
 
             {/* Progress Line */}
-            <div className="absolute left-0 top-5 h-1 w-full bg-gray-200">
+            <div className="absolute left-0 top-5 h-1 w-full bg-jet-black/10">
               <div
                 className="h-full bg-[#433075]"
                 style={{
@@ -121,7 +121,7 @@ export default function RentalTracking() {
                       ? "border-[#433075] bg-[#433075] text-white"
                       : index === currentStep
                       ? "border-[#433075] bg-[#a58cf4] text-white"
-                      : "border-gray-300 bg-white text-gray-400"
+                      : "border-jet-black/25 bg-white text-jet-black/40"
                   }`}
                 >
                   {index + 1}
@@ -131,7 +131,7 @@ export default function RentalTracking() {
                   className={`mt-3 text-sm ${
                     index === currentStep
                       ? "font-semibold text-[#433075]"
-                      : "text-gray-500"
+                      : "text-jet-black/50"
                   }`}
                 >
                   {step}
@@ -145,7 +145,7 @@ export default function RentalTracking() {
           {/* Current Stage */}
           <div className="mt-8 rounded-xl border border-[#a58cf4] bg-[#fafafa] p-4">
 
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-jet-black/50">
               Current Stage
             </p>
 
@@ -168,7 +168,7 @@ export default function RentalTracking() {
 
             {/* Status */}
             <div>
-              <p className="text-gray-500">
+              <p className="text-jet-black/50">
                 Current Status
               </p>
 
@@ -179,7 +179,7 @@ export default function RentalTracking() {
 
             {/* Locker */}
             <div>
-              <p className="text-gray-500">
+              <p className="text-jet-black/50">
                 Locker Code
               </p>
 
@@ -190,7 +190,7 @@ export default function RentalTracking() {
 
             {/* Time */}
             <div>
-              <p className="text-gray-500">
+              <p className="text-jet-black/50">
                 Time Remaining
               </p>
 
@@ -210,7 +210,7 @@ export default function RentalTracking() {
             Need Help?
           </h2>
 
-          <p className="mb-4 text-gray-600">
+          <p className="mb-4 text-jet-black/60">
             Contact support if you have any issues with your rental.
           </p>
 

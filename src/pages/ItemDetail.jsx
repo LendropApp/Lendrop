@@ -181,7 +181,7 @@ export default function ItemDetail() {
       return
     }
 
-    setBookingStatus({ type: 'success', text: 'Booking confirmed! (Sandbox — no real charge was processed.)' })
+    setBookingStatus({ type: 'success', text: 'Booking confirmed! (Sandbox: no real charge was processed.)' })
     setSelectedRange({ start: null, end: null })
     await loadBookedRanges()
   }
@@ -471,8 +471,8 @@ export default function ItemDetail() {
                             <Lock className="mt-0.5 h-3 w-3 shrink-0" />
                             <span>
                               {fee.rate > 0
-                                ? `Lendrop's ${Math.round(fee.rate * 100)}% service fee ($${fee.feeAmount.toFixed(2)}) is deducted from the lender's payout once this payment is processed — you still pay $${subtotal.toFixed(2)}.`
-                                : `${item.owner?.full_name?.split(' ')[0] ?? 'This lender'} is Premium — Lendrop charges no service fee on this rental.`}
+                                ? `Lendrop's ${Math.round(fee.rate * 100)}% service fee ($${fee.feeAmount.toFixed(2)}) is deducted from the lender's payout once this payment is processed. You still pay $${subtotal.toFixed(2)}.`
+                                : `${item.owner?.full_name?.split(' ')[0] ?? 'This lender'} is Premium, so Lendrop charges no service fee on this rental.`}
                             </span>
                           </div>
                         </div>
@@ -489,7 +489,7 @@ export default function ItemDetail() {
                         {booking ? 'Processing…' : 'Pay in Advance'}
                       </button>
                       <p className="text-center text-[11px] text-jet-black/40">
-                        Sandbox checkout — no real charge is made yet.
+                        Sandbox checkout: no real charge is made yet.
                       </p>
                     </div>
                   )}

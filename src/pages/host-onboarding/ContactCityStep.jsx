@@ -96,13 +96,13 @@ export default function ContactCityStep({ record, onNext, onBack }) {
       <h1 className="font-display text-2xl sm:text-3xl text-deep-purple leading-snug mb-2">
         Tell us how to reach you
       </h1>
-      <p className="text-gray-600 text-sm leading-relaxed mb-8">
+      <p className="text-jet-black/60 text-sm leading-relaxed mb-8">
         We use your phone number to confirm bookings and updates about your items.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label htmlFor="phone" className="block text-sm font-medium text-jet-black/70 mb-1.5">
             Phone number
           </label>
           <div
@@ -110,7 +110,7 @@ export default function ContactCityStep({ record, onNext, onBack }) {
               errors.phone ? "border-red-400" : "border-lavender/40"
             }`}
           >
-            <span className="pl-4 pr-2 py-3 text-base text-gray-500 border-r border-lavender/40 select-none">
+            <span className="pl-4 pr-2 py-3 text-base text-jet-black/50 border-r border-lavender/40 select-none">
               +503
             </span>
             <input
@@ -120,21 +120,21 @@ export default function ContactCityStep({ record, onNext, onBack }) {
               onChange={handlePhoneChange}
               autoComplete="tel"
               placeholder="0000-0000"
-              className="flex-1 min-w-0 px-3 py-3 text-base text-gray-900 placeholder:text-gray-400 bg-transparent focus:outline-none rounded-r-xl"
+              className="flex-1 min-w-0 px-3 py-3 text-base text-jet-black placeholder:text-jet-black/40 bg-transparent focus:outline-none rounded-r-xl"
             />
           </div>
           {errors.phone && <p className="text-xs text-red-500 mt-1.5">{errors.phone}</p>}
         </div>
 
         <div>
-          <label htmlFor="zone" className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label htmlFor="zone" className="block text-sm font-medium text-jet-black/70 mb-1.5">
             Department
           </label>
           <select
             id="zone"
             value={form.zone}
             onChange={handleDepartmentChange}
-            className={`w-full rounded-xl border px-4 py-3 text-base text-gray-900 bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-deep-purple ${
+            className={`w-full rounded-xl border px-4 py-3 text-base text-jet-black bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-deep-purple ${
               errors.zone ? "border-red-400" : "border-lavender/40"
             }`}
           >
@@ -147,7 +147,7 @@ export default function ContactCityStep({ record, onNext, onBack }) {
         </div>
 
         <div>
-          <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label htmlFor="city" className="block text-sm font-medium text-jet-black/70 mb-1.5">
             City
           </label>
           <select
@@ -155,7 +155,7 @@ export default function ContactCityStep({ record, onNext, onBack }) {
             value={form.city}
             onChange={handleCityChange}
             disabled={!form.zone}
-            className={`w-full rounded-xl border px-4 py-3 text-base text-gray-900 bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-deep-purple disabled:bg-gray-50 disabled:text-gray-400 ${
+            className={`w-full rounded-xl border px-4 py-3 text-base text-jet-black bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-deep-purple disabled:bg-jet-black/5 disabled:text-jet-black/40 ${
               errors.city ? "border-red-400" : "border-lavender/40"
             }`}
           >

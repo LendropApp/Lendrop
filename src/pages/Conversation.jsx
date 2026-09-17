@@ -106,7 +106,7 @@ export default function Conversation() {
       <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-3 overflow-y-auto px-6 py-6 sm:px-10">
         {messages.length === 0 ? (
           <p className="py-10 text-center text-sm text-jet-black/40">
-            No messages yet — send a quick reply to say hi.
+            No messages yet. Send a quick reply to say hi.
           </p>
         ) : (
           messages.map((m) => (
@@ -131,7 +131,7 @@ export default function Conversation() {
       <div className="sticky bottom-0 border-t border-jet-black/5 bg-white px-6 py-4 sm:px-10">
         <div className="mx-auto max-w-3xl">
           <p className="mb-2 text-xs font-medium text-jet-black/45">
-            Quick replies — free text isn't available yet, tap a message to send it.
+            Quick replies. Free text isn't available yet, tap a message to send it.
           </p>
           <div className="mb-3 flex gap-2 overflow-x-auto">
             {QUICK_MESSAGE_GROUPS.map((g) => (

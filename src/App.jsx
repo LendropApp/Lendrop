@@ -1,8 +1,10 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { AuthProvider } from './context/AuthContext'
-import ProtectedRoute from './components/ProtectedRoute'
-import HostRoute from './components/HostRoute'
-import HostOnboardingWizard from './pages/host-onboarding/HostOnboardingWizard';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
+import HostRoute from "./components/HostRoute";
+
+import HostOnboardingWizard from "./pages/host-onboarding/HostOnboardingWizard";
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -21,6 +23,9 @@ import EditProfile from "./pages/EditProfile";
 import RentalTracking from "./pages/RentalTracking";
 import OwnerDeliveryReturn from "./pages/ownerdelivery";
 import EarningsDashboard from "./pages/earningdashboard";
+import LockerCoverage from "./pages/locker-coverage";
+import Categories from "./pages/categories";
+
 import Messages from "./pages/Messages";
 import Notifications from "./pages/Notifications";
 import Conversation from "./pages/Conversation";
@@ -34,6 +39,7 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
+
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -63,43 +69,32 @@ export default function App() {
           />
 
           <Route
+            path="/locker-coverage"
+            element={<LockerCoverage />}
+          />
+
+          <Route
+            path="/categories"
+            element={<Categories />}
+          />
+
+          <Route
+            path="/help"
+            element={<RentalTracking />}
+          />
+
+          <Route
             path="/become-host"
             element={<BecomeHostEntry />}
           />
 
           {/* Protected Routes */}
+
           <Route
             path="/dashboard"
             element={
               <ProtectedRoute>
                 <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/become-host/onboarding"
-            element={
-              <ProtectedRoute>
-                <HostOnboardingWizard />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/publish"
-            element={
-              <HostRoute>
-                <PublishItem />
-              </HostRoute>
-            }
-          />
-
-          <Route
-            path="/favorites"
-            element={
-              <ProtectedRoute>
-                <Favorites />
               </ProtectedRoute>
             }
           />
@@ -118,6 +113,15 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <EditProfile />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/favorites"
+            element={
+              <ProtectedRoute>
+                <Favorites />
               </ProtectedRoute>
             }
           />
@@ -185,11 +189,30 @@ export default function App() {
             }
           />
 
+          <Route
+            path="/become-host/onboarding"
+            element={
+              <ProtectedRoute>
+                <HostOnboardingWizard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/publish"
+            element={
+              <HostRoute>
+                <PublishItem />
+              </HostRoute>
+            }
+          />
+
           {/* Fallback */}
           <Route
             path="*"
             element={<Navigate to="/" replace />}
           />
+
         </Routes>
       </AuthProvider>
     </BrowserRouter>

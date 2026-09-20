@@ -180,12 +180,18 @@ export default function ItemDetail() {
     setBooking(true)
     setBookingStatus({ type: '', text: '' })
 
-    const { data, error } = await supabase.functions.invoke('wompi-create-payment-link', {
-      body: {
-        itemId,
-        startDate: toISODate(selectedRange.start),
-        endDate: toISODate(selectedRange.end),
-      },
+    // Simulated payment: no real gateway is involved yet, so the
+    // reservation is confirmed immediately instead of going through a
+    // checkout redirect + webhook (see PaymentProvider in
+    // PLAN_MVP_70.md Fase 4 — swap this for a real provider later
+    // without touching the rest of the booking flow).
+    const { error } = await supabase.from('reservations').insert({
+      item_id: itemId,
+      renter_id: user.id,
+      start_date: toISODate(selectedRange.start),
+      end_date: toISODate(selectedRange.end),
+      status: 'confirmed',
+      total_price: subtotal,
     })
 
     setBooking(false)
@@ -202,13 +208,9 @@ export default function ItemDetail() {
       return
     }
 
-    if (error || !data?.paymentUrl) {
-      setBookingStatus({ type: 'error', text: error?.message ?? 'Could not start the payment. Please try again.' })
-      setBooking(false)
-      return
-    }
-
-    window.location.assign(data.paymentUrl)
+    setBookingStatus({ type: 'success', text: 'Booking confirmed! (Simulated: no real payment was processed.)' })
+    setSelectedRange({ start: null, end: null })
+    await loadBookedRanges()
   }
 
   async function handleToggleFavorite() {

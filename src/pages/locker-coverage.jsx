@@ -1,35 +1,27 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MapPin, ChevronRight, Check } from "lucide-react";
+import { supabase } from "../lib/supabaseClient";
 
 export default function LockerCoverage() {
   const [selectedLockers, setSelectedLockers] = useState([]);
+  const [lockers, setLockers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const lockers = [
-    {
-      id: 1,
-      name: "San Salvador Centro",
-      address: "Avenida España, San Salvador",
-      distance: "1.2 km",
-    },
-    {
-      id: 2,
-      name: "Santa Tecla",
-      address: "Centro Comercial Las Palmas",
-      distance: "3.5 km",
-    },
-    {
-      id: 3,
-      name: "Soyapango",
-      address: "Plaza Mundo Soyapango",
-      distance: "5.8 km",
-    },
-    {
-      id: 4,
-      name: "Apopa",
-      address: "Centro Urbano Apopa",
-      distance: "7.1 km",
-    },
-  ];
+  useEffect(() => {
+    let cancelled = false;
+    supabase
+      .from("lockers")
+      .select("id, name, address, city")
+      .eq("is_active", true)
+      .order("name")
+      .then(({ data }) => {
+        if (!cancelled) setLockers(data ?? []);
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const toggleLocker = (id) => {
     setSelectedLockers((prev) =>
@@ -113,6 +105,11 @@ export default function LockerCoverage() {
           </div>
 
           {/* Locker Grid */}
+          {loading ? (
+            <p className="text-sm text-[#0d0d0d]/40">Loading lockers…</p>
+          ) : lockers.length === 0 ? (
+            <p className="text-sm text-[#0d0d0d]/40">No lockers are set up yet.</p>
+          ) : (
           <div className="grid w-full gap-6 md:grid-cols-2">
             {lockers.map((locker) => {
               const isSelected = selectedLockers.includes(locker.id);
@@ -153,7 +150,7 @@ export default function LockerCoverage() {
                           className="mt-1 text-xs font-semibold text-[#a58cf4]"
                           style={{ fontFamily: "JetBrains Mono, monospace" }}
                         >
-                          {locker.distance}
+                          {locker.city}
                         </p>
                       </div>
                     </div>
@@ -177,6 +174,7 @@ export default function LockerCoverage() {
               );
             })}
           </div>
+          )}
 
           {/* Selected Summary */}
           <div

@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Heart, Star, Trash2 } from 'lucide-react'
-import { supabase } from '../lib/supabaseClient'
+import { getItemPhotoUrl } from '../lib/photos'
 import LockerAvatar from './LockerAvatar'
 
 export function coverUrlFor(photos) {
   if (!photos?.length) return null
   const [cover] = [...photos].sort((a, b) => a.display_order - b.display_order)
-  return supabase.storage.from('item-photos').getPublicUrl(cover.storage_path).data.publicUrl
+  return getItemPhotoUrl(cover.storage_path)
 }
 
 export default function ProductCard({ item, isOwner, isFavorited, isCurrentlyRented, onDelete, onToggleFavorite }) {

@@ -4,6 +4,7 @@ import { ArrowLeft, CalendarDays, Heart, Lock, MapPin, MessageCircle, ShieldChec
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import { getCategoryIcon } from '../lib/categoryIcons'
+import { getItemPhotoUrl } from '../lib/photos'
 import LockerAvatar from '../components/LockerAvatar'
 import StarRating from '../components/StarRating'
 import StatusMessage from '../components/StatusMessage'
@@ -11,7 +12,7 @@ import AvailabilityCalendar from '../components/AvailabilityCalendar'
 import AuroraBlobs from '../components/background/AuroraBlobs'
 
 function photoUrl(photo) {
-  return supabase.storage.from('item-photos').getPublicUrl(photo.storage_path).data.publicUrl
+  return getItemPhotoUrl(photo.storage_path)
 }
 
 function toISODate(date) {

@@ -1,3 +1,13 @@
+## Wompi El Salvador
+
+El checkout usa `EnlacePago` de Wompi. La integración vive en Supabase Edge Functions para que el `client_secret` nunca llegue al navegador.
+
+1. Ejecuta `supabase/migrations/0010_wompi_checkout.sql` en el SQL Editor.
+2. Despliega las funciones `wompi-create-payment-link` y `wompi-webhook` desde el directorio `supabase/functions`.
+3. Configura estos secretos en Supabase: `WOMPI_CLIENT_ID`, `WOMPI_CLIENT_SECRET`, `APP_URL` y `SUPABASE_FUNCTIONS_URL`.
+4. En el panel de Wompi registra el webhook que usa la función `wompi-webhook`.
+
+Wompi autentica el API con OAuth 2.0 (`client_id` + `client_secret`), no con una clave pública para el frontend. Las reservas se crean como `pending` y solo el webhook con `ResultadoTransaccion = ExitosaAprobada` las confirma.
 # Lendrop 
 
 Clean template to start the repo fresh. Comes with: the public marketing

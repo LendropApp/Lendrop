@@ -32,6 +32,7 @@ import Conversation from "./pages/Conversation";
 import History from "./pages/History";
 import Verification from "./pages/Verification";
 import PaymentMethods from "./pages/PaymentMethods";
+import PaymentReturn from "./pages/PaymentReturn";
 import Premium from "./pages/Premium";
 
 export default function App() {
@@ -48,6 +49,7 @@ export default function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/item/:itemId" element={<ItemDetail />} />
+          <Route path="/payment-return" element={<PaymentReturn />} />
 
           <Route
             path="/rental-tracking"

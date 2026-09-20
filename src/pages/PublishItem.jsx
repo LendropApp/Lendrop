@@ -28,7 +28,7 @@ export default function PublishItem() {
   const [description, setDescription] = useState('')
   const [condition, setCondition] = useState('good')
   const [pricePerDay, setPricePerDay] = useState('')
-  const [depositAmount, setDepositAmount] = useState('')
+  const [declaredValue, setDeclaredValue] = useState('')
   const [locationCity, setLocationCity] = useState('San Salvador')
   const [status, setStatus] = useState({ type: '', text: '' })
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -121,7 +121,7 @@ export default function PublishItem() {
         description: description.trim(),
         condition,
         price_per_day: price,
-        deposit_amount: Number(depositAmount) || 0,
+        declared_value: Number(declaredValue) || 0,
         currency: 'USD',
         location_city: locationCity.trim() || 'San Salvador',
       })
@@ -404,22 +404,25 @@ export default function PublishItem() {
           </div>
 
           <div>
-            <label htmlFor="depositAmount" className="mb-1 block text-sm font-medium text-jet-black">
-              Deposit <span className="font-normal text-jet-black/40">(optional)</span>
+            <label htmlFor="declaredValue" className="mb-1 block text-sm font-medium text-jet-black">
+              Declared value <span className="font-normal text-jet-black/40">(what it costs to replace)</span>
             </label>
             <div className="flex items-center rounded-xl border border-lavender/15 px-4 py-2.5 transition focus-within:border-lavender focus-within:ring-2 focus-within:ring-lavender/30">
               <span className="font-mono text-sm text-jet-black/40">$</span>
               <input
-                id="depositAmount"
+                id="declaredValue"
                 type="number"
                 min="0"
                 step="0.01"
-                value={depositAmount}
-                onChange={(e) => setDepositAmount(e.target.value)}
+                value={declaredValue}
+                onChange={(e) => setDeclaredValue(e.target.value)}
                 placeholder="0.00"
                 className="w-full bg-transparent pl-1.5 font-mono text-sm outline-none"
               />
             </div>
+            <p className="mt-1 text-xs text-jet-black/40">
+              Used to set the renter's refundable damage-liability hold (35% of this, capped by category).
+            </p>
           </div>
         </section>
 

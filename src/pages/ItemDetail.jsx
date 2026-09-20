@@ -4,7 +4,6 @@ import { ArrowLeft, CalendarDays, Heart, Lock, MapPin, MessageCircle, ShieldChec
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import { getCategoryIcon } from '../lib/categoryIcons'
-import { calculatePlatformFee } from '../lib/fees'
 import LockerAvatar from '../components/LockerAvatar'
 import StarRating from '../components/StarRating'
 import StatusMessage from '../components/StatusMessage'
@@ -58,12 +57,14 @@ export default function ItemDetail() {
   const [selectedRange, setSelectedRange] = useState({ start: null, end: null })
   const [booking, setBooking] = useState(false)
   const [bookingStatus, setBookingStatus] = useState({ type: '', text: '' })
+  const [breakdown, setBreakdown] = useState(null)
+  const [breakdownLoading, setBreakdownLoading] = useState(false)
 
   const loadItem = useCallback(async () => {
     const { data, error } = await supabase
       .from('items')
       .select(`
-        id, title, description, price_per_day, original_price_per_day, deposit_amount, location_city, is_available, condition, created_at,
+        id, title, description, price_per_day, original_price_per_day, declared_value, location_city, is_available, condition, created_at,
         category:categories(id, name, slug),
         photos:item_photos(id, storage_path, display_order),
         owner:profiles!items_owner_id_fkey(id, full_name, avatar_url, bio, verification_status, average_rating, total_reviews, is_premium)
@@ -163,8 +164,31 @@ export default function ItemDetail() {
   }, [bookedRanges])
 
   const days = selectedRange.start && selectedRange.end ? rentalDays(selectedRange.start, selectedRange.end) : 0
-  const subtotal = item ? Number(item.price_per_day) * days : 0
-  const fee = calculatePlatformFee(subtotal, Boolean(item?.owner?.is_premium))
+
+  useEffect(() => {
+    if (!item || days <= 0) {
+      setBreakdown(null)
+      return
+    }
+    let cancelled = false
+    setBreakdownLoading(true)
+    supabase
+      .rpc('calculate_pricing_breakdown', {
+        p_price_per_day: item.price_per_day,
+        p_days: days,
+        p_declared_value: item.declared_value,
+        p_category_id: item.category?.id,
+        p_is_premium: Boolean(item.owner?.is_premium),
+      })
+      .then(({ data, error }) => {
+        if (cancelled) return
+        setBreakdown(error ? null : data?.[0] ?? null)
+        setBreakdownLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [item, days])
 
   function handleStartBooking() {
     if (!user) {
@@ -185,13 +209,16 @@ export default function ItemDetail() {
     // checkout redirect + webhook (see PaymentProvider in
     // PLAN_MVP_70.md Fase 4 — swap this for a real provider later
     // without touching the rest of the booking flow).
-    const { error } = await supabase.from('reservations').insert({
-      item_id: itemId,
-      renter_id: user.id,
-      start_date: toISODate(selectedRange.start),
-      end_date: toISODate(selectedRange.end),
-      status: 'confirmed',
-      total_price: subtotal,
+    //
+    // Price/fee/damage-liability amounts are never sent from the
+    // client — create_simulated_reservation recomputes all of them
+    // server-side via calculate_pricing_breakdown before writing
+    // anything, so a tampered request can't under-pay or dodge the
+    // damage-liability hold.
+    const { error } = await supabase.rpc('create_simulated_reservation', {
+      p_item_id: itemId,
+      p_start_date: toISODate(selectedRange.start),
+      p_end_date: toISODate(selectedRange.end),
     })
 
     setBooking(false)
@@ -409,9 +436,9 @@ export default function ItemDetail() {
                 </p>
               )}
 
-              {Number(item.deposit_amount) > 0 && (
+              {Number(item.declared_value) > 0 && (
                 <p className="mt-1 text-xs text-jet-black/45">
-                  + ${item.deposit_amount} refundable deposit
+                  Backed by a refundable damage-liability hold — see breakdown when booking
                 </p>
               )}
 
@@ -490,20 +517,41 @@ export default function ItemDetail() {
                         onSelectRange={setSelectedRange}
                       />
 
-                      {days > 0 && (
+                      {days > 0 && breakdownLoading && (
+                        <p className="text-xs text-jet-black/40">Calculating price breakdown…</p>
+                      )}
+
+                      {days > 0 && !breakdownLoading && breakdown && (
                         <div className="space-y-1.5 rounded-xl bg-jet-black/5 p-3 text-xs">
                           <div className="flex items-center justify-between text-jet-black/70">
                             <span>
                               ${item.price_per_day} × {days} day{days > 1 ? 's' : ''}
                             </span>
-                            <span className="font-mono font-semibold">${subtotal.toFixed(2)}</span>
+                            <span className="font-mono">${Number(breakdown.rental_subtotal).toFixed(2)}</span>
                           </div>
+                          <div className="flex items-center justify-between text-jet-black/70">
+                            <span>Protection fee (non-refundable)</span>
+                            <span className="font-mono">${Number(breakdown.protection_fee_amount).toFixed(2)}</span>
+                          </div>
+                          <div className="flex items-center justify-between border-t border-jet-black/10 pt-1.5 font-semibold text-jet-black">
+                            <span>Charged today</span>
+                            <span className="font-mono">${Number(breakdown.total_charged_today).toFixed(2)}</span>
+                          </div>
+
                           <div className="flex items-start gap-1.5 border-t border-jet-black/10 pt-1.5 text-jet-black/50">
                             <Lock className="mt-0.5 h-3 w-3 shrink-0" />
                             <span>
-                              {fee.rate > 0
-                                ? `Lendrop's ${Math.round(fee.rate * 100)}% service fee ($${fee.feeAmount.toFixed(2)}) is deducted from the lender's payout once this payment is processed. You still pay $${subtotal.toFixed(2)}.`
-                                : `${item.owner?.full_name?.split(' ')[0] ?? 'This lender'} is Premium, so Lendrop charges no service fee on this rental.`}
+                              {breakdown.commission_rate > 0
+                                ? `Lendrop's ${Math.round(breakdown.commission_rate * 100)}% commission ($${Number(breakdown.commission_amount).toFixed(2)}) is deducted from the lender's payout — it doesn't add to what you pay.`
+                                : `${item.owner?.full_name?.split(' ')[0] ?? 'This lender'} is Premium, so Lendrop charges no commission on this rental.`}
+                            </span>
+                          </div>
+
+                          <div className="flex items-start gap-1.5 text-jet-black/50">
+                            <ShieldCheck className="mt-0.5 h-3 w-3 shrink-0" />
+                            <span>
+                              ${Number(breakdown.damage_liability_amount).toFixed(2)} damage-liability hold (not charged now — refunded automatically if the item comes back with no damage
+                              {breakdown.damage_liability_cap_applied ? `; capped at $${Number(breakdown.damage_liability_cap_applied).toFixed(2)} for this category` : ''}).
                             </span>
                           </div>
                         </div>

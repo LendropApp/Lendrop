@@ -47,6 +47,7 @@ export default function ItemDetail() {
   const [myComment, setMyComment] = useState('')
   const [reviewStatus, setReviewStatus] = useState({ type: '', text: '' })
   const [submittingReview, setSubmittingReview] = useState(false)
+  const [hasRented, setHasRented] = useState(false)
 
   const [confirmingDelete, setConfirmingDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -101,6 +102,27 @@ export default function ItemDetail() {
   useEffect(() => {
     loadReviews()
   }, [loadReviews])
+
+  useEffect(() => {
+    if (!user) {
+      setHasRented(false)
+      return
+    }
+    let cancelled = false
+    supabase
+      .from('reservations')
+      .select('id')
+      .eq('item_id', itemId)
+      .eq('renter_id', user.id)
+      .in('status', ['confirmed', 'active', 'completed'])
+      .limit(1)
+      .then(({ data }) => {
+        if (!cancelled) setHasRented((data ?? []).length > 0)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [itemId, user])
 
   const loadBookedRanges = useCallback(async () => {
     const { data } = await supabase.rpc('get_item_booked_ranges', { p_item_id: itemId })
@@ -238,6 +260,10 @@ export default function ItemDetail() {
     }
     if (myRating < 1) {
       setReviewStatus({ type: 'error', text: 'Pick a star rating first.' })
+      return
+    }
+    if (!hasRented) {
+      setReviewStatus({ type: 'error', text: 'You can review this item after renting it.' })
       return
     }
     setSubmittingReview(true)
@@ -553,7 +579,7 @@ export default function ItemDetail() {
               Reviews {reviews.length > 0 && `(${reviews.length})`}
             </h2>
 
-            {!isOwner && (
+            {!isOwner && hasRented && (
               <form
                 onSubmit={handleSubmitReview}
                 className="mt-4 rounded-2xl border border-lavender/15 bg-white p-4"
@@ -578,6 +604,12 @@ export default function ItemDetail() {
                   </button>
                 </div>
               </form>
+            )}
+
+            {!isOwner && !hasRented && (
+              <p className="mt-4 rounded-2xl border border-jet-black/5 bg-jet-black/[0.02] p-4 text-sm text-jet-black/50">
+                {user ? 'You can leave a review once you have rented this item.' : 'Sign in and rent this item to leave a review.'}
+              </p>
             )}
 
             <div className="mt-6 space-y-4">

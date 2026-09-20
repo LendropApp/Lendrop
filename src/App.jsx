@@ -53,12 +53,20 @@ export default function App() {
 
           <Route
             path="/rental-tracking"
-            element={<RentalTracking />}
+            element={
+              <ProtectedRoute>
+                <RentalTracking />
+              </ProtectedRoute>
+            }
           />
 
           <Route
             path="/owner-delivery"
-            element={<OwnerDeliveryReturn />}
+            element={
+              <ProtectedRoute>
+                <OwnerDeliveryReturn />
+              </ProtectedRoute>
+            }
           />
 
           <Route

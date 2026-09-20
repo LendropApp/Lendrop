@@ -1,228 +1,255 @@
-export default function RentalTracking() {
-  const rental = {
-    status: "In Use",
-    lockerCode: "LKR-4582",
-    timeRemaining: "2 days 5 hours",
-  };
+import { useCallback, useEffect, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
+import { CheckCircle2, Clock3, Lock, MapPin } from 'lucide-react'
+import { useAuth } from '../context/AuthContext'
+import { supabase } from '../lib/supabaseClient'
+import PageHeader from '../components/PageHeader'
+import StatusMessage from '../components/StatusMessage'
+import AuroraBlobs from '../components/background/AuroraBlobs'
 
-  const steps = ["Reserved", "Delivered", "In Use", "Returned"];
-  const currentStep = 2;
+const STEPS = ['Reserved', 'Delivered', 'In Use']
+
+export default function RentalTracking() {
+  const { user } = useAuth()
+  const [searchParams] = useSearchParams()
+  const paramReservationId = searchParams.get('reservationId')
+
+  const [reservation, setReservation] = useState(null)
+  const [events, setEvents] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [notFound, setNotFound] = useState(false)
+
+  const [dui, setDui] = useState('')
+  const [password, setPassword] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [formStatus, setFormStatus] = useState({ type: '', text: '' })
+
+  const loadReservation = useCallback(async () => {
+    if (!user) {
+      setLoading(false)
+      setNotFound(true)
+      return
+    }
+    setLoading(true)
+
+    let reservationId = paramReservationId
+    if (!reservationId) {
+      const { data } = await supabase
+        .from('reservations')
+        .select('id')
+        .eq('renter_id', user.id)
+        .in('status', ['confirmed', 'active'])
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+      reservationId = data?.id ?? null
+    }
+
+    if (!reservationId) {
+      setReservation(null)
+      setNotFound(true)
+      setLoading(false)
+      return
+    }
+
+    const { data, error } = await supabase
+      .from('reservations')
+      .select(
+        `id, status, start_date, end_date, compartment_id,
+         item:items(title, owner:profiles!items_owner_id_fkey(full_name)),
+         compartment:locker_compartments(compartment_code, locker:lockers(name, address, city))`
+      )
+      .eq('id', reservationId)
+      .eq('renter_id', user.id)
+      .maybeSingle()
+
+    if (error || !data) {
+      setNotFound(true)
+      setLoading(false)
+      return
+    }
+
+    setReservation(data)
+
+    const { data: eventRows } = await supabase
+      .from('locker_events')
+      .select('event_type, occurred_at')
+      .eq('reservation_id', reservationId)
+      .order('occurred_at', { ascending: true })
+    setEvents(eventRows ?? [])
+    setLoading(false)
+  }, [user, paramReservationId])
+
+  useEffect(() => {
+    loadReservation()
+  }, [loadReservation])
+
+  async function handlePickup(e) {
+    e.preventDefault()
+    setSubmitting(true)
+    setFormStatus({ type: '', text: '' })
+
+    const { data, error } = await supabase.functions.invoke('locker-access', {
+      body: { reservationId: reservation.id, dui, password, action: 'pickup' },
+    })
+
+    setSubmitting(false)
+
+    if (error || data?.error) {
+      setFormStatus({ type: 'error', text: data?.error ?? 'Could not verify your identity. Please try again.' })
+      return
+    }
+
+    setDui('')
+    setPassword('')
+    setFormStatus({ type: 'success', text: 'Locker opened — enjoy your rental!' })
+    await loadReservation()
+  }
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-soft-white">
+        <p className="text-sm text-jet-black/50">Loading your rental…</p>
+      </div>
+    )
+  }
+
+  if (notFound || !reservation) {
+    return (
+      <div className="min-h-screen bg-soft-white pb-16">
+        <PageHeader backTo="/history" backLabel="Back to Activity" />
+        <div className="flex flex-col items-center gap-2 px-6 py-24 text-center">
+          <Clock3 className="h-8 w-8 text-jet-black/20" />
+          <p className="font-display text-lg font-semibold text-jet-black">No active rental right now</p>
+          <p className="text-sm text-jet-black/50">Once you book an item, track its pickup here.</p>
+          <Link to="/explore" className="mt-2 text-sm font-semibold text-deep-purple hover:text-lavender">
+            Browse Explore
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  const hasDeposited = events.some((e) => e.event_type === 'item_deposited')
+  const hasRetrieved = events.some((e) => e.event_type === 'item_retrieved')
+  const currentStep = hasRetrieved ? 2 : hasDeposited ? 1 : 0
+  const locker = reservation.compartment?.locker
 
   return (
-    <div className="min-h-screen bg-[#fafafa]">
+    <div className="min-h-screen bg-soft-white pb-16">
+      <PageHeader backTo="/history" backLabel="Back to Activity" />
 
-      {/* Navbar */}
-      <nav className="border-b border-black/10 bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-8 py-5">
+      <div className="relative isolate overflow-hidden">
+        <AuroraBlobs className="opacity-25" />
+        <div className="relative mx-auto max-w-2xl px-6 py-8 sm:px-10">
+          <h1 className="font-display text-2xl font-bold text-jet-black">{reservation.item?.title}</h1>
+          <p className="mt-1 text-sm text-jet-black/50">Lent by {reservation.item?.owner?.full_name ?? 'the lender'}</p>
 
-          {/* Logo */}
-          <div className="flex items-center">
-            <img
-              src="/logo-lendrop.png"
-              alt="Lendrop"
-              className="h-10 w-auto"
-            />
-          </div>
-
-          {/* Navigation */}
-          <div className="flex items-center gap-10 font-medium text-[#0d0d0d]">
-
-            <a
-              href="/"
-              className="transition hover:text-[#433075]"
-            >
-              Home
-            </a>
-
-            <a
-              href="/explore"
-              className="transition hover:text-[#433075]"
-            >
-              Explore
-            </a>
-
-            <a
-              href="/help"
-              className="transition hover:text-[#433075]"
-            >
-              Help
-            </a>
-
-            <a
-              href="/profile"
-              className="flex items-center gap-2 transition hover:text-[#433075]"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 12a4 4 0 100-8 4 4 0 000 8zm0 2c-4.418 0-8 1.79-8 4v2h16v-2c0-2.21-3.582-4-8-4z"
-                />
-              </svg>
-
-              <span>Profile</span>
-            </a>
-
-          </div>
-        </div>
-      </nav>
-
-      {/* Main */}
-      <main className="mx-auto max-w-4xl p-8">
-
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="mb-2 text-4xl font-bold text-[#433075]">
-            Active Rental Tracking
-          </h1>
-
-          <p className="text-jet-black/60">
-            Track the current status of your rental.
-          </p>
-        </div>
-
-        {/* Rental Status */}
-        <section className="mb-6 rounded-2xl bg-white p-6 shadow-sm">
-
-          <h2 className="mb-8 text-xl font-semibold text-[#433075]">
-            Rental Status
-          </h2>
-
-          {/* Timeline */}
-          <div className="relative flex items-center justify-between">
-
-            {/* Progress Line */}
-            <div className="absolute left-0 top-5 h-1 w-full bg-jet-black/10">
-              <div
-                className="h-full bg-[#433075]"
-                style={{
-                  width: `${(currentStep / (steps.length - 1)) * 100}%`,
-                }}
-              />
-            </div>
-
-            {/* Steps */}
-            {steps.map((step, index) => (
-              <div
-                key={step}
-                className="relative z-10 flex flex-col items-center"
-              >
-
+          <section className="mt-8 rounded-2xl border border-lavender/15 bg-white p-6">
+            <div className="relative flex items-center justify-between">
+              <div className="absolute left-0 top-5 h-1 w-full bg-jet-black/10">
                 <div
-                  className={`flex h-10 w-10 items-center justify-center rounded-full border-4 font-bold ${
-                    index < currentStep
-                      ? "border-[#433075] bg-[#433075] text-white"
-                      : index === currentStep
-                      ? "border-[#433075] bg-[#a58cf4] text-white"
-                      : "border-jet-black/25 bg-white text-jet-black/40"
-                  }`}
-                >
-                  {index + 1}
-                </div>
-
-                <span
-                  className={`mt-3 text-sm ${
-                    index === currentStep
-                      ? "font-semibold text-[#433075]"
-                      : "text-jet-black/50"
-                  }`}
-                >
-                  {step}
-                </span>
-
+                  className="h-full bg-deep-purple transition-all"
+                  style={{ width: `${(currentStep / (STEPS.length - 1)) * 100}%` }}
+                />
               </div>
-            ))}
+              {STEPS.map((step, index) => (
+                <div key={step} className="relative z-10 flex flex-col items-center">
+                  <div
+                    className={`flex h-10 w-10 items-center justify-center rounded-full border-4 font-bold ${
+                      index < currentStep
+                        ? 'border-deep-purple bg-deep-purple text-white'
+                        : index === currentStep
+                          ? 'border-deep-purple bg-lavender text-white'
+                          : 'border-jet-black/25 bg-white text-jet-black/40'
+                    }`}
+                  >
+                    {index + 1}
+                  </div>
+                  <span className={`mt-2 text-xs ${index === currentStep ? 'font-semibold text-deep-purple' : 'text-jet-black/50'}`}>
+                    {step}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
 
-          </div>
+          {locker && (
+            <section className="mt-4 flex items-start gap-3 rounded-2xl border border-lavender/15 bg-white p-4">
+              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-deep-purple" />
+              <div className="text-sm">
+                <p className="font-semibold text-jet-black">
+                  {locker.name} · Compartment {reservation.compartment?.compartment_code}
+                </p>
+                <p className="text-jet-black/50">
+                  {locker.address}, {locker.city}
+                </p>
+              </div>
+            </section>
+          )}
 
-          {/* Current Stage */}
-          <div className="mt-8 rounded-xl border border-[#a58cf4] bg-[#fafafa] p-4">
-
-            <p className="text-sm text-jet-black/50">
-              Current Stage
+          {!reservation.compartment_id && (
+            <p className="mt-4 rounded-2xl border border-jet-black/5 bg-jet-black/[0.02] p-4 text-sm text-jet-black/50">
+              We're finding you a locker — check back soon.
             </p>
+          )}
 
-            <p className="text-lg font-semibold text-[#433075]">
-              {rental.status}
+          {reservation.compartment_id && !hasDeposited && (
+            <p className="mt-4 rounded-2xl border border-jet-black/5 bg-jet-black/[0.02] p-4 text-sm text-jet-black/50">
+              Waiting for the lender to drop off the item at this locker.
             </p>
+          )}
 
-          </div>
-
-        </section>
-
-        {/* Rental Details */}
-        <section className="mb-6 rounded-2xl bg-white p-6 shadow-sm">
-
-          <h2 className="mb-4 text-xl font-semibold text-[#433075]">
-            Rental Details
-          </h2>
-
-          <div className="space-y-4">
-
-            {/* Status */}
-            <div>
-              <p className="text-jet-black/50">
-                Current Status
+          {reservation.compartment_id && hasDeposited && !hasRetrieved && (
+            <form onSubmit={handlePickup} className="mt-4 rounded-2xl border border-lavender/15 bg-white p-5">
+              <div className="mb-3 flex items-center gap-2">
+                <Lock className="h-4 w-4 text-deep-purple" />
+                <p className="text-sm font-semibold text-jet-black">Pick up your item</p>
+              </div>
+              <p className="mb-4 text-xs text-jet-black/50">
+                Enter your DUI and account password at the locker to confirm it's you and unlock the compartment.
               </p>
+              <div className="space-y-3">
+                <input
+                  type="text"
+                  value={dui}
+                  onChange={(e) => setDui(e.target.value)}
+                  placeholder="DUI"
+                  required
+                  className="w-full rounded-xl border border-lavender/15 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+                />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Password"
+                  required
+                  className="w-full rounded-xl border border-lavender/15 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+                />
+              </div>
+              <div className="mt-3 flex items-center justify-between gap-3">
+                <StatusMessage type={formStatus.type} text={formStatus.text} />
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="ml-auto shrink-0 rounded-full bg-linear-to-r from-deep-purple to-lavender px-4 py-2 text-xs font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)] transition hover:brightness-105 disabled:opacity-50"
+                >
+                  {submitting ? 'Verifying…' : 'Unlock locker'}
+                </button>
+              </div>
+            </form>
+          )}
 
-              <p className="font-semibold text-[#433075]">
-                {rental.status}
+          {hasRetrieved && (
+            <div className="mt-4 flex items-start gap-3 rounded-2xl border border-emerald-100 bg-emerald-50 p-4">
+              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+              <p className="text-sm text-emerald-700">
+                You picked this item up. Enjoy your rental — the return flow is coming in a later update.
               </p>
             </div>
-
-            {/* Locker */}
-            <div>
-              <p className="text-jet-black/50">
-                Locker Code
-              </p>
-
-              <p className="font-mono text-lg">
-                {rental.lockerCode}
-              </p>
-            </div>
-
-            {/* Time */}
-            <div>
-              <p className="text-jet-black/50">
-                Time Remaining
-              </p>
-
-              <p className="font-semibold">
-                {rental.timeRemaining}
-              </p>
-            </div>
-
-          </div>
-
-        </section>
-
-        {/* Support */}
-        <section className="rounded-2xl bg-white p-6 shadow-sm">
-
-          <h2 className="mb-2 text-xl font-semibold text-[#433075]">
-            Need Help?
-          </h2>
-
-          <p className="mb-4 text-jet-black/60">
-            Contact support if you have any issues with your rental.
-          </p>
-
-          <button
-            className="rounded-xl bg-[#433075] px-5 py-3 text-white transition hover:bg-[#37285f]"
-          >
-            Contact Support
-          </button>
-
-        </section>
-
-      </main>
+          )}
+        </div>
+      </div>
     </div>
-  );
+  )
 }

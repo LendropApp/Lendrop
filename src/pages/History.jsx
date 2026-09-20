@@ -177,6 +177,17 @@ export default function History() {
                     </span>
                   </div>
 
+                  {row.status === 'confirmed' && (
+                    <div className="mt-3 border-t border-jet-black/5 pt-3">
+                      <Link
+                        to={tab === 'rentals' ? `/rental-tracking?reservationId=${row.id}` : `/owner-delivery?reservationId=${row.id}`}
+                        className="text-xs font-semibold text-deep-purple hover:text-lavender"
+                      >
+                        {tab === 'rentals' ? 'Track pickup →' : 'Deliver item →'}
+                      </Link>
+                    </div>
+                  )}
+
                   {canCancel(row) && (
                     <div className="mt-3 border-t border-jet-black/5 pt-3">
                       {confirmCancelId === row.id ? (

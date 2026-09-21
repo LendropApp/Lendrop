@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { CheckCircle2, Camera, Lock, MapPin, Package } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, Camera, Lock, MapPin, Package } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import PageHeader from '../components/PageHeader'
@@ -147,18 +147,74 @@ function DeliveryForm({ reservation, onDelivered }) {
 }
 
 function ReturnPickupForm({ reservation, onCompleted }) {
+  const { user } = useAuth()
   const [dui, setDui] = useState('')
   const [password, setPassword] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [status, setStatus] = useState({ type: '', text: '' })
 
+  const [reportingDamage, setReportingDamage] = useState(false)
+  const [damagePhoto, setDamagePhoto] = useState(null)
+  const [damagePhotoPreview, setDamagePhotoPreview] = useState(null)
+  const [damageReason, setDamageReason] = useState('')
+
+  function handleDamagePhotoChange(e) {
+    const file = e.target.files?.[0] ?? null
+    setDamagePhoto(file)
+    setDamagePhotoPreview(file ? URL.createObjectURL(file) : null)
+  }
+
+  function toggleDamageReport() {
+    setReportingDamage((prev) => !prev)
+    setStatus({ type: '', text: '' })
+  }
+
   async function handleSubmit(e) {
     e.preventDefault()
+
+    if (reportingDamage && !damagePhoto) {
+      setStatus({ type: 'error', text: 'Attach a photo of the damage before reporting it.' })
+      return
+    }
+    if (reportingDamage && !damageReason.trim()) {
+      setStatus({ type: 'error', text: 'Describe the damage before reporting it.' })
+      return
+    }
+
     setSubmitting(true)
     setStatus({ type: '', text: '' })
 
+    if (reportingDamage) {
+      const ext = damagePhoto.name.split('.').pop()
+      const path = `${reservation.id}/return_pick_up-${Date.now()}.${ext}`
+      const { error: uploadError } = await supabase.storage.from('evidence-photos').upload(path, damagePhoto)
+      if (uploadError) {
+        setSubmitting(false)
+        setStatus({ type: 'error', text: 'Could not upload the photo. Please try again.' })
+        return
+      }
+
+      const { error: evidenceError } = await supabase.from('photo_evidence').insert({
+        reservation_id: reservation.id,
+        stage: 'return_pick_up',
+        storage_path: path,
+        uploaded_by: user.id,
+      })
+      if (evidenceError) {
+        setSubmitting(false)
+        setStatus({ type: 'error', text: 'Could not save the photo record. Please try again.' })
+        return
+      }
+    }
+
     const { data, error } = await supabase.functions.invoke('locker-access', {
-      body: { reservationId: reservation.id, dui, password, action: 'return_pickup' },
+      body: {
+        reservationId: reservation.id,
+        dui,
+        password,
+        action: 'return_pickup',
+        ...(reportingDamage ? { hasDamage: true, damageReason: damageReason.trim() } : {}),
+      },
     })
 
     setSubmitting(false)
@@ -168,7 +224,12 @@ function ReturnPickupForm({ reservation, onCompleted }) {
       return
     }
 
-    setStatus({ type: 'success', text: 'Return confirmed — rental completed!' })
+    setStatus({
+      type: 'success',
+      text: data?.disputed
+        ? 'Damage reported — the deposit stays held pending review.'
+        : 'Return confirmed — rental completed!',
+    })
     onCompleted(reservation.id)
   }
 
@@ -193,6 +254,39 @@ function ReturnPickupForm({ reservation, onCompleted }) {
       )}
 
       <form onSubmit={handleSubmit} className="mt-4 space-y-3">
+        {reportingDamage && (
+          <div className="rounded-xl border border-red-100 bg-red-50 p-3">
+            <div>
+              <label
+                htmlFor={`damage-photo-${reservation.id}`}
+                className="flex cursor-pointer items-center gap-2 rounded-xl border border-dashed border-red-200 bg-white px-4 py-3 text-xs text-jet-black/60 transition hover:border-red-400"
+              >
+                <Camera className="h-4 w-4 shrink-0 text-red-500" />
+                {damagePhoto ? damagePhoto.name : 'Attach a photo of the damage (required)'}
+              </label>
+              <input
+                id={`damage-photo-${reservation.id}`}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleDamagePhotoChange}
+                required
+                className="hidden"
+              />
+              {damagePhotoPreview && (
+                <img src={damagePhotoPreview} alt="Damage preview" className="mt-2 h-28 w-full rounded-lg object-cover" />
+              )}
+            </div>
+            <textarea
+              value={damageReason}
+              onChange={(e) => setDamageReason(e.target.value.slice(0, 500))}
+              placeholder="Describe the damage…"
+              rows={2}
+              required
+              className="mt-2 w-full resize-none rounded-xl border border-red-200 bg-white px-3 py-2 text-xs outline-none transition focus:border-red-400 focus:ring-2 focus:ring-red-200"
+            />
+          </div>
+        )}
+
         <p className="flex items-center gap-1.5 text-xs text-jet-black/50">
           <Lock className="h-3.5 w-3.5" />
           Enter your DUI and account password to confirm you picked up the returned item.
@@ -214,15 +308,27 @@ function ReturnPickupForm({ reservation, onCompleted }) {
           className="w-full rounded-xl border border-lavender/15 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
         />
         <div className="flex items-center justify-between gap-3">
-          <StatusMessage type={status.type} text={status.text} />
+          <button
+            type="button"
+            onClick={toggleDamageReport}
+            className={`flex items-center gap-1.5 text-xs font-semibold ${
+              reportingDamage ? 'text-jet-black/50 hover:text-jet-black' : 'text-red-500 hover:text-red-600'
+            }`}
+          >
+            <AlertTriangle className="h-3.5 w-3.5" />
+            {reportingDamage ? 'Cancel damage report' : 'Report damage instead'}
+          </button>
           <button
             type="submit"
             disabled={submitting}
-            className="ml-auto shrink-0 rounded-full bg-linear-to-r from-deep-purple to-lavender px-4 py-2 text-xs font-semibold text-soft-white glow-sm transition hover:brightness-105 disabled:opacity-50"
+            className={`shrink-0 rounded-full px-4 py-2 text-xs font-semibold text-soft-white glow-sm transition hover:brightness-105 disabled:opacity-50 ${
+              reportingDamage ? 'bg-red-500' : 'bg-linear-to-r from-deep-purple to-lavender'
+            }`}
           >
-            {submitting ? 'Verifying…' : 'Confirm return pickup'}
+            {submitting ? 'Verifying…' : reportingDamage ? 'Submit damage report' : 'Confirm return pickup'}
           </button>
         </div>
+        <StatusMessage type={status.type} text={status.text} />
       </form>
     </div>
   )

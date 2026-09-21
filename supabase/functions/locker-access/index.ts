@@ -7,7 +7,12 @@
 // (renter) -> return_pickup (owner), which finalizes the reservation
 // as 'completed' and auto-releases the damage-liability hold if it
 // hasn't already been captured (see Fase 8's review RLS, which
-// requires status = 'completed').
+// requires status = 'completed'). Fase 10: return_pickup can instead
+// be flagged with damage (hasDamage + damageReason + a required
+// 'return_pick_up' evidence photo) -- the reservation goes to
+// 'disputed' and the damage hold is left 'held' (pending a real review
+// flow -- see 0013_damage_deposit_model.sql's scope note on
+// capture_damage_hold) instead of auto-releasing.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
@@ -53,9 +58,12 @@ Deno.serve(async (request) => {
   if (userError || !userData.user) return json({ error: 'Unauthorized' }, 401)
   const caller = userData.user
 
-  const { reservationId, dui, password, action } = await request.json()
+  const { reservationId, dui, password, action, hasDamage, damageReason } = await request.json()
   if (!reservationId || !dui || !password || !ACTIONS.includes(action)) {
     return json({ error: 'Missing or invalid fields' }, 400)
+  }
+  if (action === 'return_pickup' && hasDamage && !String(damageReason ?? '').trim()) {
+    return json({ error: 'Describe the damage before reporting it.' }, 400)
   }
 
   const admin = createClient(supabaseUrl, serviceKey)
@@ -81,7 +89,7 @@ Deno.serve(async (request) => {
     return json({ error: 'Only the renter can do this.' }, 403)
   }
 
-  const requiredStage = EVIDENCE_STAGE[action as Action]
+  const requiredStage = EVIDENCE_STAGE[action as Action] ?? (action === 'return_pickup' && hasDamage ? 'return_pick_up' : null)
   if (requiredStage) {
     const { data: evidence } = await admin
       .from('photo_evidence')
@@ -90,7 +98,15 @@ Deno.serve(async (request) => {
       .eq('stage', requiredStage)
       .limit(1)
     if (!evidence || evidence.length === 0) {
-      return json({ error: 'Upload a condition photo before confirming this step.' }, 409)
+      return json(
+        {
+          error:
+            action === 'return_pickup' && hasDamage
+              ? 'Upload a photo of the damage before reporting it.'
+              : 'Upload a condition photo before confirming this step.',
+        },
+        409
+      )
     }
   }
 
@@ -147,7 +163,19 @@ Deno.serve(async (request) => {
   const newCompartmentStatus = action === 'deposit' || action === 'return_dropoff' ? 'occupied' : 'available'
   await admin.from('locker_compartments').update({ status: newCompartmentStatus }).eq('id', reservation.compartment_id)
 
-  if (action === 'return_pickup') {
+  if (action === 'return_pickup' && hasDamage) {
+    // Fase 10: damage reported on return — hold the reservation as
+    // 'disputed' and leave the damage hold 'held' rather than releasing
+    // it. Deliberately does NOT call capture_damage_hold: that's a
+    // lender self-report with no review step (see 0013's scope note),
+    // so real review has to resolve the dispute before any capture.
+    await admin.from('reservations').update({ status: 'disputed' }).eq('id', reservationId).eq('status', 'confirmed')
+    await admin.from('disputes').insert({
+      reservation_id: reservationId,
+      raised_by: caller.id,
+      reason: damageReason,
+    })
+  } else if (action === 'return_pickup') {
     await admin.from('reservations').update({ status: 'completed' }).eq('id', reservationId).eq('status', 'confirmed')
     // Auto-release the damage hold on a clean return — a no-op if it
     // was already captured/partially_captured via capture_damage_hold.
@@ -158,5 +186,10 @@ Deno.serve(async (request) => {
       .eq('status', 'held')
   }
 
-  return json({ ok: true, eventType, occurredAt: new Date().toISOString() })
+  return json({
+    ok: true,
+    eventType,
+    occurredAt: new Date().toISOString(),
+    disputed: action === 'return_pickup' && Boolean(hasDamage),
+  })
 })

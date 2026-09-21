@@ -4,7 +4,9 @@ import {
   Compass,
   CreditCard,
   DollarSign,
+  Edit3,
   Heart,
+  LayoutDashboard,
   LayoutGrid,
   LayoutList,
   MapPin,
@@ -28,7 +30,7 @@ import {
 //
 // Keep this in sync with the route list in App.jsx.
 
-export function buildNavSections({ isHost = false } = {}) {
+export function buildNavSections({ isHost = false, isAdmin = false } = {}) {
   const sections = [
     {
       id: 'renting',
@@ -62,10 +64,11 @@ export function buildNavSections({ isHost = false } = {}) {
     title: 'Account',
     items: [
       { to: '/profile', label: 'Profile', icon: UserCircle2 },
+      { to: '/profile/edit', label: 'Edit profile', icon: Edit3 },
       { to: '/verification', label: 'Verification', icon: ShieldCheck, badge: 'verification' },
       { to: '/payment-methods', label: 'Payment methods', icon: CreditCard },
       { to: '/premium', label: 'Premium', icon: Sparkles },
-      { to: '/profile/edit', label: 'Settings', icon: Settings },
+      { to: '/settings', label: 'Settings', icon: Settings },
     ],
   })
 
@@ -77,6 +80,14 @@ export function buildNavSections({ isHost = false } = {}) {
       { to: '/locker-coverage', label: 'Locker coverage', icon: MapPin },
     ],
   })
+
+  if (isAdmin) {
+    sections.push({
+      id: 'admin',
+      title: 'Admin',
+      items: [{ to: '/admin', label: 'Admin panel', icon: LayoutDashboard }],
+    })
+  }
 
   return sections
 }

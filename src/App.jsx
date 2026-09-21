@@ -4,6 +4,7 @@ import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import HostRoute from "./components/HostRoute";
 import VerifiedRoute from "./components/VerifiedRoute";
+import AdminRoute from "./components/AdminRoute";
 import MobileBottomNav from "./components/MobileBottomNav";
 
 import HostOnboardingWizard from "./pages/host-onboarding/HostOnboardingWizard";
@@ -38,6 +39,7 @@ import Verification from "./pages/Verification";
 import PaymentMethods from "./pages/PaymentMethods";
 import PaymentReturn from "./pages/PaymentReturn";
 import Premium from "./pages/Premium";
+import Admin from "./pages/Admin";
 
 export default function App() {
   return (
@@ -253,6 +255,15 @@ export default function App() {
                   <PublishItem />
                 </VerifiedRoute>
               </HostRoute>
+            }
+          />
+
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <Admin />
+              </AdminRoute>
             }
           />
 

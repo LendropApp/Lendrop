@@ -105,7 +105,7 @@ export default function MobileNav() {
 
   if (!user) return null
 
-  const sections = buildNavSections({ isHost })
+  const sections = buildNavSections({ isHost, isAdmin: Boolean(profile?.is_admin) })
   const firstName = profile?.full_name?.split(' ')[0] ?? user.email?.split('@')[0]
   const verification = describeVerification(verificationStatus)
   const BecomeHostIcon = BECOME_HOST_CTA.icon

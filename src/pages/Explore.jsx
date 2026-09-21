@@ -11,6 +11,7 @@ import {
   UserCircle2,
   Menu,
   CreditCard,
+  LayoutDashboard,
   Settings as SettingsIcon,
   ShieldCheck,
   Sparkles,
@@ -394,6 +395,16 @@ export default function Explore() {
                       <SettingsIcon className="h-4 w-4 text-jet-black/50" />
                       Settings
                     </Link>
+                    {profile?.is_admin && (
+                      <Link
+                        to="/admin"
+                        onClick={() => setMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-jet-black transition hover:bg-lavender/5"
+                      >
+                        <LayoutDashboard className="h-4 w-4 text-jet-black/50" />
+                        Admin panel
+                      </Link>
+                    )}
                     <div className="my-1.5 border-t border-jet-black/5" />
                     <button
                       type="button"

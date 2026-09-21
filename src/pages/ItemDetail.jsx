@@ -11,6 +11,7 @@ import StarRating from '../components/StarRating'
 import StatusMessage from '../components/StatusMessage'
 import AvailabilityCalendar from '../components/AvailabilityCalendar'
 import VerificationNotice from '../components/VerificationNotice'
+import MobileNav from '../components/MobileNav'
 import { isVerificationError } from '../lib/verification'
 import AuroraBlobs from '../components/background/AuroraBlobs'
 
@@ -402,7 +403,9 @@ export default function ItemDetail() {
             Back to Explore
           </Link>
           <img src="/logo-lendrop.png" alt="Lendrop" className="h-7 w-auto" />
-          <div className="w-24" />
+          <div className="flex w-24 justify-end">
+            <MobileNav />
+          </div>
         </div>
       </header>
 

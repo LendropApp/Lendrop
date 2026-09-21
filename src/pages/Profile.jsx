@@ -15,6 +15,7 @@ import {
   Sparkles,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import MobileNav from '../components/MobileNav'
 import { supabase } from '../lib/supabaseClient'
 import LockerAvatar from '../components/LockerAvatar'
 import StarRating from '../components/StarRating'
@@ -82,15 +83,18 @@ export default function Profile() {
             Back to Explore
           </Link>
           <img src="/logo-lendrop.png" alt="Lendrop" className="h-7 w-auto" />
-          <button
-            type="button"
-            onClick={handleSignOut}
-            aria-label="Log out"
-            className="flex items-center gap-1.5 text-sm font-medium text-jet-black/60 transition hover:text-red-500"
-          >
-            <LogOut className="h-4 w-4" />
-            <span className="hidden sm:inline">Log out</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <MobileNav />
+            <button
+              type="button"
+              onClick={handleSignOut}
+              aria-label="Log out"
+              className="hidden items-center gap-1.5 text-sm font-medium text-jet-black/60 transition hover:text-red-500 md:flex"
+            >
+              <LogOut className="h-4 w-4" />
+              <span className="hidden sm:inline">Log out</span>
+            </button>
+          </div>
         </div>
       </header>
 

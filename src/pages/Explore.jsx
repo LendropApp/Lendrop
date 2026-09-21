@@ -24,6 +24,7 @@ import { getCategoryIcon } from '../lib/categoryIcons'
 import { getExploreHeroImage } from '../lib/exploreHero'
 import LockerAvatar from '../components/LockerAvatar'
 import ProductCard from '../components/ProductCard'
+import MobileNav from '../components/MobileNav'
 import AuroraBlobs from '../components/background/AuroraBlobs'
 import { buildSteps } from '../components/ProfileCompletion'
 
@@ -251,8 +252,10 @@ export default function Explore() {
               <img src="/logo-lendrop.png" alt="Lendrop" className="h-7 w-auto" />
             </Link>
 
-            {/* Main nav — centered, like Airbnb's top tabs */}
-            <nav className="flex items-center gap-1 rounded-full border border-jet-black/10 bg-white p-1 shadow-sm">
+            {/* Main nav — centered, like Airbnb's top tabs. Desktop only:
+                on mobile every one of these lives in MobileNav instead,
+                so the two never show the same link twice. */}
+            <nav className="hidden items-center gap-1 rounded-full border border-jet-black/10 bg-white p-1 shadow-sm md:flex">
               {isHost && (
                 <Link
                   to={ROUTES.publish}
@@ -298,7 +301,7 @@ export default function Explore() {
             {!isHost && (
               <Link
                 to={ROUTES.becomeLender}
-                className="flex shrink-0 items-center gap-1.5 rounded-full bg-linear-to-r from-deep-purple to-lavender px-4 py-2 text-xs font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(67,48,117,0.5)] transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.6)] hover:brightness-105"
+                className="hidden shrink-0 items-center gap-1.5 rounded-full bg-linear-to-r from-deep-purple to-lavender px-4 py-2 text-xs font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(67,48,117,0.5)] transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.6)] hover:brightness-105 md:flex"
               >
                 <Store className="h-3.5 w-3.5" />
                 Become a Lender
@@ -314,12 +317,13 @@ export default function Explore() {
               >
                 <LockerAvatar label={firstName} photoUrl={profile?.avatar_url} verified={isVerified} size="md" />
               </Link>
+              <MobileNav />
               <button
                 type="button"
                 aria-label="More options"
                 aria-expanded={menuOpen}
                 onClick={() => setMenuOpen((v) => !v)}
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-jet-black/10 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple"
+                className="hidden h-9 w-9 items-center justify-center rounded-full border border-jet-black/10 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple md:flex"
               >
                 <Menu className="h-4 w-4" />
               </button>

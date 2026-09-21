@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
+import MobileNav from './MobileNav'
 
 export default function PageHeader({ backTo = '/profile', backLabel = 'Back', right = null, maxWidth = 'max-w-3xl' }) {
   return (
@@ -15,7 +16,12 @@ export default function PageHeader({ backTo = '/profile', backLabel = 'Back', ri
           {backLabel}
         </Link>
         <img src="/logo-lendrop.png" alt="Lendrop" className="h-7 w-auto" />
-        <div className="flex w-24 justify-end">{right}</div>
+        {/* The hamburger lives in the right slot on mobile — MobileNav
+            hides itself on md and up, and for signed-out visitors. */}
+        <div className="flex w-24 items-center justify-end gap-2">
+          {right}
+          <MobileNav />
+        </div>
       </div>
     </header>
   )

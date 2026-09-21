@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowLeft, Heart } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import MobileNav from '../components/MobileNav'
 import { supabase } from '../lib/supabaseClient'
 import ProductCard from '../components/ProductCard'
 import AuroraBlobs from '../components/background/AuroraBlobs'
@@ -59,7 +60,9 @@ export default function Favorites() {
             Back to Explore
           </Link>
           <img src="/logo-lendrop.png" alt="Lendrop" className="h-7 w-auto" />
-          <div className="w-24" />
+          <div className="flex w-24 justify-end">
+            <MobileNav />
+          </div>
         </div>
       </header>
 

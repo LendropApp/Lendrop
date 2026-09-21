@@ -10,9 +10,12 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [session, setSession] = useState(null)
   const [profile, setProfile] = useState(null)
+  // Which user the profile in state belongs to. Route guards need to
+  // tell "no profile yet" apart from "profile loaded, and it says no" —
+  // see profileLoading below.
+  const [profileOwnerId, setProfileOwnerId] = useState(null)
 
   const [loading, setLoading] = useState(true)
-  const [profileLoading, setProfileLoading] = useState(true)
 
   useEffect(() => {
     // 1. On mount: was there already an active session?
@@ -47,10 +50,9 @@ export function AuthProvider({ children }) {
   const fetchProfile = useCallback(async (userId) => {
     if (!userId) {
       setProfile(null)
-      setProfileLoading(false)
+      setProfileOwnerId(null)
       return
     }
-    setProfileLoading(true)
     const { data, error } = await supabase
       .from('profiles')
       .select('*')
@@ -58,7 +60,7 @@ export function AuthProvider({ children }) {
       .maybeSingle()
     if (error) console.error('Error loading profile:', error)
     setProfile(data ?? null)
-    setProfileLoading(false)
+    setProfileOwnerId(userId)
   }, [])
 
   useEffect(() => {
@@ -69,6 +71,13 @@ export function AuthProvider({ children }) {
   // finishing host onboarding) so context state doesn't go stale until a
   // full reload.
   const refreshProfile = useCallback(() => fetchProfile(user?.id), [fetchProfile, user?.id])
+
+  // Derived, not a separate flag. A plain useState here used to go false
+  // as soon as the no-op fetch for a null user returned — so on a direct
+  // load of /publish, the frame where the session had just resolved but
+  // the profile fetch hadn't started yet looked like "loaded, is_host
+  // false" to HostRoute, and it bounced real hosts to the onboarding
+  // wizard. Deriving it means there is no such frame.
 
 
   async function signUp({ email, password, fullName, dui, dateOfBirth, agreedToTerms }) {
@@ -121,6 +130,8 @@ export function AuthProvider({ children }) {
   // (RLS on items/reservations + the reservation RPCs, see migration
   // 0019) — this is only so the UI can explain itself before the user
   // hits a wall.
+  const profileLoading = loading || (user ? profileOwnerId !== user.id : false)
+
   const verificationStatus = profile?.verification_status ?? 'unverified'
 
   const value = {

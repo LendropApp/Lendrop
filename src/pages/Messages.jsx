@@ -51,7 +51,7 @@ export default function Messages() {
   }, [user])
 
   return (
-    <div className="min-h-screen bg-soft-white pb-16">
+    <div className="min-h-screen bg-soft-white pb-28 md:pb-16">
       <PageHeader backTo="/explore" backLabel="Back to Explore" />
 
       <div className="relative isolate overflow-hidden">

@@ -1,11 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, ImagePlus, X, Star } from 'lucide-react'
 import StatusMessage from '../components/StatusMessage'
+import VerificationNotice from '../components/VerificationNotice'
+import { isVerificationError } from '../lib/verification'
 import PriceSuggestionButton from '../components/PriceSuggestionButton'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import { getCategoryIcon } from '../lib/categoryIcons'
+import { getItemPhotoUrl } from '../lib/photos'
 import AuroraBlobs from '../components/background/AuroraBlobs'
 import useSmartBack from '../hooks/useSmartBack'
 
@@ -18,15 +21,26 @@ const CONDITIONS = [
   { value: 'fair', label: 'Fair' },
 ]
 
+// One form, two modes. With an :itemId in the route it loads that
+// listing and saves with an update; without one it creates a new item.
+// Keeping it as a single component means the publish and edit forms
+// can't drift apart in validation, field set or copy.
 export default function PublishItem() {
-  const { user } = useAuth()
+  const { user, verificationStatus, isVerified } = useAuth()
   const navigate = useNavigate()
-  const goBack = useSmartBack('/explore')
+  const { itemId } = useParams()
+  const isEditing = Boolean(itemId)
+  const goBack = useSmartBack(isEditing ? '/my-listings' : '/explore')
 
   const [categories, setCategories] = useState([])
   const [categoriesError, setCategoriesError] = useState('')
-  const [photos, setPhotos] = useState([]) // [{ id, file, previewUrl }]
+  const [photos, setPhotos] = useState([]) // newly picked: [{ id, file, previewUrl }]
+  const [existingPhotos, setExistingPhotos] = useState([]) // already stored: item_photos rows
+  const [removedPhotoIds, setRemovedPhotoIds] = useState([])
+  const [loadingItem, setLoadingItem] = useState(isEditing)
+  const [loadError, setLoadError] = useState('')
   const [categorySlug, setCategorySlug] = useState(null)
+  const [editingCategoryId, setEditingCategoryId] = useState(null)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [condition, setCondition] = useState('good')
@@ -57,8 +71,63 @@ export default function PublishItem() {
     }
   }, [])
 
+  // Prefill from the listing being edited. The ownership check is
+  // belt-and-braces for the UI: items_update_own already makes a save on
+  // someone else's listing fail server-side, but bouncing here means the
+  // user never fills in a form that was never going to save.
+  useEffect(() => {
+    if (!isEditing || !user) return
+    let cancelled = false
+    setLoadingItem(true)
+
+    supabase
+      .from('items')
+      .select('*, photos:item_photos(id, storage_path, display_order)')
+      .eq('id', itemId)
+      .maybeSingle()
+      .then(({ data, error }) => {
+        if (cancelled) return
+        if (error || !data) {
+          setLoadError('Could not load this listing.')
+          setLoadingItem(false)
+          return
+        }
+        if (data.owner_id !== user.id) {
+          setLoadError('This listing belongs to someone else.')
+          setLoadingItem(false)
+          return
+        }
+        setTitle(data.title ?? '')
+        setDescription(data.description ?? '')
+        setCondition(data.condition ?? 'good')
+        setPricePerDay(String(data.price_per_day ?? ''))
+        setDeclaredValue(data.declared_value ? String(data.declared_value) : '')
+        setLocationCity(data.location_city ?? 'San Salvador')
+        setExistingPhotos(
+          [...(data.photos ?? [])].sort((a, b) => a.display_order - b.display_order)
+        )
+        setEditingCategoryId(data.category_id)
+        setLoadingItem(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [isEditing, itemId, user])
+
+  // Categories and the item load independently, so the slug can only be
+  // resolved once both are in.
+  useEffect(() => {
+    if (!editingCategoryId || categories.length === 0) return
+    const match = categories.find((c) => c.id === editingCategoryId)
+    if (match) setCategorySlug(match.slug)
+  }, [editingCategoryId, categories])
+
+  const keptExistingPhotos = existingPhotos.filter((p) => !removedPhotoIds.includes(p.id))
+  const totalPhotoCount = keptExistingPhotos.length + photos.length
+
   const descriptionCount = description.length
-  const canAddMorePhotos = photos.length < MAX_PHOTOS
+  const canAddMorePhotos = totalPhotoCount < MAX_PHOTOS
 
   const selectedCategory = useMemo(
     () => categories.find((c) => c.slug === categorySlug) ?? null,
@@ -69,7 +138,7 @@ export default function PublishItem() {
     const files = Array.from(e.target.files ?? [])
     e.target.value = '' // allow re-selecting the same file later
 
-    const room = MAX_PHOTOS - photos.length
+    const room = MAX_PHOTOS - totalPhotoCount
     const accepted = files.slice(0, room).map((file) => ({
       id: `${file.name}-${file.lastModified}-${Math.random().toString(36).slice(2)}`,
       file,
@@ -91,7 +160,7 @@ export default function PublishItem() {
     e.preventDefault()
     setStatus({ type: '', text: '' })
 
-    if (photos.length === 0) {
+    if (totalPhotoCount === 0) {
       setStatus({ type: 'error', text: 'Add at least one photo.' })
       return
     }
@@ -113,55 +182,109 @@ export default function PublishItem() {
       return
     }
 
-    setIsSubmitting(true)
-
-    const { data: item, error: itemError } = await supabase
-      .from('items')
-      .insert({
-        owner_id: user.id,
-        category_id: selectedCategory.id,
-        title: title.trim(),
-        description: description.trim(),
-        condition,
-        price_per_day: price,
-        declared_value: Number(declaredValue) || 0,
-        currency: 'USD',
-        location_city: locationCity.trim() || 'San Salvador',
+    // Only creating a listing is gated on verification — editing one you
+    // already own isn't, which matches items_update_own server-side.
+    // VerifiedRoute normally keeps unverified users off the create form,
+    // so this is the backstop for a status that changed mid-session; the
+    // real gate is the items_insert_own RLS policy (migration 0019),
+    // handled below.
+    if (!isEditing && !isVerified) {
+      setStatus({
+        type: 'error',
+        text: 'You need to verify your identity before publishing an item.',
       })
-      .select()
-      .single()
-
-    if (itemError) {
-      setIsSubmitting(false)
-      setStatus({ type: 'error', text: 'Could not publish the item. Please try again.' })
       return
     }
 
+    setIsSubmitting(true)
+
+    const fields = {
+      category_id: selectedCategory.id,
+      title: title.trim(),
+      description: description.trim(),
+      condition,
+      price_per_day: price,
+      declared_value: Number(declaredValue) || 0,
+      currency: 'USD',
+      location_city: locationCity.trim() || 'San Salvador',
+    }
+
+    const { data: item, error: itemError } = isEditing
+      ? await supabase.from('items').update(fields).eq('id', itemId).select().single()
+      : await supabase
+          .from('items')
+          .insert({ owner_id: user.id, ...fields })
+          .select()
+          .single()
+
+    if (itemError) {
+      setIsSubmitting(false)
+      setStatus({
+        type: 'error',
+        text: isVerificationError(itemError)
+          ? 'You need to verify your identity before publishing an item.'
+          : isEditing
+            ? 'Could not save your changes. Please try again.'
+            : 'Could not publish the item. Please try again.',
+      })
+      return
+    }
+
+    // New photos are numbered after the ones being kept, so the first
+    // remaining photo stays the cover.
     const uploads = await Promise.all(
       photos.map(async (photo, index) => {
         const ext = photo.file.name.split('.').pop()
-        const path = `${user.id}/${item.id}/${index}-${crypto.randomUUID()}.${ext}`
+        const path = `${user.id}/${item.id}/${crypto.randomUUID()}.${ext}`
         const { error: uploadError } = await supabase.storage
           .from('item-photos')
           .upload(path, photo.file, { contentType: photo.file.type })
-        return uploadError ? null : { item_id: item.id, storage_path: path, display_order: index }
+        return uploadError
+          ? null
+          : {
+              item_id: item.id,
+              storage_path: path,
+              display_order: keptExistingPhotos.length + index,
+            }
       })
     )
 
     const photoRows = uploads.filter(Boolean)
 
-    if (photoRows.length === 0) {
+    if (!isEditing && photoRows.length === 0) {
+      // A listing with no photo is worse than no listing — roll the row
+      // back rather than leave an empty one behind.
       await supabase.from('items').delete().eq('id', item.id)
       setIsSubmitting(false)
       setStatus({ type: 'error', text: 'Photo upload failed. Please try again.' })
       return
     }
 
-    const { error: photosError } = await supabase.from('item_photos').insert(photoRows)
+    if (photoRows.length > 0) {
+      const { error: photosError } = await supabase.from('item_photos').insert(photoRows)
+      if (photosError) {
+        setIsSubmitting(false)
+        setStatus({
+          type: 'error',
+          text: 'Item saved, but photos failed to attach. Please try again.',
+        })
+        return
+      }
+    }
+
+    if (isEditing && removedPhotoIds.length > 0) {
+      const removed = existingPhotos.filter((photo) => removedPhotoIds.includes(photo.id))
+      await supabase.from('item_photos').delete().in('id', removedPhotoIds)
+      // Demo listings store an external URL here rather than a bucket
+      // path (see getItemPhotoUrl) — there is nothing to delete for those.
+      const paths = removed.map((p) => p.storage_path).filter((path) => !/^https?:\/\//i.test(path))
+      if (paths.length > 0) await supabase.storage.from('item-photos').remove(paths)
+    }
+
     setIsSubmitting(false)
 
-    if (photosError) {
-      setStatus({ type: 'error', text: 'Item saved, but photos failed to attach. Please try again.' })
+    if (isEditing) {
+      navigate('/my-listings', { state: { saved: item.title } })
       return
     }
 
@@ -212,25 +335,45 @@ export default function PublishItem() {
     )
   }
 
+  if (isEditing && (loadingItem || loadError)) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-soft-white px-6">
+        {loadError ? (
+          <>
+            <p className="text-sm text-red-600">{loadError}</p>
+            <Link
+              to="/my-listings"
+              className="rounded-xl border border-lavender/15 px-4 py-2 text-sm font-semibold text-jet-black transition hover:bg-jet-black/5"
+            >
+              Back to my listings
+            </Link>
+          </>
+        ) : (
+          <p className="font-body text-sm text-jet-black/60">Loading…</p>
+        )}
+      </div>
+    )
+  }
+
   return (
-    <div className="min-h-screen bg-soft-white pb-16">
+    <div className="min-h-screen bg-soft-white pb-28 md:pb-16">
       <header className="glass sticky top-0 z-50">
         <div className="h-px bg-linear-to-r from-transparent via-lavender/50 to-transparent" />
         <div className="mx-auto flex max-w-2xl items-center gap-3 px-6 py-4 sm:px-10">
           <button
             type="button"
             onClick={goBack}
-            aria-label="Back to Explore"
+            aria-label={isEditing ? 'Back to my listings' : 'Back to Explore'}
             className="flex h-9 w-9 items-center justify-center rounded-full border border-lavender/15 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple"
           >
             <ArrowLeft className="h-4 w-4" />
           </button>
           <div>
             <h1 className="font-display text-lg font-semibold text-jet-black">
-              Publish an item
+              {isEditing ? 'Edit listing' : 'Publish an item'}
             </h1>
             <p className="font-mono text-[10px] uppercase tracking-widest text-lavender">
-              New listing
+              {isEditing ? 'Update details' : 'New listing'}
             </p>
           </div>
         </div>
@@ -239,6 +382,8 @@ export default function PublishItem() {
       <div className="relative isolate overflow-hidden">
         <AuroraBlobs className="opacity-30" />
       <form onSubmit={handleSubmit} className="relative mx-auto max-w-2xl space-y-8 px-6 pt-8 sm:px-10">
+        {!isEditing && <VerificationNotice status={verificationStatus} action="publish" />}
+
         {/* ================= PHOTOS ================= */}
         <section>
           <label className="mb-2 block text-sm font-medium text-jet-black">
@@ -249,6 +394,32 @@ export default function PublishItem() {
           </p>
 
           <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
+            {keptExistingPhotos.map((photo, index) => (
+              <div
+                key={photo.id}
+                className="group relative aspect-square overflow-hidden rounded-xl bg-jet-black/5"
+              >
+                <img
+                  src={getItemPhotoUrl(photo.storage_path)}
+                  alt={`Item photo ${index + 1}`}
+                  className="h-full w-full object-cover"
+                />
+                {index === 0 && (
+                  <span className="absolute left-1.5 top-1.5 rounded-full bg-linear-to-r from-deep-purple to-lavender px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-soft-white shadow-[0_2px_10px_-2px_rgba(165,140,244,0.7)]">
+                    Cover
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setRemovedPhotoIds((prev) => [...prev, photo.id])}
+                  aria-label="Remove photo"
+                  className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-jet-black/60 text-soft-white backdrop-blur transition hover:bg-jet-black/80"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            ))}
+
             {photos.map((photo, index) => (
               <div
                 key={photo.id}
@@ -256,10 +427,10 @@ export default function PublishItem() {
               >
                 <img
                   src={photo.previewUrl}
-                  alt={`Item photo ${index + 1}`}
+                  alt={`Item photo ${keptExistingPhotos.length + index + 1}`}
                   className="h-full w-full object-cover"
                 />
-                {index === 0 && (
+                {keptExistingPhotos.length === 0 && index === 0 && (
                   <span className="absolute left-1.5 top-1.5 rounded-full bg-linear-to-r from-deep-purple to-lavender px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-soft-white shadow-[0_2px_10px_-2px_rgba(165,140,244,0.7)]">
                     Cover
                   </span>
@@ -496,10 +667,18 @@ export default function PublishItem() {
 
         <button
           type="submit"
-          disabled={isSubmitting}
-          className="w-full rounded-xl bg-linear-to-r from-deep-purple to-lavender py-3 text-sm font-semibold text-soft-white glow-sm transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 disabled:opacity-50"
+          disabled={isSubmitting || (!isEditing && !isVerified)}
+          className="w-full rounded-xl bg-linear-to-r from-deep-purple to-lavender py-3 text-sm font-semibold text-soft-white glow-sm transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {isSubmitting ? 'Publishing…' : 'Publish item'}
+          {isEditing
+            ? isSubmitting
+              ? 'Saving…'
+              : 'Save changes'
+            : isSubmitting
+              ? 'Publishing…'
+              : isVerified
+                ? 'Publish item'
+                : 'Verify your identity to publish'}
         </button>
       </form>
       </div>

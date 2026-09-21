@@ -227,7 +227,7 @@ export default function RentalTracking() {
 
   if (notFound || !reservation) {
     return (
-      <div className="min-h-screen bg-soft-white pb-16">
+      <div className="min-h-screen bg-soft-white pb-28 md:pb-16">
         <PageHeader backTo="/history" backLabel="Back to Activity" />
         <div className="flex flex-col items-center gap-2 px-6 py-24 text-center">
           <Clock3 className="h-8 w-8 text-jet-black/20" />
@@ -249,7 +249,7 @@ export default function RentalTracking() {
   const locker = reservation.compartment?.locker
 
   return (
-    <div className="min-h-screen bg-soft-white pb-16">
+    <div className="min-h-screen bg-soft-white pb-28 md:pb-16">
       <PageHeader backTo="/history" backLabel="Back to Activity" />
 
       <div className="relative isolate overflow-hidden">

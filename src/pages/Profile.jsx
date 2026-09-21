@@ -16,6 +16,7 @@ import {
   Sparkles,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import MobileNav from '../components/MobileNav'
 import { supabase } from '../lib/supabaseClient'
 import LockerAvatar from '../components/LockerAvatar'
 import StarRating from '../components/StarRating'
@@ -73,7 +74,7 @@ export default function Profile() {
   const hasReviews = (profile?.total_reviews ?? 0) > 0
 
   return (
-    <div className="min-h-screen bg-soft-white pb-16">
+    <div className="min-h-screen bg-soft-white pb-28 md:pb-16">
       <header className="glass sticky top-0 z-50">
         <div className="h-px bg-linear-to-r from-transparent via-lavender/50 to-transparent" />
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-6 py-4 sm:px-10">
@@ -87,15 +88,18 @@ export default function Profile() {
             Back to Explore
           </button>
           <img src="/logo-lendrop.png" alt="Lendrop" className="h-7 w-auto" />
-          <button
-            type="button"
-            onClick={handleSignOut}
-            aria-label="Log out"
-            className="flex items-center gap-1.5 text-sm font-medium text-jet-black/60 transition hover:text-red-500"
-          >
-            <LogOut className="h-4 w-4" />
-            <span className="hidden sm:inline">Log out</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <MobileNav />
+            <button
+              type="button"
+              onClick={handleSignOut}
+              aria-label="Log out"
+              className="hidden items-center gap-1.5 text-sm font-medium text-jet-black/60 transition hover:text-red-500 md:flex"
+            >
+              <LogOut className="h-4 w-4" />
+              <span className="hidden sm:inline">Log out</span>
+            </button>
+          </div>
         </div>
       </header>
 

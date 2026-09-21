@@ -16,6 +16,7 @@ import {
   History,
   LogOut,
   Mail,
+  PackageSearch,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
@@ -33,6 +34,7 @@ const ROUTES = {
   notifications: '/notifications',
   profile: '/profile',
   publish: '/publish',
+  tracking: '/rental-tracking',
 }
 
 export default function Explore() {
@@ -283,6 +285,13 @@ export default function Explore() {
                 {hasUnreadNotifications && (
                   <span className="absolute right-1.5 top-1 h-1.5 w-1.5 animate-pulse rounded-full bg-lavender ring-2 ring-white" />
                 )}
+              </Link>
+              <Link
+                to={ROUTES.tracking}
+                className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-jet-black/60 transition hover:bg-lavender/10 hover:text-deep-purple"
+              >
+                <PackageSearch className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Track</span>
               </Link>
             </nav>
 

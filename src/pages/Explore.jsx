@@ -13,6 +13,7 @@ import {
   CreditCard,
   LayoutDashboard,
   Settings as SettingsIcon,
+  Truck,
   ShieldCheck,
   Sparkles,
   History,
@@ -363,6 +364,16 @@ export default function Explore() {
                       <History className="h-4 w-4 text-jet-black/50" />
                       Activity
                     </Link>
+                    {isHost && (
+                      <Link
+                        to="/owner-delivery"
+                        onClick={() => setMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-jet-black transition hover:bg-lavender/5"
+                      >
+                        <Truck className="h-4 w-4 text-jet-black/50" />
+                        Drop-offs & returns
+                      </Link>
+                    )}
                     <Link
                       to="/payment-methods"
                       onClick={() => setMenuOpen(false)}

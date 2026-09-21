@@ -240,7 +240,7 @@ export default function Explore() {
   return (
     <div className="min-h-screen bg-soft-white">
       {/* ================= HEADER ================= */}
-      <header className="sticky top-0 z-50 border-b border-jet-black/5 bg-soft-white/90 shadow-[0_8px_24px_-18px_rgba(67,48,117,0.35)] backdrop-blur-md">
+      <header className="glass sticky top-0 z-50 shadow-[0_8px_24px_-18px_rgba(67,48,117,0.35)]">
         <div className="h-px bg-linear-to-r from-transparent via-lavender/50 to-transparent" />
 
         {!scrolled && (

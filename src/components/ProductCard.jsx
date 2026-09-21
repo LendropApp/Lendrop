@@ -43,9 +43,9 @@ export default function ProductCard({ item, isOwner, isFavorited, isCurrentlyRen
   return (
     <Link
       to={`/item/${item.id}`}
-      className="group block cursor-pointer transition duration-300 hover:-translate-y-1"
+      className="lift group block cursor-pointer"
     >
-      <div className="relative aspect-4/3 w-full overflow-hidden rounded-2xl bg-jet-black/5 shadow-sm transition duration-300 group-hover:shadow-[0_16px_36px_-14px_rgba(165,140,244,0.6)]">
+      <div className="glow-sm relative aspect-4/3 w-full overflow-hidden rounded-2xl bg-jet-black/5 transition duration-300 group-hover:shadow-[0_24px_60px_-16px_rgba(67,48,117,0.45),0_8px_24px_-8px_rgba(165,140,244,0.5)]">
         {coverUrl && (
           <img
             src={coverUrl}

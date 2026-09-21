@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft, ImagePlus, X, Star } from 'lucide-react'
 import StatusMessage from '../components/StatusMessage'
+import PriceSuggestionButton from '../components/PriceSuggestionButton'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import { getCategoryIcon } from '../lib/categoryIcons'
@@ -401,6 +402,12 @@ export default function PublishItem() {
                 className="w-full bg-transparent pl-1.5 font-mono text-sm outline-none"
               />
             </div>
+            <PriceSuggestionButton
+              category={categorySlug}
+              description={description}
+              condition={condition}
+              onApply={(price) => setPricePerDay(String(price))}
+            />
           </div>
 
           <div>

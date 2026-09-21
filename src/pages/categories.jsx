@@ -141,8 +141,8 @@ export default function Categories() {
   return (
     <div className="min-h-screen bg-[#faf9fc] text-jet-black font-[Manrope] overflow-hidden">
       {/* Decorative background */}
-      <div className="absolute top-[-180px] right-[-140px] w-[420px] h-[420px] rounded-full bg-[#433075]/[0.06] blur-3xl" />
-      <div className="absolute bottom-[-180px] left-[-140px] w-[400px] h-[400px] rounded-full bg-[#433075]/[0.04] blur-3xl" />
+      <div className="absolute top-[-180px] right-[-140px] w-[420px] h-[420px] rounded-full bg-deep-purple/[0.06] blur-3xl" />
+      <div className="absolute bottom-[-180px] left-[-140px] w-[400px] h-[400px] rounded-full bg-deep-purple/[0.04] blur-3xl" />
 
       {/* Navbar */}
       <nav className="w-full border-b border-[#0d0d0d]/10 bg-white">
@@ -156,18 +156,18 @@ export default function Categories() {
           </div>
 
           <div className="flex items-center gap-8 font-medium text-[#0d0d0d]">
-            <a href="/" className="transition hover:text-[#433075]">
+            <a href="/" className="transition hover:text-deep-purple">
               Home
             </a>
-            <a href="/explore" className="transition hover:text-[#433075]">
+            <a href="/explore" className="transition hover:text-deep-purple">
               Explore
             </a>
-            <a href="/help" className="transition hover:text-[#433075]">
+            <a href="/help" className="transition hover:text-deep-purple">
               Help
             </a>
             <a
               href="/profile"
-              className="flex items-center gap-2 transition hover:text-[#433075]"
+              className="flex items-center gap-2 transition hover:text-deep-purple"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -193,14 +193,14 @@ export default function Categories() {
       <main className="relative z-10 max-w-6xl mx-auto px-8 lg:px-12 pt-10 pb-12">
         {/* Heading */}
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#433075]/[0.07] text-[#433075] text-xs font-bold tracking-wider mb-5">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-deep-purple/[0.07] text-deep-purple text-xs font-bold tracking-wider mb-5">
             EXPLORE LENDROP
           </div>
 
           <h1 className="text-4xl lg:text-5xl font-bold tracking-tight mb-5">
             What are you interested
             <br />
-            <span className="text-[#433075]">in renting?</span>
+            <span className="text-deep-purple">in renting?</span>
           </h1>
 
           <p className="text-jet-black/50 text-base lg:text-lg leading-relaxed">
@@ -224,8 +224,8 @@ export default function Categories() {
                 onClick={() => toggleCategory(category.id)}
                 className={`group relative text-left rounded-3xl p-6 min-h-[190px] transition-all duration-300 ${
                   isSelected
-                    ? "bg-[#433075] border-4 border-[#3d179c] shadow-2xl shadow-[#433075]/40 -translate-y-1.5"
-                    : "bg-white border-2 border-jet-black/15 hover:border-[#433075] hover:-translate-y-1.5 shadow-md shadow-jet-black/10 hover:shadow-xl hover:shadow-[#433075]/20"
+                    ? "bg-deep-purple border-4 border-deep-purple shadow-2xl shadow-deep-purple/40 -translate-y-1.5"
+                    : "bg-white border-2 border-jet-black/15 hover:border-deep-purple hover:-translate-y-1.5 shadow-md shadow-jet-black/10 hover:shadow-xl hover:shadow-deep-purple/20"
                 }`}
               >
                 {/* Number */}
@@ -242,7 +242,7 @@ export default function Categories() {
                   className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-7 transition-all ${
                     isSelected
                       ? "bg-white/15 text-white"
-                      : "bg-[#433075]/[0.07] text-[#433075] group-hover:bg-[#433075] group-hover:text-white"
+                      : "bg-deep-purple/[0.07] text-deep-purple group-hover:bg-deep-purple group-hover:text-white"
                   }`}
                 >
                   {category.icon}
@@ -270,7 +270,7 @@ export default function Categories() {
                   className={`absolute bottom-6 right-6 w-6 h-6 rounded-full border flex items-center justify-center transition-all ${
                     isSelected
                       ? "bg-white border-white"
-                      : "border-jet-black/10 group-hover:border-[#433075]"
+                      : "border-jet-black/10 group-hover:border-deep-purple"
                   }`}
                 >
                   {isSelected && (
@@ -299,7 +299,7 @@ export default function Categories() {
               "Select at least one category"
             ) : (
               <>
-                <span className="font-semibold text-[#433075]">
+                <span className="font-semibold text-deep-purple">
                   {selected.length}
                 </span>{" "}
                 {selected.length === 1 ? "category" : "categories"} selected
@@ -322,7 +322,7 @@ export default function Categories() {
               onClick={handleContinue}
               className={`group px-7 py-3.5 rounded-xl text-sm font-bold flex items-center gap-3 transition-all ${
                 selected.length > 0
-                  ? "bg-[#433075] text-white hover:shadow-xl hover:shadow-[#433075]/20 hover:-translate-y-0.5"
+                  ? "bg-deep-purple text-white hover:shadow-xl hover:shadow-deep-purple/20 hover:-translate-y-0.5"
                   : "bg-jet-black/10 text-jet-black/40 cursor-not-allowed"
               }`}
             >

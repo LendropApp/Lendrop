@@ -97,7 +97,7 @@ export default function EditProfile() {
 
   return (
     <div className="min-h-screen bg-soft-white pb-16">
-      <header className="sticky top-0 z-50 border-b border-jet-black/5 bg-soft-white/85 backdrop-blur-md">
+      <header className="glass sticky top-0 z-50">
         <div className="h-px bg-linear-to-r from-transparent via-lavender/50 to-transparent" />
         <div className="mx-auto flex max-w-xl items-center gap-3 px-6 py-4 sm:px-10">
           <Link
@@ -202,7 +202,7 @@ export default function EditProfile() {
           <button
             type="submit"
             disabled={saving}
-            className="w-full rounded-xl bg-linear-to-r from-deep-purple to-lavender py-3 text-sm font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)] transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 disabled:opacity-50"
+            className="w-full rounded-xl bg-linear-to-r from-deep-purple to-lavender py-3 text-sm font-semibold text-soft-white glow-sm transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 disabled:opacity-50"
           >
             {saving ? 'Saving…' : 'Save changes'}
           </button>

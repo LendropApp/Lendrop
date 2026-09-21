@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 
 export default function AuthLayout({ eyebrow = 'Smart locker network', children }) {
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-linear-to-br from-[#0d0d0d] via-[#241a42] to-[#0d0d0d] px-4 py-12">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-linear-to-br from-jet-black via-[#241a42] to-jet-black px-4 py-12">
       {/* Grid pattern, on-brand lavender lines at low opacity */}
       <LockerWallBg
         className="pointer-events-none absolute inset-0"

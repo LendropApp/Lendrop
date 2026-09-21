@@ -20,7 +20,7 @@ export default function Dashboard() {
           </button>
         </div>
 
-        <div className="rounded-2xl border border-jet-black/10 bg-white p-6">
+        <div className="rounded-2xl border border-lavender/15 bg-white p-6 glow-sm">
           <p className="text-sm text-jet-black/60">Signed in as</p>
           <p className="font-mono text-sm">{user?.email}</p>
         </div>

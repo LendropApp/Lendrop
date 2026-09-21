@@ -93,7 +93,7 @@
   /* Soft, brand-tinted elevation instead of default black shadows —
      reads as "lit from the brand color" rather than a generic drop shadow. */
   .glow-sm {
-    box-shadow: 0 4px 20px -6px rgb(165 140 244 / 0.5);
+    box-shadow: 0 4px 20px -4px rgb(165 140 244 / 0.6);
   }
 
   .glow {

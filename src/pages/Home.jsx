@@ -227,7 +227,7 @@ export default function Home() {
 
       {/* ================= HEADER ================= */}
 
-      <header className="sticky top-0 z-50 border-b border-jet-black/5 bg-soft-white/80 backdrop-blur">
+      <header className="glass sticky top-0 z-50">
 
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 sm:px-10">
 
@@ -264,7 +264,7 @@ export default function Home() {
 
             <Link
               to="/signup"
-              className="rounded-full bg-linear-to-r from-deep-purple to-lavender px-5 py-2.5 text-sm font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)] transition hover:brightness-105"
+              className="rounded-full bg-linear-to-r from-deep-purple to-lavender px-5 py-2.5 text-sm font-semibold text-soft-white glow-sm transition hover:brightness-105"
             >
               Get started
             </Link>
@@ -311,7 +311,7 @@ export default function Home() {
 
               <Link
                 to="/signup"
-                className="rounded-full bg-linear-to-r from-deep-purple to-lavender px-5 py-2.5 text-center text-sm font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)]"
+                className="rounded-full bg-linear-to-r from-deep-purple to-lavender px-5 py-2.5 text-center text-sm font-semibold text-soft-white glow-sm"
               >
                 Get started
               </Link>
@@ -363,7 +363,7 @@ export default function Home() {
 
             <Link
               to="/signup"
-              className="inline-flex items-center gap-2 rounded-full bg-linear-to-r from-deep-purple to-lavender px-6 py-3 text-sm font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)] transition hover:brightness-105"
+              className="inline-flex items-center gap-2 rounded-full bg-linear-to-r from-deep-purple to-lavender px-6 py-3 text-sm font-semibold text-soft-white glow-sm transition hover:brightness-105"
             >
               Explore items
               <ArrowRight className="h-4 w-4" />
@@ -680,7 +680,7 @@ export default function Home() {
                         displayedLocker.status !==
                         'available'
                       }
-                      className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-linear-to-r from-deep-purple to-lavender px-3 py-2 font-mono text-[9px] font-bold uppercase tracking-wider text-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)] transition hover:brightness-105 disabled:cursor-not-allowed disabled:bg-none disabled:bg-jet-black/10 disabled:text-jet-black/30 disabled:shadow-none"
+                      className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-linear-to-r from-deep-purple to-lavender px-3 py-2 font-mono text-[9px] font-bold uppercase tracking-wider text-white glow-sm transition hover:brightness-105 disabled:cursor-not-allowed disabled:bg-none disabled:bg-jet-black/10 disabled:text-jet-black/30 disabled:shadow-none"
                     >
                       {displayedLocker.status ===
                       'available'
@@ -795,7 +795,7 @@ export default function Home() {
 
             <Link
               to="/signup"
-              className="flex flex-col items-center justify-center gap-1 rounded-2xl bg-linear-to-r from-deep-purple to-lavender px-3 py-7 text-center text-xs font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)] transition hover:brightness-105"
+              className="flex flex-col items-center justify-center gap-1 rounded-2xl bg-linear-to-r from-deep-purple to-lavender px-3 py-7 text-center text-xs font-semibold text-soft-white glow-sm transition hover:brightness-105"
             >
               View full
               <br />
@@ -940,7 +940,7 @@ export default function Home() {
 
           <Link
             to="/signup"
-            className="inline-flex shrink-0 items-center gap-2 rounded-full bg-linear-to-r from-deep-purple to-lavender px-6 py-3 text-sm font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)] transition hover:brightness-105"
+            className="inline-flex shrink-0 items-center gap-2 rounded-full bg-linear-to-r from-deep-purple to-lavender px-6 py-3 text-sm font-semibold text-soft-white glow-sm transition hover:brightness-105"
           >
             Get started now
             <ArrowRight className="h-4 w-4" />

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, ImagePlus, X, Star } from 'lucide-react'
 import StatusMessage from '../components/StatusMessage'
 import PriceSuggestionButton from '../components/PriceSuggestionButton'
@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import { getCategoryIcon } from '../lib/categoryIcons'
 import AuroraBlobs from '../components/background/AuroraBlobs'
+import useSmartBack from '../hooks/useSmartBack'
 
 const MAX_PHOTOS = 6
 
@@ -20,6 +21,7 @@ const CONDITIONS = [
 export default function PublishItem() {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const goBack = useSmartBack('/explore')
 
   const [categories, setCategories] = useState([])
   const [categoriesError, setCategoriesError] = useState('')
@@ -215,13 +217,14 @@ export default function PublishItem() {
       <header className="glass sticky top-0 z-50">
         <div className="h-px bg-linear-to-r from-transparent via-lavender/50 to-transparent" />
         <div className="mx-auto flex max-w-2xl items-center gap-3 px-6 py-4 sm:px-10">
-          <Link
-            to="/explore"
+          <button
+            type="button"
+            onClick={goBack}
             aria-label="Back to Explore"
             className="flex h-9 w-9 items-center justify-center rounded-full border border-lavender/15 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple"
           >
             <ArrowLeft className="h-4 w-4" />
-          </Link>
+          </button>
           <div>
             <h1 className="font-display text-lg font-semibold text-jet-black">
               Publish an item

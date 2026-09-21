@@ -11,6 +11,7 @@ import {
   MapPin,
   MessageCircle,
   Package,
+  Settings,
   ShieldCheck,
   Sparkles,
 } from 'lucide-react'
@@ -20,6 +21,7 @@ import LockerAvatar from '../components/LockerAvatar'
 import StarRating from '../components/StarRating'
 import ProfileCompletion from '../components/ProfileCompletion'
 import AuroraBlobs from '../components/background/AuroraBlobs'
+import useSmartBack from '../hooks/useSmartBack'
 
 const ACCOUNT_MENU = [
   { to: '/messages', icon: MessageCircle, label: 'Messages', desc: 'Coordinate pickups and drop offs' },
@@ -28,11 +30,13 @@ const ACCOUNT_MENU = [
   { to: '/payment-methods', icon: CreditCard, label: 'Payment methods', desc: 'Manage saved cards' },
   { to: '/earnings-dashboard', icon: BarChart3, label: 'Lender statistics', desc: 'Earnings and ratings' },
   { to: '/premium', icon: Sparkles, label: 'Lendrop Premium', desc: 'Coming soon', badge: 'Soon' },
+  { to: '/settings', icon: Settings, label: 'Settings', desc: 'Notifications, browsing defaults, password' },
 ]
 
 export default function Profile() {
   const { user, profile, profileLoading, signOut } = useAuth()
   const navigate = useNavigate()
+  const goBack = useSmartBack('/explore')
 
   const [itemsCount, setItemsCount] = useState(0)
   const [favoritesCount, setFavoritesCount] = useState(0)
@@ -73,14 +77,15 @@ export default function Profile() {
       <header className="glass sticky top-0 z-50">
         <div className="h-px bg-linear-to-r from-transparent via-lavender/50 to-transparent" />
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-6 py-4 sm:px-10">
-          <Link
-            to="/explore"
+          <button
+            type="button"
+            onClick={goBack}
             aria-label="Back to Explore"
             className="flex items-center gap-2 text-sm font-medium text-jet-black/60 transition hover:text-deep-purple"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Explore
-          </Link>
+          </button>
           <img src="/logo-lendrop.png" alt="Lendrop" className="h-7 w-auto" />
           <button
             type="button"

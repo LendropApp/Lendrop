@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
   Search,
@@ -11,6 +11,7 @@ import {
   UserCircle2,
   Menu,
   CreditCard,
+  Settings as SettingsIcon,
   ShieldCheck,
   Sparkles,
   History,
@@ -56,6 +57,7 @@ export default function Explore() {
   const [unreadNotifications, setUnreadNotifications] = useState(0)
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const hasAppliedDefaultCity = useRef(false)
 
   const firstName = user?.user_metadata?.full_name?.split(' ')[0]
 
@@ -137,14 +139,34 @@ export default function Explore() {
       return
     }
     let cancelled = false
-    supabase
-      .from('notifications')
-      .select('id', { count: 'exact', head: true })
-      .eq('user_id', user.id)
-      .eq('is_read', false)
-      .then(({ count }) => {
-        if (!cancelled) setUnreadNotifications(count ?? 0)
-      })
+
+    Promise.all([
+      supabase.from('notifications').select('type').eq('user_id', user.id).eq('is_read', false),
+      supabase
+        .from('user_preferences')
+        .select('notify_messages, notify_reservations, notify_reviews, default_city')
+        .eq('user_id', user.id)
+        .maybeSingle(),
+    ]).then(([{ data: unread }, { data: prefs }]) => {
+      if (cancelled) return
+
+      const mutedTypes = new Set()
+      if (prefs?.notify_messages === false) mutedTypes.add('message')
+      if (prefs?.notify_reservations === false) {
+        mutedTypes.add('reservation')
+        mutedTypes.add('payment')
+      }
+      if (prefs?.notify_reviews === false) mutedTypes.add('review')
+      setUnreadNotifications((unread ?? []).filter((n) => !mutedTypes.has(n.type)).length)
+
+      // Apply the saved default browsing city once, without overriding a
+      // filter the user has already picked this session.
+      if (prefs?.default_city && !hasAppliedDefaultCity.current) {
+        hasAppliedDefaultCity.current = true
+        setSelectedCity(prefs.default_city)
+      }
+    })
+
     return () => {
       cancelled = true
     }
@@ -359,6 +381,14 @@ export default function Explore() {
                     >
                       <Sparkles className="h-4 w-4 text-jet-black/50" />
                       Premium
+                    </Link>
+                    <Link
+                      to="/settings"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-jet-black transition hover:bg-lavender/5"
+                    >
+                      <SettingsIcon className="h-4 w-4 text-jet-black/50" />
+                      Settings
                     </Link>
                     <div className="my-1.5 border-t border-jet-black/5" />
                     <button

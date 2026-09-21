@@ -9,6 +9,11 @@ import AuroraBlobs from '../components/background/AuroraBlobs'
 
 const STEPS = ['Reserved', 'Delivered', 'In Use', 'Returned']
 
+function formatDateRange(start, end) {
+  const opts = { month: 'short', day: 'numeric' }
+  return `${new Date(start).toLocaleDateString([], opts)} – ${new Date(end).toLocaleDateString([], opts)}`
+}
+
 export default function RentalTracking() {
   const { user } = useAuth()
   const [searchParams] = useSearchParams()
@@ -18,6 +23,7 @@ export default function RentalTracking() {
   const [events, setEvents] = useState([])
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
+  const [pickList, setPickList] = useState(null)
 
   const [dui, setDui] = useState('')
   const [password, setPassword] = useState('')
@@ -38,18 +44,34 @@ export default function RentalTracking() {
       return
     }
     setLoading(true)
+    setPickList(null)
 
     let reservationId = paramReservationId
     if (!reservationId) {
+      // No specific reservation was requested (e.g. the nav bar's generic
+      // "Track" button) — if there's more than one active rental, we can't
+      // just guess which one the user means, so ask instead of silently
+      // always showing the most recent.
       const { data } = await supabase
         .from('reservations')
-        .select('id')
+        .select('id, start_date, end_date, item:items(title)')
         .eq('renter_id', user.id)
         .in('status', ['confirmed', 'active'])
         .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle()
-      reservationId = data?.id ?? null
+
+      const rows = data ?? []
+      if (rows.length === 0) {
+        setReservation(null)
+        setNotFound(true)
+        setLoading(false)
+        return
+      }
+      if (rows.length > 1) {
+        setPickList(rows)
+        setLoading(false)
+        return
+      }
+      reservationId = rows[0].id
     }
 
     if (!reservationId) {
@@ -170,6 +192,35 @@ export default function RentalTracking() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-soft-white">
         <p className="text-sm text-jet-black/50">Loading your rental…</p>
+      </div>
+    )
+  }
+
+  if (pickList) {
+    return (
+      <div className="min-h-screen bg-soft-white pb-16">
+        <PageHeader backTo="/history" backLabel="Back to Activity" />
+        <div className="mx-auto max-w-2xl px-6 py-8 sm:px-10">
+          <h1 className="font-display text-2xl font-bold text-jet-black">Which rental?</h1>
+          <p className="mt-1 text-sm text-jet-black/50">
+            You have {pickList.length} active rentals — pick one to track.
+          </p>
+          <div className="mt-6 space-y-3">
+            {pickList.map((r) => (
+              <Link
+                key={r.id}
+                to={`/rental-tracking?reservationId=${r.id}`}
+                className="flex items-center justify-between gap-3 rounded-2xl border border-lavender/15 bg-white p-4 transition hover:border-lavender"
+              >
+                <div className="min-w-0">
+                  <p className="truncate font-semibold text-jet-black">{r.item?.title ?? 'Item'}</p>
+                  <p className="text-xs text-jet-black/45">{formatDateRange(r.start_date, r.end_date)}</p>
+                </div>
+                <span className="shrink-0 text-xs font-semibold text-deep-purple">Track →</span>
+              </Link>
+            ))}
+          </div>
+        </div>
       </div>
     )
   }

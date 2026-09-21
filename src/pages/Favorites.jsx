@@ -5,9 +5,11 @@ import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import ProductCard from '../components/ProductCard'
 import AuroraBlobs from '../components/background/AuroraBlobs'
+import useSmartBack from '../hooks/useSmartBack'
 
 export default function Favorites() {
   const { user } = useAuth()
+  const goBack = useSmartBack('/explore')
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -50,14 +52,15 @@ export default function Favorites() {
       <header className="glass sticky top-0 z-50">
         <div className="h-px bg-linear-to-r from-transparent via-lavender/50 to-transparent" />
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-6 py-4 sm:px-10">
-          <Link
-            to="/explore"
+          <button
+            type="button"
+            onClick={goBack}
             aria-label="Back to Explore"
             className="flex items-center gap-2 text-sm font-medium text-jet-black/60 transition hover:text-deep-purple"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Explore
-          </Link>
+          </button>
           <img src="/logo-lendrop.png" alt="Lendrop" className="h-7 w-auto" />
           <div className="w-24" />
         </div>

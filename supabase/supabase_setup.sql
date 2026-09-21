@@ -516,6 +516,29 @@ comment on table public.messages is 'DECISIÓN DE PRODUCTO PENDIENTE: la mensaje
 create index messages_conversation_idx on public.messages(conversation_id);
 
 
+-- ────────────────────────────────────────────────────────────────────
+-- 19.1 PREFERENCIAS DE USUARIO (notificaciones, filtros por defecto)
+-- ────────────────────────────────────────────────────────────────────
+-- Misma razón que profile_private: "profiles" es de lectura pública, así
+-- que qué tipos de notificación silenció un usuario NO debe vivir ahí —
+-- va en su propia tabla, solo legible/editable por el dueño.
+create table public.user_preferences (
+  user_id uuid primary key references public.profiles(id) on delete cascade,
+  notify_messages boolean not null default true,
+  notify_reservations boolean not null default true,
+  notify_reviews boolean not null default true,
+  default_city text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+comment on table public.user_preferences is 'Preferencias de usuario por app (silenciar tipos de notificación, ciudad de búsqueda por defecto). Solo el dueño — nunca lectura pública.';
+
+create trigger set_user_preferences_updated_at
+  before update on public.user_preferences
+  for each row execute function public.set_updated_at();
+
+
 -- ════════════════════════════════════════════════════════════════════
 -- 20. ROW LEVEL SECURITY (RLS)
 -- ════════════════════════════════════════════════════════════════════
@@ -543,6 +566,7 @@ alter table public.disputes enable row level security;
 alter table public.conversations enable row level security;
 alter table public.conversation_participants enable row level security;
 alter table public.messages enable row level security;
+alter table public.user_preferences enable row level security;
 
 -- PROFILES: cualquiera puede ver perfiles públicos; solo el dueño edita el suyo.
 create policy "profiles_select_all" on public.profiles for select using (true);
@@ -720,6 +744,14 @@ create policy "messages_insert_participant" on public.messages
       where cp.conversation_id = conversation_id and cp.user_id = auth.uid()
     )
   );
+
+-- USER PREFERENCES: solo el dueño lee/escribe las suyas.
+create policy "user_preferences_select_own" on public.user_preferences
+  for select using (user_id = auth.uid());
+create policy "user_preferences_insert_own" on public.user_preferences
+  for insert with check (user_id = auth.uid());
+create policy "user_preferences_update_own" on public.user_preferences
+  for update using (user_id = auth.uid());
 
 -- ════════════════════════════════════════════════════════════════════
 -- FIN DEL SCRIPT

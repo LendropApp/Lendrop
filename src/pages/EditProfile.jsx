@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Camera } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import LockerAvatar from '../components/LockerAvatar'
 import StatusMessage from '../components/StatusMessage'
 import AuroraBlobs from '../components/background/AuroraBlobs'
+import useSmartBack from '../hooks/useSmartBack'
 
 export default function EditProfile() {
   const { user, profile, refreshProfile } = useAuth()
   const navigate = useNavigate()
+  const goBack = useSmartBack('/profile')
 
   const [fullName, setFullName] = useState('')
   const [phone, setPhone] = useState('')
@@ -100,13 +102,14 @@ export default function EditProfile() {
       <header className="glass sticky top-0 z-50">
         <div className="h-px bg-linear-to-r from-transparent via-lavender/50 to-transparent" />
         <div className="mx-auto flex max-w-xl items-center gap-3 px-6 py-4 sm:px-10">
-          <Link
-            to="/profile"
+          <button
+            type="button"
+            onClick={goBack}
             aria-label="Back to Profile"
             className="flex h-9 w-9 items-center justify-center rounded-full border border-lavender/15 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple"
           >
             <ArrowLeft className="h-4 w-4" />
-          </Link>
+          </button>
           <div>
             <h1 className="font-display text-lg font-semibold text-jet-black">Edit profile</h1>
             <p className="font-mono text-[10px] uppercase tracking-widest text-lavender">

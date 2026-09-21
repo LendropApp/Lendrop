@@ -4,6 +4,8 @@ import { Clock } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import PageHeader from '../components/PageHeader'
+import StarRating from '../components/StarRating'
+import StatusMessage from '../components/StatusMessage'
 import AuroraBlobs from '../components/background/AuroraBlobs'
 
 const STATUS_STYLES = {
@@ -43,6 +45,13 @@ export default function History() {
   const [confirmCancelId, setConfirmCancelId] = useState(null)
   const [cancelling, setCancelling] = useState(false)
 
+  const [myReviews, setMyReviews] = useState({})
+  const [openReviewId, setOpenReviewId] = useState(null)
+  const [draftRating, setDraftRating] = useState(0)
+  const [draftComment, setDraftComment] = useState('')
+  const [reviewSubmitting, setReviewSubmitting] = useState(false)
+  const [reviewStatus, setReviewStatus] = useState({ type: '', text: '' })
+
   useEffect(() => {
     if (!user) {
       setLoading(false)
@@ -56,20 +65,21 @@ export default function History() {
         .from('reservations')
         .select(
           `id, start_date, end_date, status, total_price,
-           item:items(title, owner:profiles!items_owner_id_fkey(full_name))`
+           item:items(title, owner_id, owner:profiles!items_owner_id_fkey(full_name))`
         )
         .eq('renter_id', user.id)
         .order('created_at', { ascending: false }),
       supabase
         .from('reservations')
         .select(
-          `id, start_date, end_date, status, total_price,
+          `id, start_date, end_date, status, total_price, renter_id,
            item:items!inner(title, owner_id),
            renter:profiles!reservations_renter_id_fkey(full_name)`
         )
         .eq('item.owner_id', user.id)
         .order('created_at', { ascending: false }),
-    ]).then(([rentalsRes, lendingsRes]) => {
+      supabase.from('reviews').select('reservation_id, rating, comment').eq('reviewer_id', user.id),
+    ]).then(([rentalsRes, lendingsRes, reviewsRes]) => {
       if (cancelled) return
       if (rentalsRes.error || lendingsRes.error) {
         setError('Could not load your activity. Please refresh.')
@@ -79,6 +89,7 @@ export default function History() {
             id: r.id,
             itemTitle: r.item?.title ?? 'Item',
             counterparty: r.item?.owner?.full_name ?? 'Lender',
+            revieweeId: r.item?.owner_id ?? null,
             startDate: r.start_date,
             endDate: r.end_date,
             totalPrice: Number(r.total_price),
@@ -90,12 +101,19 @@ export default function History() {
             id: r.id,
             itemTitle: r.item?.title ?? 'Item',
             counterparty: r.renter?.full_name ?? 'Renter',
+            revieweeId: r.renter_id,
             startDate: r.start_date,
             endDate: r.end_date,
             totalPrice: Number(r.total_price),
             status: r.status,
           }))
         )
+
+        const reviewMap = {}
+        for (const rv of reviewsRes.data ?? []) {
+          reviewMap[rv.reservation_id] = { rating: rv.rating, comment: rv.comment }
+        }
+        setMyReviews(reviewMap)
       }
       setLoading(false)
     })
@@ -119,6 +137,42 @@ export default function History() {
     if (error) return
     setRentals((prev) => prev.map((r) => (r.id === id ? { ...r, status: 'cancelled' } : r)))
     setConfirmCancelId(null)
+  }
+
+  function openReviewForm(row) {
+    setOpenReviewId(row.id)
+    setDraftRating(0)
+    setDraftComment('')
+    setReviewStatus({ type: '', text: '' })
+  }
+
+  async function handleSubmitReview(e, row) {
+    e.preventDefault()
+    if (!draftRating) {
+      setReviewStatus({ type: 'error', text: 'Pick a rating first.' })
+      return
+    }
+
+    setReviewSubmitting(true)
+    setReviewStatus({ type: '', text: '' })
+
+    const { error } = await supabase.from('reviews').insert({
+      reservation_id: row.id,
+      reviewer_id: user.id,
+      reviewee_id: row.revieweeId,
+      rating: draftRating,
+      comment: draftComment.trim() || null,
+    })
+
+    setReviewSubmitting(false)
+
+    if (error) {
+      setReviewStatus({ type: 'error', text: 'Could not save your review. Please try again.' })
+      return
+    }
+
+    setMyReviews((prev) => ({ ...prev, [row.id]: { rating: draftRating, comment: draftComment.trim() || null } }))
+    setOpenReviewId(null)
   }
 
   return (
@@ -185,6 +239,62 @@ export default function History() {
                       >
                         {tab === 'rentals' ? 'Track pickup →' : 'Deliver item →'}
                       </Link>
+                    </div>
+                  )}
+
+                  {row.status === 'completed' && row.revieweeId && (
+                    <div className="mt-3 border-t border-jet-black/5 pt-3">
+                      {myReviews[row.id] ? (
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <StarRating value={myReviews[row.id].rating} size="sm" />
+                            <span className="text-xs text-jet-black/45">
+                              You rated {tab === 'rentals' ? 'this lender' : 'this renter'}
+                            </span>
+                          </div>
+                          {myReviews[row.id].comment && (
+                            <p className="mt-1.5 text-xs leading-5 text-jet-black/55">{myReviews[row.id].comment}</p>
+                          )}
+                        </div>
+                      ) : openReviewId === row.id ? (
+                        <form onSubmit={(e) => handleSubmitReview(e, row)} className="space-y-2">
+                          <StarRating value={draftRating} onChange={setDraftRating} size="sm" />
+                          <textarea
+                            value={draftComment}
+                            onChange={(e) => setDraftComment(e.target.value.slice(0, 500))}
+                            placeholder={`How was ${row.counterparty}?`}
+                            rows={2}
+                            className="w-full resize-none rounded-xl border border-lavender/15 px-3 py-2 text-xs outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+                          />
+                          <div className="flex items-center justify-between gap-2">
+                            <StatusMessage type={reviewStatus.type} text={reviewStatus.text} />
+                            <div className="ml-auto flex shrink-0 gap-2">
+                              <button
+                                type="button"
+                                onClick={() => setOpenReviewId(null)}
+                                className="rounded-full border border-jet-black/10 px-3 py-1 text-xs font-semibold text-jet-black/60 hover:bg-jet-black/5"
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                type="submit"
+                                disabled={reviewSubmitting}
+                                className="rounded-full bg-linear-to-r from-deep-purple to-lavender px-3 py-1 text-xs font-semibold text-soft-white disabled:opacity-50"
+                              >
+                                {reviewSubmitting ? 'Saving…' : 'Submit'}
+                              </button>
+                            </div>
+                          </div>
+                        </form>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => openReviewForm(row)}
+                          className="text-xs font-semibold text-deep-purple hover:text-lavender"
+                        >
+                          Rate {tab === 'rentals' ? 'this lender' : 'this renter'} →
+                        </button>
+                      )}
                     </div>
                   )}
 

@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import HostRoute from "./components/HostRoute";
+import VerifiedRoute from "./components/VerifiedRoute";
 
 import HostOnboardingWizard from "./pages/host-onboarding/HostOnboardingWizard";
 
@@ -208,11 +209,16 @@ export default function App() {
             }
           />
 
+          {/* Publishing needs BOTH: a host profile (HostRoute) and a
+              verified identity (VerifiedRoute). The server enforces the
+              verification half too — see migration 0019. */}
           <Route
             path="/publish"
             element={
               <HostRoute>
-                <PublishItem />
+                <VerifiedRoute reason="publish">
+                  <PublishItem />
+                </VerifiedRoute>
               </HostRoute>
             }
           />

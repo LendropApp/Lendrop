@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft, ImagePlus, X, Star } from 'lucide-react'
 import StatusMessage from '../components/StatusMessage'
+import VerificationNotice from '../components/VerificationNotice'
+import { isVerificationError } from '../lib/verification'
 import PriceSuggestionButton from '../components/PriceSuggestionButton'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
@@ -18,7 +20,7 @@ const CONDITIONS = [
 ]
 
 export default function PublishItem() {
-  const { user } = useAuth()
+  const { user, verificationStatus, isVerified } = useAuth()
   const navigate = useNavigate()
 
   const [categories, setCategories] = useState([])
@@ -111,6 +113,18 @@ export default function PublishItem() {
       return
     }
 
+    // VerifiedRoute normally keeps unverified users off this screen, so
+    // this is the backstop for a status that changed mid-session. The
+    // real gate is the items_insert_own RLS policy (migration 0019),
+    // handled below.
+    if (!isVerified) {
+      setStatus({
+        type: 'error',
+        text: 'You need to verify your identity before publishing an item.',
+      })
+      return
+    }
+
     setIsSubmitting(true)
 
     const { data: item, error: itemError } = await supabase
@@ -131,7 +145,12 @@ export default function PublishItem() {
 
     if (itemError) {
       setIsSubmitting(false)
-      setStatus({ type: 'error', text: 'Could not publish the item. Please try again.' })
+      setStatus({
+        type: 'error',
+        text: isVerificationError(itemError)
+          ? 'You need to verify your identity before publishing an item.'
+          : 'Could not publish the item. Please try again.',
+      })
       return
     }
 
@@ -236,6 +255,8 @@ export default function PublishItem() {
       <div className="relative isolate overflow-hidden">
         <AuroraBlobs className="opacity-30" />
       <form onSubmit={handleSubmit} className="relative mx-auto max-w-2xl space-y-8 px-6 pt-8 sm:px-10">
+        <VerificationNotice status={verificationStatus} action="publish" />
+
         {/* ================= PHOTOS ================= */}
         <section>
           <label className="mb-2 block text-sm font-medium text-jet-black">
@@ -493,10 +514,14 @@ export default function PublishItem() {
 
         <button
           type="submit"
-          disabled={isSubmitting}
-          className="w-full rounded-xl bg-linear-to-r from-deep-purple to-lavender py-3 text-sm font-semibold text-soft-white glow-sm transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 disabled:opacity-50"
+          disabled={isSubmitting || !isVerified}
+          className="w-full rounded-xl bg-linear-to-r from-deep-purple to-lavender py-3 text-sm font-semibold text-soft-white glow-sm transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {isSubmitting ? 'Publishing…' : 'Publish item'}
+          {isSubmitting
+            ? 'Publishing…'
+            : isVerified
+              ? 'Publish item'
+              : 'Verify your identity to publish'}
         </button>
       </form>
       </div>

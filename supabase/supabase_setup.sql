@@ -301,6 +301,11 @@ begin
   if current_user_id is null then
     raise exception 'Not authenticated' using errcode = '42501';
   end if;
+  -- 'IDENTITY_NOT_VERIFIED' es el contrato que el frontend busca para
+  -- mostrar "verifica tu identidad" en vez de un error genérico.
+  if not public.is_identity_verified(current_user_id) then
+    raise exception 'IDENTITY_NOT_VERIFIED' using errcode = '42501';
+  end if;
   if p_end_date < p_start_date then
     raise exception 'Invalid date range' using errcode = '22023';
   end if;
@@ -459,6 +464,79 @@ create table public.identity_verifications (
 
 create index identity_verifications_user_idx on public.identity_verifications(user_id);
 
+-- Identity verification is REQUIRED to publish an item and to book one
+-- (see the policies in section 20 and create_pending_reservation).
+-- SECURITY DEFINER so it reads profiles regardless of the RLS context
+-- it gets called from — policies, and SECURITY DEFINER RPCs alike.
+create or replace function public.is_identity_verified(p_user_id uuid default null)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1
+    from public.profiles
+    where id = coalesce(p_user_id, auth.uid())
+      and verification_status = 'verified'
+  );
+$$;
+
+grant execute on function public.is_identity_verified(uuid) to authenticated, anon;
+
+-- profiles_update_own is row-level, so on its own it would let anyone
+-- PATCH their own verification_status to 'verified' from the browser —
+-- which would make every check above decorative. Postgres RLS can't say
+-- "every column except this one", so a BEFORE UPDATE trigger reverts the
+-- change instead. Legitimate writers (the sync trigger below) flag
+-- themselves with lendrop.allow_verification_write; a human reviewer
+-- using the service role is allowed outright.
+create or replace function public.protect_verification_status()
+returns trigger
+language plpgsql
+as $$
+begin
+  if new.verification_status is distinct from old.verification_status
+     and coalesce(current_setting('lendrop.allow_verification_write', true), 'off') <> 'on'
+     and coalesce(auth.role(), '') <> 'service_role'
+  then
+    new.verification_status := old.verification_status;
+  end if;
+  return new;
+end;
+$$;
+
+create trigger protect_profiles_verification_status
+  before update on public.profiles
+  for each row execute function public.protect_verification_status();
+
+-- Submitting documents moves the profile to 'pending' (the UI shows that
+-- differently from 'unverified'); a reviewer flipping the
+-- identity_verifications row to verified/rejected propagates too, so the
+-- reviewer never has to remember to update two tables.
+create or replace function public.sync_verification_status()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  perform set_config('lendrop.allow_verification_write', 'on', true);
+
+  update public.profiles
+  set verification_status = new.status
+  where id = new.user_id;
+
+  perform set_config('lendrop.allow_verification_write', 'off', true);
+  return new;
+end;
+$$;
+
+create trigger sync_profile_verification_status
+  after insert or update of status on public.identity_verifications
+  for each row execute function public.sync_verification_status();
+
 
 -- ────────────────────────────────────────────────────────────────────
 -- 17. FAVORITES
@@ -563,8 +641,13 @@ create policy "categories_select_all" on public.categories for select using (tru
 -- ITEMS: cualquiera ve artículos disponibles; el dueño ve y gestiona los suyos.
 create policy "items_select_available_or_own" on public.items
   for select using (is_available = true or owner_id = auth.uid());
+-- Publicar exige identidad verificada. Va aquí (y no solo en el
+-- frontend) porque un cliente se puede editar: esta es la barrera real.
 create policy "items_insert_own" on public.items
-  for insert with check (owner_id = auth.uid());
+  for insert with check (
+    owner_id = auth.uid()
+    and public.is_identity_verified()
+  );
 create policy "items_update_own" on public.items
   for update using (owner_id = auth.uid());
 create policy "items_delete_own" on public.items
@@ -594,8 +677,15 @@ create policy "reservations_select_involved" on public.reservations
     renter_id = auth.uid()
     or exists (select 1 from public.items i where i.id = item_id and i.owner_id = auth.uid())
   );
+-- Rentar también exige identidad verificada. OJO: las RPC
+-- create_pending_reservation / create_simulated_reservation son
+-- SECURITY DEFINER, así que esta policy NO aplica dentro de ellas —
+-- llevan su propio check de is_identity_verified().
 create policy "reservations_insert_own" on public.reservations
-  for insert with check (renter_id = auth.uid());
+  for insert with check (
+    renter_id = auth.uid()
+    and public.is_identity_verified()
+  );
 create policy "reservations_update_involved" on public.reservations
   for update using (
     renter_id = auth.uid()

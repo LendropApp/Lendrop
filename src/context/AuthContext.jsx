@@ -116,6 +116,13 @@ export function AuthProvider({ children }) {
     return { data, error }
   }
 
+  // profiles.verification_status drives the "you must verify your
+  // identity before publishing/renting" rule. The server enforces it too
+  // (RLS on items/reservations + the reservation RPCs, see migration
+  // 0019) — this is only so the UI can explain itself before the user
+  // hits a wall.
+  const verificationStatus = profile?.verification_status ?? 'unverified'
+
   const value = {
     user,
     session,
@@ -124,6 +131,8 @@ export function AuthProvider({ children }) {
     profile,
     profileLoading,
     isHost: !!profile?.is_host,
+    verificationStatus,
+    isVerified: verificationStatus === 'verified',
     refreshProfile,
     signUp,
     signIn,

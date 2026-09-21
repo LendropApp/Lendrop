@@ -10,6 +10,8 @@ import LockerAvatar from '../components/LockerAvatar'
 import StarRating from '../components/StarRating'
 import StatusMessage from '../components/StatusMessage'
 import AvailabilityCalendar from '../components/AvailabilityCalendar'
+import VerificationNotice from '../components/VerificationNotice'
+import { isVerificationError } from '../lib/verification'
 import AuroraBlobs from '../components/background/AuroraBlobs'
 
 function photoUrl(photo) {
@@ -33,7 +35,7 @@ function startOfDay(date) {
 
 export default function ItemDetail() {
   const { itemId } = useParams()
-  const { user } = useAuth()
+  const { user, verificationStatus, isVerified } = useAuth()
   const navigate = useNavigate()
 
   const [item, setItem] = useState(null)
@@ -218,6 +220,21 @@ export default function ItemDetail() {
 
   async function handleConfirmBooking() {
     if (!selectedRange.start || !selectedRange.end || !user) return
+
+    // Renting requires a verified identity. The panel already shows the
+    // notice instead of the calendar for unverified users — this only
+    // catches a status that went stale mid-session. The authoritative
+    // check lives inside create_simulated_reservation (migration 0019),
+    // which is SECURITY DEFINER and therefore the only thing a tampered
+    // client can't route around.
+    if (!isVerified) {
+      setBookingStatus({
+        type: 'error',
+        text: 'You need to verify your identity before booking a rental.',
+      })
+      return
+    }
+
     setBooking(true)
     setBookingStatus({ type: '', text: '' })
 
@@ -246,7 +263,9 @@ export default function ItemDetail() {
         type: 'error',
         text: overlapping
           ? 'Those dates were just booked by someone else. Please pick different dates.'
-          : 'Could not complete the booking. Please try again.',
+          : isVerificationError(error)
+            ? 'You need to verify your identity before booking a rental.'
+            : 'Could not complete the booking. Please try again.',
       })
       await loadBookedRanges()
       return
@@ -512,7 +531,9 @@ export default function ItemDetail() {
 
               {!isOwner && (
                 <div className="mt-3">
-                  {!showBooking ? (
+                  {user && !isVerified ? (
+                    <VerificationNotice status={verificationStatus} action="rent" />
+                  ) : !showBooking ? (
                     <button
                       type="button"
                       onClick={handleStartBooking}

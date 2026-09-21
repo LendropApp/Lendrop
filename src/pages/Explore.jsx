@@ -1,6 +1,22 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Search, Heart, Bell, MessageCircle, Store, Plus, MapPin, UserCircle2 } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import {
+  Search,
+  Heart,
+  Bell,
+  MessageCircle,
+  Store,
+  Plus,
+  MapPin,
+  UserCircle2,
+  Menu,
+  CreditCard,
+  ShieldCheck,
+  Sparkles,
+  History,
+  LogOut,
+  Mail,
+} from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import { getCategoryIcon } from '../lib/categoryIcons'
@@ -20,7 +36,8 @@ const ROUTES = {
 }
 
 export default function Explore() {
-  const { user, isHost, profile, profileLoading } = useAuth()
+  const { user, isHost, profile, profileLoading, signOut } = useAuth()
+  const navigate = useNavigate()
 
   const [categories, setCategories] = useState([])
   const [items, setItems] = useState([])
@@ -35,6 +52,8 @@ export default function Explore() {
   const [rentedItemIds, setRentedItemIds] = useState(new Set())
 
   const [unreadNotifications, setUnreadNotifications] = useState(0)
+  const [scrolled, setScrolled] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   const firstName = user?.user_metadata?.full_name?.split(' ')[0]
 
@@ -129,6 +148,20 @@ export default function Explore() {
     }
   }, [user])
 
+  useEffect(() => {
+    function onScroll() {
+      setScrolled(window.scrollY > 72)
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  async function handleSignOut() {
+    setMenuOpen(false)
+    await signOut()
+    navigate('/')
+  }
+
   const profileSteps = useMemo(() => buildSteps(user, profile), [user, profile])
   const profileIncomplete = Boolean(user) && !profileLoading && profileSteps.some((s) => !s.done)
 
@@ -207,15 +240,136 @@ export default function Explore() {
   return (
     <div className="min-h-screen bg-soft-white">
       {/* ================= HEADER ================= */}
-      <header className="sticky top-0 z-50 border-b border-jet-black/5 bg-soft-white/85 shadow-[0_8px_24px_-18px_rgba(67,48,117,0.35)] backdrop-blur-md">
+      <header className="sticky top-0 z-50 border-b border-jet-black/5 bg-soft-white/90 shadow-[0_8px_24px_-18px_rgba(67,48,117,0.35)] backdrop-blur-md">
         <div className="h-px bg-linear-to-r from-transparent via-lavender/50 to-transparent" />
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-6 py-4 sm:px-10">
-          <Link to="/" className="shrink-0">
-            <img src="/logo-lendrop.png" alt="Lendrop" className="h-7 w-auto" />
-          </Link>
 
-          {/* Search — desktop */}
-          <div className="hidden max-w-md flex-1 items-center gap-2 rounded-full border border-jet-black/10 bg-white px-4 py-2.5 shadow-sm transition hover:shadow-md focus-within:border-lavender focus-within:shadow-[0_0_0_1px_rgba(165,140,244,0.4),0_8px_24px_-8px_rgba(165,140,244,0.5)] focus-within:ring-2 focus-within:ring-lavender/30 sm:flex">
+        {!scrolled && (
+          <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-6 pt-4 sm:px-10">
+            <Link to="/" className="shrink-0">
+              <img src="/logo-lendrop.png" alt="Lendrop" className="h-7 w-auto" />
+            </Link>
+
+            {/* Main nav — centered, like Airbnb's top tabs */}
+            <nav className="flex items-center gap-1 rounded-full border border-jet-black/10 bg-white p-1 shadow-sm">
+              {isHost && (
+                <Link
+                  to={ROUTES.publish}
+                  className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-jet-black/60 transition hover:bg-lavender/10 hover:text-deep-purple"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">Publish</span>
+                </Link>
+              )}
+              <Link
+                to={ROUTES.favorites}
+                className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-jet-black/60 transition hover:bg-lavender/10 hover:text-deep-purple"
+              >
+                <Heart className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Saved</span>
+              </Link>
+              <Link
+                to={ROUTES.messages}
+                className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-jet-black/60 transition hover:bg-lavender/10 hover:text-deep-purple"
+              >
+                <MessageCircle className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Messages</span>
+              </Link>
+              <Link
+                to={ROUTES.notifications}
+                className="relative flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-jet-black/60 transition hover:bg-lavender/10 hover:text-deep-purple"
+              >
+                <Bell className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Alerts</span>
+                {hasUnreadNotifications && (
+                  <span className="absolute right-1.5 top-1 h-1.5 w-1.5 animate-pulse rounded-full bg-lavender ring-2 ring-white" />
+                )}
+              </Link>
+            </nav>
+
+            {!isHost && (
+              <Link
+                to={ROUTES.becomeLender}
+                className="flex shrink-0 items-center gap-1.5 rounded-full bg-linear-to-r from-deep-purple to-lavender px-4 py-2 text-xs font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(67,48,117,0.5)] transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.6)] hover:brightness-105"
+              >
+                <Store className="h-3.5 w-3.5" />
+                Become a Lender
+              </Link>
+            )}
+
+            {/* Profile, next to the hamburger with the rest of the options */}
+            <div className="relative flex shrink-0 items-center gap-2">
+              <Link
+                to={ROUTES.profile}
+                aria-label="Your account"
+                className="rounded-full transition hover:ring-2 hover:ring-lavender/40"
+              >
+                <LockerAvatar label={firstName} photoUrl={profile?.avatar_url} verified={isVerified} size="md" />
+              </Link>
+              <button
+                type="button"
+                aria-label="More options"
+                aria-expanded={menuOpen}
+                onClick={() => setMenuOpen((v) => !v)}
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-jet-black/10 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple"
+              >
+                <Menu className="h-4 w-4" />
+              </button>
+
+              {menuOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
+                  <div className="absolute right-0 top-full z-50 mt-2 w-60 overflow-hidden rounded-2xl border border-jet-black/10 bg-white py-1.5 shadow-xl">
+                    <Link
+                      to="/history"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-jet-black transition hover:bg-lavender/5"
+                    >
+                      <History className="h-4 w-4 text-jet-black/50" />
+                      Activity
+                    </Link>
+                    <Link
+                      to="/payment-methods"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-jet-black transition hover:bg-lavender/5"
+                    >
+                      <CreditCard className="h-4 w-4 text-jet-black/50" />
+                      Payment methods
+                    </Link>
+                    <Link
+                      to="/verification"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-jet-black transition hover:bg-lavender/5"
+                    >
+                      <ShieldCheck className="h-4 w-4 text-jet-black/50" />
+                      Verification
+                    </Link>
+                    <Link
+                      to="/premium"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-jet-black transition hover:bg-lavender/5"
+                    >
+                      <Sparkles className="h-4 w-4 text-jet-black/50" />
+                      Premium
+                    </Link>
+                    <div className="my-1.5 border-t border-jet-black/5" />
+                    <button
+                      type="button"
+                      onClick={handleSignOut}
+                      className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-500 transition hover:bg-red-50"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Sign out
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Search — the one thing that stays visible once you scroll */}
+        <div className={`mx-auto max-w-2xl px-6 sm:px-10 ${scrolled ? 'py-3' : 'pb-4 pt-3'}`}>
+          <div className="flex items-center gap-2 rounded-full border border-jet-black/10 bg-white px-4 py-2.5 shadow-sm transition hover:shadow-md focus-within:border-lavender focus-within:shadow-[0_0_0_1px_rgba(165,140,244,0.4),0_8px_24px_-8px_rgba(165,140,244,0.5)] focus-within:ring-2 focus-within:ring-lavender/30">
             <Search className="h-4 w-4 shrink-0 text-jet-black/35" />
             <input
               type="text"
@@ -225,86 +379,6 @@ export default function Explore() {
               className="w-full bg-transparent text-sm outline-none placeholder:text-jet-black/35"
             />
           </div>
-
-          <div className="flex shrink-0 items-center gap-1.5 sm:gap-4">
-            {isHost ? (
-              /* Publish an item — lenders only */
-              <Link
-                to={ROUTES.publish}
-                aria-label="Publish an item"
-                className="flex items-center gap-1.5 rounded-full border border-jet-black/10 px-3 py-2 text-xs font-semibold text-jet-black/70 transition hover:border-lavender hover:text-deep-purple sm:px-4"
-              >
-                <Plus className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Publish</span>
-              </Link>
-            ) : (
-              /* Become a Lender — only for renters who aren't lenders yet */
-              <Link
-                to={ROUTES.becomeLender}
-                aria-label="Become a Lender"
-                className="flex items-center gap-1.5 rounded-full bg-linear-to-r from-deep-purple to-lavender px-3 py-2 text-xs font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(67,48,117,0.5)] transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.6)] hover:brightness-105 sm:px-4"
-              >
-                <Store className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Become a Lender</span>
-              </Link>
-            )}
-
-            {/* Favorites */}
-            <Link
-              to={ROUTES.favorites}
-              aria-label="Saved items"
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-jet-black/10 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple"
-            >
-              <Heart className="h-4 w-4" />
-            </Link>
-
-            {/* Messages */}
-            <Link
-              to={ROUTES.messages}
-              aria-label="Messages"
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-jet-black/10 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple"
-            >
-              <MessageCircle className="h-4 w-4" />
-            </Link>
-
-            {/* Notifications */}
-            <Link
-              to={ROUTES.notifications}
-              aria-label="Notifications"
-              className="relative flex h-9 w-9 items-center justify-center rounded-full border border-jet-black/10 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple"
-            >
-              <Bell className="h-4 w-4" />
-              {hasUnreadNotifications && (
-                <span className="absolute right-2 top-2 h-1.5 w-1.5 animate-pulse rounded-full bg-lavender ring-2 ring-soft-white" />
-              )}
-            </Link>
-
-            {/* Profile */}
-            <Link
-              to={ROUTES.profile}
-              aria-label="Your account"
-              className="rounded-full transition hover:ring-2 hover:ring-lavender/40"
-            >
-              <LockerAvatar
-                label={firstName}
-                photoUrl={profile?.avatar_url}
-                verified={isVerified}
-                size="md"
-              />
-            </Link>
-          </div>
-        </div>
-
-        {/* Search bar, mobile only */}
-        <div className="flex items-center gap-2 border-t border-jet-black/5 px-6 py-3 sm:hidden">
-          <Search className="h-4 w-4 shrink-0 text-jet-black/35" />
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={handleSearchChange}
-            placeholder="Search cameras, tools, gear…"
-            className="w-full bg-transparent text-sm outline-none placeholder:text-jet-black/35"
-          />
         </div>
       </header>
 
@@ -366,7 +440,7 @@ export default function Explore() {
 
       {/* ================= CATEGORIES ================= */}
       <section className="mx-auto max-w-6xl px-6 sm:px-10">
-        <div className="mt-6 flex gap-2 overflow-x-auto pb-1">
+        <div className="mt-6 flex gap-5 overflow-x-auto pb-1 sm:gap-7">
           {categories.map((cat) => {
             const active = selectedCategory === cat.slug
             const Icon = getCategoryIcon(cat.slug)
@@ -375,13 +449,13 @@ export default function Explore() {
                 key={cat.id}
                 type="button"
                 onClick={() => handleCategoryClick(cat.slug)}
-                className={`flex shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-xs font-semibold transition ${
+                className={`flex shrink-0 flex-col items-center gap-1.5 border-b-2 pb-2 pt-1 text-[11px] font-semibold transition ${
                   active
-                    ? 'border-transparent bg-linear-to-r from-deep-purple to-lavender text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)]'
-                    : 'border-jet-black/10 text-jet-black/60 hover:border-lavender hover:text-deep-purple'
+                    ? 'border-deep-purple text-deep-purple'
+                    : 'border-transparent text-jet-black/50 hover:border-jet-black/15 hover:text-jet-black'
                 }`}
               >
-                <Icon className="h-3.5 w-3.5" strokeWidth={active ? 2.25 : 1.75} />
+                <Icon className="h-5 w-5" strokeWidth={active ? 2.25 : 1.6} />
                 {cat.name}
               </button>
             )
@@ -470,10 +544,61 @@ export default function Explore() {
       </section>
 
       {/* ================= FOOTER ================= */}
-      <footer className="border-t border-jet-black/5 px-6 py-8 text-center sm:px-10">
-        <a href="#" className="text-sm font-medium text-jet-black/50 hover:text-deep-purple">
-          Need help?
-        </a>
+      <footer className="border-t border-jet-black/5 bg-white">
+        <div className="mx-auto max-w-6xl px-6 py-12 sm:px-10">
+          <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
+            <div className="col-span-2 sm:col-span-1">
+              <img src="/logo-lendrop.png" alt="Lendrop" className="h-7 w-auto" />
+              <p className="mt-3 max-w-40 text-xs leading-relaxed text-jet-black/50">
+                Rent what you need, from people near you in El Salvador.
+              </p>
+              <div className="mt-4 flex items-center gap-2">
+                <a
+                  href="mailto:hola@lendrop.app"
+                  aria-label="Email"
+                  className="flex h-8 w-8 items-center justify-center rounded-full border border-jet-black/10 text-jet-black/50 transition hover:border-lavender hover:text-deep-purple"
+                >
+                  <Mail className="h-3.5 w-3.5" />
+                </a>
+              </div>
+            </div>
+
+            <div>
+              <p className="font-display text-xs font-semibold uppercase tracking-wide text-jet-black/40">Explore</p>
+              <ul className="mt-3 space-y-2 text-sm text-jet-black/60">
+                <li><Link to="/categories" className="hover:text-deep-purple">Browse categories</Link></li>
+                <li><Link to={ROUTES.becomeLender} className="hover:text-deep-purple">Become a Lender</Link></li>
+                <li><Link to="/locker-coverage" className="hover:text-deep-purple">Locker locations</Link></li>
+              </ul>
+            </div>
+
+            <div>
+              <p className="font-display text-xs font-semibold uppercase tracking-wide text-jet-black/40">Support</p>
+              <ul className="mt-3 space-y-2 text-sm text-jet-black/60">
+                <li><Link to="/help" className="hover:text-deep-purple">Help center</Link></li>
+                <li><Link to="/history" className="hover:text-deep-purple">Your activity</Link></li>
+                <li><a href="mailto:hola@lendrop.app" className="hover:text-deep-purple">Contact us</a></li>
+              </ul>
+            </div>
+
+            <div>
+              <p className="font-display text-xs font-semibold uppercase tracking-wide text-jet-black/40">Account</p>
+              <ul className="mt-3 space-y-2 text-sm text-jet-black/60">
+                <li><Link to={ROUTES.profile} className="hover:text-deep-purple">Your profile</Link></li>
+                <li><Link to="/payment-methods" className="hover:text-deep-purple">Payment methods</Link></li>
+                <li><Link to="/verification" className="hover:text-deep-purple">Verification</Link></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="mt-10 flex flex-col items-center gap-3 border-t border-jet-black/5 pt-6 text-xs text-jet-black/40 sm:flex-row sm:justify-between">
+            <span>© {new Date().getFullYear()} Lendrop · San Salvador, El Salvador</span>
+            <div className="flex items-center gap-4">
+              <a href="#" className="hover:text-deep-purple">Terms</a>
+              <a href="#" className="hover:text-deep-purple">Privacy</a>
+            </div>
+          </div>
+        </div>
       </footer>
     </div>
   )

@@ -83,10 +83,12 @@ export default function PaymentMethods() {
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold text-jet-black">
-                      {m.brand} •••• {m.last4}
+                      {m.last4 ? `${m.brand} •••• ${m.last4}` : m.brand}
                     </p>
                     <p className="text-xs text-jet-black/45">
-                      Expires {String(m.expiry_month).padStart(2, '0')}/{String(m.expiry_year).slice(-2)}
+                      {m.expiry_month && m.expiry_year
+                        ? `Expires ${String(m.expiry_month).padStart(2, '0')}/${String(m.expiry_year).slice(-2)}`
+                        : 'Connected'}
                     </p>
                   </div>
                   {m.is_default ? (

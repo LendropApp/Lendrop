@@ -9,7 +9,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const CACHE_TTL_MS = 14 * 24 * 60 * 60 * 1000
 const HARD_CEILING = 100 // USD/day — accessible-market ceiling for the AI fallback path.
 const MIN_COMPARABLES = 3
-const GEMINI_MODEL = 'gemini-2.5-flash'
+const GEMINI_MODEL = 'gemini-3.6-flash'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -126,7 +126,12 @@ Description: ${description}`
           body: JSON.stringify({
             systemInstruction: { parts: [{ text: systemPrompt }] },
             contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
-            generationConfig: { temperature: 0.3, maxOutputTokens: 300, responseMimeType: 'application/json' },
+            generationConfig: {
+              temperature: 0.3,
+              maxOutputTokens: 300,
+              responseMimeType: 'application/json',
+              thinkingConfig: { thinkingBudget: 0 },
+            },
           }),
         }
       )
@@ -148,7 +153,7 @@ Description: ${description}`
         const jsonMatch = rawText.match(/\{[\s\S]*\}/)
         parsed = JSON.parse(jsonMatch ? jsonMatch[0] : rawText)
       } catch {
-        console.error('suggest-price: could not parse model output', rawText)
+        console.error('suggest-price: could not parse model output', { rawText, finishReason: candidate?.finishReason })
         return json({ error: 'Could not parse the price suggestion.' }, 502)
       }
 

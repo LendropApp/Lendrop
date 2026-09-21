@@ -146,10 +146,93 @@ function DeliveryForm({ reservation, onDelivered }) {
   )
 }
 
+function ReturnPickupForm({ reservation, onCompleted }) {
+  const [dui, setDui] = useState('')
+  const [password, setPassword] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [status, setStatus] = useState({ type: '', text: '' })
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    setSubmitting(true)
+    setStatus({ type: '', text: '' })
+
+    const { data, error } = await supabase.functions.invoke('locker-access', {
+      body: { reservationId: reservation.id, dui, password, action: 'return_pickup' },
+    })
+
+    setSubmitting(false)
+
+    if (error || data?.error) {
+      setStatus({ type: 'error', text: data?.error ?? 'Could not verify your identity. Please try again.' })
+      return
+    }
+
+    setStatus({ type: 'success', text: 'Return confirmed — rental completed!' })
+    onCompleted(reservation.id)
+  }
+
+  const locker = reservation.compartment?.locker
+
+  return (
+    <div className="rounded-2xl border border-lavender/15 bg-white p-5">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="font-semibold text-jet-black">{reservation.item?.title}</p>
+          <p className="text-xs text-jet-black/45">Returned by {reservation.renter?.full_name ?? 'the renter'}</p>
+        </div>
+      </div>
+
+      {locker && (
+        <div className="mt-3 flex items-start gap-2 rounded-xl bg-jet-black/[0.02] p-3 text-xs text-jet-black/60">
+          <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-deep-purple" />
+          <span>
+            {locker.name} · Compartment {reservation.compartment?.compartment_code} — {locker.address}, {locker.city}
+          </span>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="mt-4 space-y-3">
+        <p className="flex items-center gap-1.5 text-xs text-jet-black/50">
+          <Lock className="h-3.5 w-3.5" />
+          Enter your DUI and account password to confirm you picked up the returned item.
+        </p>
+        <input
+          type="text"
+          value={dui}
+          onChange={(e) => setDui(e.target.value)}
+          placeholder="DUI"
+          required
+          className="w-full rounded-xl border border-lavender/15 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+        />
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Password"
+          required
+          className="w-full rounded-xl border border-lavender/15 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+        />
+        <div className="flex items-center justify-between gap-3">
+          <StatusMessage type={status.type} text={status.text} />
+          <button
+            type="submit"
+            disabled={submitting}
+            className="ml-auto shrink-0 rounded-full bg-linear-to-r from-deep-purple to-lavender px-4 py-2 text-xs font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)] transition hover:brightness-105 disabled:opacity-50"
+          >
+            {submitting ? 'Verifying…' : 'Confirm return pickup'}
+          </button>
+        </div>
+      </form>
+    </div>
+  )
+}
+
 export default function OwnerDeliveryReturn() {
   const { user } = useAuth()
   const [pending, setPending] = useState([])
   const [delivered, setDelivered] = useState([])
+  const [returnPending, setReturnPending] = useState([])
   const [loading, setLoading] = useState(true)
 
   const loadReservations = useCallback(async () => {
@@ -174,10 +257,30 @@ export default function OwnerDeliveryReturn() {
       ? await supabase.from('locker_events').select('reservation_id, event_type').in('reservation_id', ids)
       : { data: [] }
 
-    const depositedIds = new Set((eventRows ?? []).filter((e) => e.event_type === 'item_deposited').map((e) => e.reservation_id))
+    const eventsByReservation = new Map()
+    for (const e of eventRows ?? []) {
+      if (!eventsByReservation.has(e.reservation_id)) eventsByReservation.set(e.reservation_id, new Set())
+      eventsByReservation.get(e.reservation_id).add(e.event_type)
+    }
 
-    setPending((reservations ?? []).filter((r) => !depositedIds.has(r.id)))
-    setDelivered((reservations ?? []).filter((r) => depositedIds.has(r.id)))
+    const nextPending = []
+    const nextDelivered = []
+    const nextReturnPending = []
+
+    for (const r of reservations ?? []) {
+      const types = eventsByReservation.get(r.id) ?? new Set()
+      if (types.has('return_deposited')) {
+        nextReturnPending.push(r)
+      } else if (types.has('item_deposited')) {
+        nextDelivered.push(r)
+      } else {
+        nextPending.push(r)
+      }
+    }
+
+    setPending(nextPending)
+    setDelivered(nextDelivered)
+    setReturnPending(nextReturnPending)
     setLoading(false)
   }, [user])
 
@@ -189,6 +292,11 @@ export default function OwnerDeliveryReturn() {
     setTimeout(() => loadReservations(), 800)
     // Optimistically move it over so the form's success message is still visible briefly.
     setPending((prev) => prev.filter((r) => r.id !== reservationId))
+  }
+
+  function handleReturnCompleted(reservationId) {
+    setTimeout(() => loadReservations(), 800)
+    setReturnPending((prev) => prev.filter((r) => r.id !== reservationId))
   }
 
   return (
@@ -205,6 +313,17 @@ export default function OwnerDeliveryReturn() {
             <p className="mt-8 text-center text-sm text-jet-black/40">Loading…</p>
           ) : (
             <>
+              {returnPending.length > 0 && (
+                <div className="mt-6">
+                  <h2 className="text-sm font-semibold text-jet-black/60">Returned — confirm pickup</h2>
+                  <div className="mt-3 space-y-4">
+                    {returnPending.map((r) => (
+                      <ReturnPickupForm key={r.id} reservation={r} onCompleted={handleReturnCompleted} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="mt-6 space-y-4">
                 {pending.length === 0 ? (
                   <div className="flex flex-col items-center gap-2 rounded-2xl border border-jet-black/5 bg-white py-12 text-center">

@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { CheckCircle2, Clock3, Lock, MapPin } from 'lucide-react'
+import { Camera, CheckCircle2, Clock3, Lock, MapPin } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import PageHeader from '../components/PageHeader'
 import StatusMessage from '../components/StatusMessage'
 import AuroraBlobs from '../components/background/AuroraBlobs'
 
-const STEPS = ['Reserved', 'Delivered', 'In Use']
+const STEPS = ['Reserved', 'Delivered', 'In Use', 'Returned']
 
 export default function RentalTracking() {
   const { user } = useAuth()
@@ -23,6 +23,13 @@ export default function RentalTracking() {
   const [password, setPassword] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [formStatus, setFormStatus] = useState({ type: '', text: '' })
+
+  const [returnPhoto, setReturnPhoto] = useState(null)
+  const [returnPhotoPreview, setReturnPhotoPreview] = useState(null)
+  const [returnDui, setReturnDui] = useState('')
+  const [returnPassword, setReturnPassword] = useState('')
+  const [returnSubmitting, setReturnSubmitting] = useState(false)
+  const [returnStatus, setReturnStatus] = useState({ type: '', text: '' })
 
   const loadReservation = useCallback(async () => {
     if (!user) {
@@ -106,6 +113,59 @@ export default function RentalTracking() {
     await loadReservation()
   }
 
+  function handleReturnPhotoChange(e) {
+    const file = e.target.files?.[0] ?? null
+    setReturnPhoto(file)
+    setReturnPhotoPreview(file ? URL.createObjectURL(file) : null)
+  }
+
+  async function handleReturn(e) {
+    e.preventDefault()
+    if (!returnPhoto) {
+      setReturnStatus({ type: 'error', text: 'Attach a condition photo before confirming the return.' })
+      return
+    }
+    setReturnSubmitting(true)
+    setReturnStatus({ type: '', text: '' })
+
+    const ext = returnPhoto.name.split('.').pop()
+    const path = `${reservation.id}/return_drop_off-${Date.now()}.${ext}`
+    const { error: uploadError } = await supabase.storage.from('evidence-photos').upload(path, returnPhoto)
+    if (uploadError) {
+      setReturnSubmitting(false)
+      setReturnStatus({ type: 'error', text: 'Could not upload the photo. Please try again.' })
+      return
+    }
+
+    const { error: evidenceError } = await supabase.from('photo_evidence').insert({
+      reservation_id: reservation.id,
+      stage: 'return_drop_off',
+      storage_path: path,
+      uploaded_by: user.id,
+    })
+    if (evidenceError) {
+      setReturnSubmitting(false)
+      setReturnStatus({ type: 'error', text: 'Could not save the photo record. Please try again.' })
+      return
+    }
+
+    const { data, error } = await supabase.functions.invoke('locker-access', {
+      body: { reservationId: reservation.id, dui: returnDui, password: returnPassword, action: 'return_dropoff' },
+    })
+
+    setReturnSubmitting(false)
+
+    if (error || data?.error) {
+      setReturnStatus({ type: 'error', text: data?.error ?? 'Could not verify your identity. Please try again.' })
+      return
+    }
+
+    setReturnDui('')
+    setReturnPassword('')
+    setReturnStatus({ type: 'success', text: 'Return confirmed — thanks!' })
+    await loadReservation()
+  }
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-soft-white">
@@ -132,7 +192,9 @@ export default function RentalTracking() {
 
   const hasDeposited = events.some((e) => e.event_type === 'item_deposited')
   const hasRetrieved = events.some((e) => e.event_type === 'item_retrieved')
-  const currentStep = hasRetrieved ? 2 : hasDeposited ? 1 : 0
+  const hasReturnDeposited = events.some((e) => e.event_type === 'return_deposited')
+  const hasReturnRetrieved = events.some((e) => e.event_type === 'return_retrieved')
+  const currentStep = hasReturnRetrieved ? 3 : hasRetrieved ? 2 : hasDeposited ? 1 : 0
   const locker = reservation.compartment?.locker
 
   return (
@@ -240,12 +302,76 @@ export default function RentalTracking() {
             </form>
           )}
 
-          {hasRetrieved && (
+          {hasRetrieved && !hasReturnDeposited && (
+            <form onSubmit={handleReturn} className="mt-4 rounded-2xl border border-lavender/15 bg-white p-5">
+              <div className="mb-3 flex items-center gap-2">
+                <Lock className="h-4 w-4 text-deep-purple" />
+                <p className="text-sm font-semibold text-jet-black">Return your item</p>
+              </div>
+              <p className="mb-4 text-xs text-jet-black/50">
+                Drop it back at the same locker with a condition photo, then confirm with your DUI and password.
+              </p>
+
+              <label
+                htmlFor="return-photo"
+                className="flex cursor-pointer items-center gap-2 rounded-xl border border-dashed border-lavender/30 px-4 py-3 text-xs text-jet-black/60 transition hover:border-lavender"
+              >
+                <Camera className="h-4 w-4 shrink-0 text-deep-purple" />
+                {returnPhoto ? returnPhoto.name : 'Attach a condition photo (required)'}
+              </label>
+              <input
+                id="return-photo"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleReturnPhotoChange}
+                required
+                className="hidden"
+              />
+              {returnPhotoPreview && (
+                <img src={returnPhotoPreview} alt="Return condition preview" className="mt-2 h-28 w-full rounded-lg object-cover" />
+              )}
+
+              <div className="mt-3 space-y-3">
+                <input
+                  type="text"
+                  value={returnDui}
+                  onChange={(e) => setReturnDui(e.target.value)}
+                  placeholder="DUI"
+                  required
+                  className="w-full rounded-xl border border-lavender/15 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+                />
+                <input
+                  type="password"
+                  value={returnPassword}
+                  onChange={(e) => setReturnPassword(e.target.value)}
+                  placeholder="Password"
+                  required
+                  className="w-full rounded-xl border border-lavender/15 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+                />
+              </div>
+              <div className="mt-3 flex items-center justify-between gap-3">
+                <StatusMessage type={returnStatus.type} text={returnStatus.text} />
+                <button
+                  type="submit"
+                  disabled={returnSubmitting}
+                  className="ml-auto shrink-0 rounded-full bg-linear-to-r from-deep-purple to-lavender px-4 py-2 text-xs font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(165,140,244,0.6)] transition hover:brightness-105 disabled:opacity-50"
+                >
+                  {returnSubmitting ? 'Verifying…' : 'Confirm return'}
+                </button>
+              </div>
+            </form>
+          )}
+
+          {hasReturnDeposited && !hasReturnRetrieved && (
+            <p className="mt-4 rounded-2xl border border-jet-black/5 bg-jet-black/[0.02] p-4 text-sm text-jet-black/50">
+              Return dropped off — waiting for the lender to confirm they picked it up.
+            </p>
+          )}
+
+          {hasReturnRetrieved && (
             <div className="mt-4 flex items-start gap-3 rounded-2xl border border-emerald-100 bg-emerald-50 p-4">
               <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
-              <p className="text-sm text-emerald-700">
-                You picked this item up. Enjoy your rental — the return flow is coming in a later update.
-              </p>
+              <p className="text-sm text-emerald-700">Rental completed. Thanks for using Lendrop!</p>
             </div>
           )}
         </div>

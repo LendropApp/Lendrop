@@ -1,12 +1,33 @@
 // Verifies a renter/lender's identity (DUI + account password) before
-// logging a locker drop-off or pickup. This is the "secure backend"
-// locker_events' table comment requires — the client never inserts
-// locker_events rows directly.
+// logging a locker drop-off, pickup, or return event. This is the
+// "secure backend" locker_events' table comment requires — the client
+// never inserts locker_events rows directly.
+//
+// Full lifecycle: deposit (owner) -> pickup (renter) -> return_dropoff
+// (renter) -> return_pickup (owner), which finalizes the reservation
+// as 'completed' and auto-releases the damage-liability hold if it
+// hasn't already been captured (see Fase 8's review RLS, which
+// requires status = 'completed').
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
+const ACTIONS = ['deposit', 'pickup', 'return_dropoff', 'return_pickup'] as const
+type Action = (typeof ACTIONS)[number]
+
+const EVENT_TYPE: Record<Action, string> = {
+  deposit: 'item_deposited',
+  pickup: 'item_retrieved',
+  return_dropoff: 'return_deposited',
+  return_pickup: 'return_retrieved',
+}
+
+const EVIDENCE_STAGE: Partial<Record<Action, string>> = {
+  deposit: 'drop_off',
+  return_dropoff: 'return_drop_off',
 }
 
 function json(body: unknown, status = 200) {
@@ -33,7 +54,7 @@ Deno.serve(async (request) => {
   const caller = userData.user
 
   const { reservationId, dui, password, action } = await request.json()
-  if (!reservationId || !dui || !password || (action !== 'deposit' && action !== 'pickup')) {
+  if (!reservationId || !dui || !password || !ACTIONS.includes(action)) {
     return json({ error: 'Missing or invalid fields' }, 400)
   }
 
@@ -53,21 +74,23 @@ Deno.serve(async (request) => {
   const isRenter = reservation.renter_id === caller.id
   const isOwner = reservation.item?.owner_id === caller.id
 
-  if (action === 'deposit' && !isOwner) return json({ error: 'Only the lender can drop off the item.' }, 403)
-  if (action === 'pickup' && !isRenter) return json({ error: 'Only the renter can pick up the item.' }, 403)
+  if ((action === 'deposit' || action === 'return_pickup') && !isOwner) {
+    return json({ error: 'Only the lender can do this.' }, 403)
+  }
+  if ((action === 'pickup' || action === 'return_dropoff') && !isRenter) {
+    return json({ error: 'Only the renter can do this.' }, 403)
+  }
 
-  // Fase 6: an item can't be marked delivered without condition
-  // evidence — enforced here, not just in the upload form, since the
-  // client could otherwise skip straight to this call.
-  if (action === 'deposit') {
+  const requiredStage = EVIDENCE_STAGE[action as Action]
+  if (requiredStage) {
     const { data: evidence } = await admin
       .from('photo_evidence')
       .select('id')
       .eq('reservation_id', reservationId)
-      .eq('stage', 'drop_off')
+      .eq('stage', requiredStage)
       .limit(1)
     if (!evidence || evidence.length === 0) {
-      return json({ error: 'Upload a condition photo before confirming drop-off.' }, 409)
+      return json({ error: 'Upload a condition photo before confirming this step.' }, 409)
     }
   }
 
@@ -76,12 +99,19 @@ Deno.serve(async (request) => {
     .select('event_type')
     .eq('reservation_id', reservationId)
 
-  const hasDeposited = (existingEvents ?? []).some((e) => e.event_type === 'item_deposited')
-  const hasRetrieved = (existingEvents ?? []).some((e) => e.event_type === 'item_retrieved')
+  const eventTypes = new Set((existingEvents ?? []).map((e) => e.event_type))
+  const hasDeposited = eventTypes.has('item_deposited')
+  const hasRetrieved = eventTypes.has('item_retrieved')
+  const hasReturnDeposited = eventTypes.has('return_deposited')
+  const hasReturnRetrieved = eventTypes.has('return_retrieved')
 
   if (action === 'deposit' && hasDeposited) return json({ error: 'The item was already marked as dropped off.' }, 409)
   if (action === 'pickup' && !hasDeposited) return json({ error: 'The lender has not dropped off the item yet.' }, 409)
   if (action === 'pickup' && hasRetrieved) return json({ error: 'The item was already picked up.' }, 409)
+  if (action === 'return_dropoff' && !hasRetrieved) return json({ error: 'You have not picked up this item yet.' }, 409)
+  if (action === 'return_dropoff' && hasReturnDeposited) return json({ error: 'The return was already dropped off.' }, 409)
+  if (action === 'return_pickup' && !hasReturnDeposited) return json({ error: 'The renter has not returned the item yet.' }, 409)
+  if (action === 'return_pickup' && hasReturnRetrieved) return json({ error: 'The return was already picked up.' }, 409)
 
   const { data: privateProfile, error: privateError } = await admin
     .from('profile_private')
@@ -105,7 +135,7 @@ Deno.serve(async (request) => {
   })
   if (passwordError) return json({ error: 'Incorrect password.' }, 401)
 
-  const eventType = action === 'deposit' ? 'item_deposited' : 'item_retrieved'
+  const eventType = EVENT_TYPE[action as Action]
   const { error: insertError } = await admin.from('locker_events').insert({
     compartment_id: reservation.compartment_id,
     reservation_id: reservationId,
@@ -114,8 +144,19 @@ Deno.serve(async (request) => {
   })
   if (insertError) return json({ error: 'Could not log the locker event.' }, 500)
 
-  const newCompartmentStatus = action === 'deposit' ? 'occupied' : 'available'
+  const newCompartmentStatus = action === 'deposit' || action === 'return_dropoff' ? 'occupied' : 'available'
   await admin.from('locker_compartments').update({ status: newCompartmentStatus }).eq('id', reservation.compartment_id)
+
+  if (action === 'return_pickup') {
+    await admin.from('reservations').update({ status: 'completed' }).eq('id', reservationId).eq('status', 'confirmed')
+    // Auto-release the damage hold on a clean return — a no-op if it
+    // was already captured/partially_captured via capture_damage_hold.
+    await admin
+      .from('damage_holds')
+      .update({ status: 'released', released_at: new Date().toISOString() })
+      .eq('reservation_id', reservationId)
+      .eq('status', 'held')
+  }
 
   return json({ ok: true, eventType, occurredAt: new Date().toISOString() })
 })

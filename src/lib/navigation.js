@@ -6,6 +6,7 @@ import {
   DollarSign,
   Heart,
   LayoutGrid,
+  LayoutList,
   MapPin,
   MessageCircle,
   PackageSearch,
@@ -49,6 +50,7 @@ export function buildNavSections({ isHost = false } = {}) {
       title: 'Hosting',
       items: [
         { to: '/publish', label: 'Publish an item', icon: Plus },
+        { to: '/my-listings', label: 'My listings', icon: LayoutList },
         { to: '/earnings-dashboard', label: 'Earnings', icon: DollarSign },
         { to: '/owner-delivery', label: 'Drop-offs & returns', icon: Truck },
       ],

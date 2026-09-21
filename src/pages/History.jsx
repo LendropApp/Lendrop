@@ -122,7 +122,7 @@ export default function History() {
   }
 
   return (
-    <div className="min-h-screen bg-soft-white pb-16">
+    <div className="min-h-screen bg-soft-white pb-28 md:pb-16">
       <PageHeader backTo="/profile" backLabel="Back to Profile" />
 
       <div className="relative isolate overflow-hidden">

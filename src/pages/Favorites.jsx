@@ -47,7 +47,7 @@ export default function Favorites() {
   }
 
   return (
-    <div className="min-h-screen bg-soft-white pb-16">
+    <div className="min-h-screen bg-soft-white pb-28 md:pb-16">
       <header className="glass sticky top-0 z-50">
         <div className="h-px bg-linear-to-r from-transparent via-lavender/50 to-transparent" />
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-6 py-4 sm:px-10">

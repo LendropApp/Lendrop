@@ -4,6 +4,7 @@ import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import HostRoute from "./components/HostRoute";
 import VerifiedRoute from "./components/VerifiedRoute";
+import MobileBottomNav from "./components/MobileBottomNav";
 
 import HostOnboardingWizard from "./pages/host-onboarding/HostOnboardingWizard";
 
@@ -16,6 +17,7 @@ import Dashboard from "./pages/Dashboard";
 import Explore from "./pages/Explore";
 import BecomeHostEntry from "./pages/BecomeHostEntry";
 import PublishItem from "./pages/PublishItem";
+import MyListings from "./pages/MyListings";
 import ItemDetail from "./pages/ItemDetail";
 import Favorites from "./pages/Favorites";
 import Profile from "./pages/Profile";
@@ -209,6 +211,27 @@ export default function App() {
             }
           />
 
+          <Route
+            path="/my-listings"
+            element={
+              <HostRoute>
+                <MyListings />
+              </HostRoute>
+            }
+          />
+
+          {/* Editing a listing you already own isn't gated on
+              verification — only creating one is. Ownership is enforced
+              by the items_update_own policy either way. */}
+          <Route
+            path="/my-listings/:itemId/edit"
+            element={
+              <HostRoute>
+                <PublishItem />
+              </HostRoute>
+            }
+          />
+
           {/* Publishing needs BOTH: a host profile (HostRoute) and a
               verified identity (VerifiedRoute). The server enforces the
               verification half too — see migration 0019. */}
@@ -230,6 +253,10 @@ export default function App() {
           />
 
         </Routes>
+
+        {/* Mobile-only bottom bar: Publish + Profile, nothing else.
+            Everything else lives in MobileNav's drawer. */}
+        <MobileBottomNav />
       </AuthProvider>
     </BrowserRouter>
   );

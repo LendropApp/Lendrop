@@ -241,7 +241,7 @@ export default function Explore() {
       : 'Recommended for you'
 
   return (
-    <div className="min-h-screen bg-soft-white">
+    <div className="min-h-screen bg-soft-white pb-28 md:pb-0">
       {/* ================= HEADER ================= */}
       <header className="glass sticky top-0 z-50 shadow-[0_8px_24px_-18px_rgba(67,48,117,0.35)]">
         <div className="h-px bg-linear-to-r from-transparent via-lavender/50 to-transparent" />

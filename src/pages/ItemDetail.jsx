@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, CalendarDays, Heart, Lock, MapPin, MessageCircle, ShieldCheck, Trash2 } from 'lucide-react'
+import { ArrowLeft, CalendarDays, CheckCircle2, Heart, Lock, MapPin, MessageCircle, ShieldCheck, Trash2 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import { getCategoryIcon } from '../lib/categoryIcons'
 import { getItemPhotoUrl } from '../lib/photos'
+import AddCardForm from '../components/AddCardForm'
 import LockerAvatar from '../components/LockerAvatar'
 import StarRating from '../components/StarRating'
 import StatusMessage from '../components/StatusMessage'
@@ -60,6 +61,8 @@ export default function ItemDetail() {
   const [bookingStatus, setBookingStatus] = useState({ type: '', text: '' })
   const [breakdown, setBreakdown] = useState(null)
   const [breakdownLoading, setBreakdownLoading] = useState(false)
+  const [hasSavedCard, setHasSavedCard] = useState(null)
+  const [confirmedReservationId, setConfirmedReservationId] = useState(null)
 
   const loadItem = useCallback(async () => {
     const { data, error } = await supabase
@@ -155,6 +158,19 @@ export default function ItemDetail() {
     }
   }, [user, itemId])
 
+  const checkSavedCard = useCallback(async () => {
+    if (!user) {
+      setHasSavedCard(null)
+      return
+    }
+    const { data } = await supabase.from('payment_methods').select('id').eq('user_id', user.id).limit(1)
+    setHasSavedCard((data ?? []).length > 0)
+  }, [user])
+
+  useEffect(() => {
+    checkSavedCard()
+  }, [checkSavedCard])
+
   const isOwner = Boolean(user) && item?.owner?.id === user.id
 
   const isCurrentlyRented = useMemo(() => {
@@ -216,7 +232,7 @@ export default function ItemDetail() {
     // server-side via calculate_pricing_breakdown before writing
     // anything, so a tampered request can't under-pay or dodge the
     // damage-liability hold.
-    const { error } = await supabase.rpc('create_simulated_reservation', {
+    const { data, error } = await supabase.rpc('create_simulated_reservation', {
       p_item_id: itemId,
       p_start_date: toISODate(selectedRange.start),
       p_end_date: toISODate(selectedRange.end),
@@ -236,9 +252,15 @@ export default function ItemDetail() {
       return
     }
 
-    setBookingStatus({ type: 'success', text: 'Booking confirmed! (Simulated: no real payment was processed.)' })
+    setConfirmedReservationId(data?.[0]?.reservation_id ?? null)
     setSelectedRange({ start: null, end: null })
     await loadBookedRanges()
+  }
+
+  function handleCloseBooking() {
+    setShowBooking(false)
+    setConfirmedReservationId(null)
+    setBookingStatus({ type: '', text: '' })
   }
 
   async function handleToggleFavorite() {
@@ -499,6 +521,30 @@ export default function ItemDetail() {
                       <CalendarDays className="h-4 w-4" />
                       Rent
                     </button>
+                  ) : confirmedReservationId ? (
+                    <div className="space-y-3 rounded-2xl border border-emerald-100 bg-emerald-50 p-4 text-center">
+                      <CheckCircle2 className="mx-auto h-8 w-8 text-emerald-600" />
+                      <div>
+                        <p className="text-sm font-semibold text-emerald-800">Booking confirmed!</p>
+                        <p className="mt-1 text-xs text-emerald-700">
+                          (Simulated: no real payment was processed.) Track pickup and delivery anytime from your
+                          Activity page.
+                        </p>
+                      </div>
+                      <Link
+                        to={`/rental-tracking?reservationId=${confirmedReservationId}`}
+                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-deep-purple px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-deep-purple/90"
+                      >
+                        View my rental tracking
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={handleCloseBooking}
+                        className="text-xs font-semibold text-emerald-700/70 hover:text-emerald-800"
+                      >
+                        Done
+                      </button>
+                    </div>
                   ) : (
                     <div className="space-y-3 rounded-2xl border border-lavender/15 bg-white p-4">
                       <div className="flex items-center justify-between">
@@ -522,55 +568,66 @@ export default function ItemDetail() {
                         <p className="text-xs text-jet-black/40">Calculating price breakdown…</p>
                       )}
 
-                      {days > 0 && !breakdownLoading && breakdown && (
-                        <div className="space-y-1.5 rounded-xl bg-jet-black/5 p-3 text-xs">
-                          <div className="flex items-center justify-between text-jet-black/70">
-                            <span>
-                              ${item.price_per_day} × {days} day{days > 1 ? 's' : ''}
-                            </span>
-                            <span className="font-mono">${Number(breakdown.rental_subtotal).toFixed(2)}</span>
-                          </div>
-                          <div className="flex items-center justify-between text-jet-black/70">
-                            <span>Protection fee (non-refundable)</span>
-                            <span className="font-mono">${Number(breakdown.protection_fee_amount).toFixed(2)}</span>
-                          </div>
-                          <div className="flex items-center justify-between border-t border-jet-black/10 pt-1.5 font-semibold text-jet-black">
-                            <span>Charged today</span>
-                            <span className="font-mono">${Number(breakdown.total_charged_today).toFixed(2)}</span>
-                          </div>
-
-                          <div className="flex items-start gap-1.5 border-t border-jet-black/10 pt-1.5 text-jet-black/50">
-                            <Lock className="mt-0.5 h-3 w-3 shrink-0" />
-                            <span>
-                              {breakdown.commission_rate > 0
-                                ? `Lendrop's ${Math.round(breakdown.commission_rate * 100)}% commission ($${Number(breakdown.commission_amount).toFixed(2)}) is deducted from the lender's payout — it doesn't add to what you pay.`
-                                : `${item.owner?.full_name?.split(' ')[0] ?? 'This lender'} is Premium, so Lendrop charges no commission on this rental.`}
-                            </span>
-                          </div>
-
-                          <div className="flex items-start gap-1.5 text-jet-black/50">
-                            <ShieldCheck className="mt-0.5 h-3 w-3 shrink-0" />
-                            <span>
-                              ${Number(breakdown.damage_liability_amount).toFixed(2)} damage-liability hold (not charged now — refunded automatically if the item comes back with no damage
-                              {breakdown.damage_liability_cap_applied ? `; capped at $${Number(breakdown.damage_liability_cap_applied).toFixed(2)} for this category` : ''}).
-                            </span>
-                          </div>
+                      {days > 0 && !breakdownLoading && breakdown && hasSavedCard === false && (
+                        <div className="space-y-2">
+                          <p className="text-xs text-jet-black/60">
+                            Sandbox checkout: add a card to continue — no real charge will be made.
+                          </p>
+                          <AddCardForm makeDefault onSaved={() => setHasSavedCard(true)} />
                         </div>
                       )}
 
-                      <StatusMessage type={bookingStatus.type} text={bookingStatus.text} />
+                      {days > 0 && !breakdownLoading && breakdown && hasSavedCard && (
+                        <>
+                          <div className="space-y-1.5 rounded-xl bg-jet-black/5 p-3 text-xs">
+                            <div className="flex items-center justify-between text-jet-black/70">
+                              <span>
+                                ${item.price_per_day} × {days} day{days > 1 ? 's' : ''}
+                              </span>
+                              <span className="font-mono">${Number(breakdown.rental_subtotal).toFixed(2)}</span>
+                            </div>
+                            <div className="flex items-center justify-between text-jet-black/70">
+                              <span>Protection fee (non-refundable)</span>
+                              <span className="font-mono">${Number(breakdown.protection_fee_amount).toFixed(2)}</span>
+                            </div>
+                            <div className="flex items-center justify-between border-t border-jet-black/10 pt-1.5 font-semibold text-jet-black">
+                              <span>Charged today</span>
+                              <span className="font-mono">${Number(breakdown.total_charged_today).toFixed(2)}</span>
+                            </div>
 
-                      <button
-                        type="button"
-                        onClick={handleConfirmBooking}
-                        disabled={!selectedRange.end || booking}
-                        className="w-full rounded-xl bg-deep-purple px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-deep-purple/90 disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        {booking ? 'Processing…' : 'Pay in Advance'}
-                      </button>
-                      <p className="text-center text-[11px] text-jet-black/40">
-                        Sandbox checkout: no real charge is made yet.
-                      </p>
+                            <div className="flex items-start gap-1.5 border-t border-jet-black/10 pt-1.5 text-jet-black/50">
+                              <Lock className="mt-0.5 h-3 w-3 shrink-0" />
+                              <span>
+                                {breakdown.commission_rate > 0
+                                  ? `Lendrop's ${Math.round(breakdown.commission_rate * 100)}% commission ($${Number(breakdown.commission_amount).toFixed(2)}) is deducted from the lender's payout — it doesn't add to what you pay.`
+                                  : `${item.owner?.full_name?.split(' ')[0] ?? 'This lender'} is Premium, so Lendrop charges no commission on this rental.`}
+                              </span>
+                            </div>
+
+                            <div className="flex items-start gap-1.5 text-jet-black/50">
+                              <ShieldCheck className="mt-0.5 h-3 w-3 shrink-0" />
+                              <span>
+                                ${Number(breakdown.damage_liability_amount).toFixed(2)} damage-liability hold (not charged now — refunded automatically if the item comes back with no damage
+                                {breakdown.damage_liability_cap_applied ? `; capped at $${Number(breakdown.damage_liability_cap_applied).toFixed(2)} for this category` : ''}).
+                              </span>
+                            </div>
+                          </div>
+
+                          <StatusMessage type={bookingStatus.type} text={bookingStatus.text} />
+
+                          <button
+                            type="button"
+                            onClick={handleConfirmBooking}
+                            disabled={!selectedRange.end || booking}
+                            className="w-full rounded-xl bg-deep-purple px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-deep-purple/90 disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            {booking ? 'Processing…' : 'Pay in Advance'}
+                          </button>
+                          <p className="text-center text-[11px] text-jet-black/40">
+                            Sandbox checkout: no real charge is made yet.
+                          </p>
+                        </>
+                      )}
                     </div>
                   )}
                 </div>

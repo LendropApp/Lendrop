@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { CheckCircle2, Lock, MapPin, Package } from 'lucide-react'
+import { CheckCircle2, Camera, Lock, MapPin, Package } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import PageHeader from '../components/PageHeader'
@@ -7,15 +7,52 @@ import StatusMessage from '../components/StatusMessage'
 import AuroraBlobs from '../components/background/AuroraBlobs'
 
 function DeliveryForm({ reservation, onDelivered }) {
+  const { user } = useAuth()
+  const [photo, setPhoto] = useState(null)
+  const [photoPreview, setPhotoPreview] = useState(null)
   const [dui, setDui] = useState('')
   const [password, setPassword] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [status, setStatus] = useState({ type: '', text: '' })
 
+  function handlePhotoChange(e) {
+    const file = e.target.files?.[0] ?? null
+    setPhoto(file)
+    setPhotoPreview(file ? URL.createObjectURL(file) : null)
+  }
+
   async function handleSubmit(e) {
     e.preventDefault()
+    if (!photo) {
+      setStatus({ type: 'error', text: 'Attach a photo of the item before confirming drop-off.' })
+      return
+    }
     setSubmitting(true)
     setStatus({ type: '', text: '' })
+
+    // Fase 6: no drop-off can be confirmed without condition evidence —
+    // uploaded first so locker-access can verify it exists before it
+    // will log the item as delivered.
+    const ext = photo.name.split('.').pop()
+    const path = `${reservation.id}/drop_off-${Date.now()}.${ext}`
+    const { error: uploadError } = await supabase.storage.from('evidence-photos').upload(path, photo)
+    if (uploadError) {
+      setSubmitting(false)
+      setStatus({ type: 'error', text: 'Could not upload the photo. Please try again.' })
+      return
+    }
+
+    const { error: evidenceError } = await supabase.from('photo_evidence').insert({
+      reservation_id: reservation.id,
+      stage: 'drop_off',
+      storage_path: path,
+      uploaded_by: user.id,
+    })
+    if (evidenceError) {
+      setSubmitting(false)
+      setStatus({ type: 'error', text: 'Could not save the photo record. Please try again.' })
+      return
+    }
 
     const { data, error } = await supabase.functions.invoke('locker-access', {
       body: { reservationId: reservation.id, dui, password, action: 'deposit' },
@@ -53,6 +90,27 @@ function DeliveryForm({ reservation, onDelivered }) {
       )}
 
       <form onSubmit={handleSubmit} className="mt-4 space-y-3">
+        <div>
+          <label
+            htmlFor={`photo-${reservation.id}`}
+            className="flex cursor-pointer items-center gap-2 rounded-xl border border-dashed border-lavender/30 px-4 py-3 text-xs text-jet-black/60 transition hover:border-lavender"
+          >
+            <Camera className="h-4 w-4 shrink-0 text-deep-purple" />
+            {photo ? photo.name : 'Attach a condition photo (required before drop-off)'}
+          </label>
+          <input
+            id={`photo-${reservation.id}`}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={handlePhotoChange}
+            required
+            className="hidden"
+          />
+          {photoPreview && (
+            <img src={photoPreview} alt="Condition preview" className="mt-2 h-28 w-full rounded-lg object-cover" />
+          )}
+        </div>
+
         <p className="flex items-center gap-1.5 text-xs text-jet-black/50">
           <Lock className="h-3.5 w-3.5" />
           Enter your DUI and account password at the locker to confirm the drop-off.

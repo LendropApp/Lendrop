@@ -56,6 +56,21 @@ Deno.serve(async (request) => {
   if (action === 'deposit' && !isOwner) return json({ error: 'Only the lender can drop off the item.' }, 403)
   if (action === 'pickup' && !isRenter) return json({ error: 'Only the renter can pick up the item.' }, 403)
 
+  // Fase 6: an item can't be marked delivered without condition
+  // evidence — enforced here, not just in the upload form, since the
+  // client could otherwise skip straight to this call.
+  if (action === 'deposit') {
+    const { data: evidence } = await admin
+      .from('photo_evidence')
+      .select('id')
+      .eq('reservation_id', reservationId)
+      .eq('stage', 'drop_off')
+      .limit(1)
+    if (!evidence || evidence.length === 0) {
+      return json({ error: 'Upload a condition photo before confirming drop-off.' }, 409)
+    }
+  }
+
   const { data: existingEvents } = await admin
     .from('locker_events')
     .select('event_type')

@@ -47,16 +47,33 @@ export default function Notifications() {
   const [error, setError] = useState('')
 
   const load = useCallback(async () => {
-    const { data, error } = await supabase
-      .from('notifications')
-      .select('id, type, title, body, related_id, is_read, created_at')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
+    const [{ data, error }, { data: prefs }] = await Promise.all([
+      supabase
+        .from('notifications')
+        .select('id, type, title, body, related_id, is_read, created_at')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false }),
+      supabase
+        .from('user_preferences')
+        .select('notify_messages, notify_reservations, notify_reviews')
+        .eq('user_id', user.id)
+        .maybeSingle(),
+    ])
 
     if (error) {
       setError('Could not load your notifications. Please refresh.')
     } else {
-      setNotifications(data ?? [])
+      // Disputes and system alerts are safety-critical and always shown,
+      // even if someone muted messages/reservations/reviews in Settings.
+      const mutedTypes = new Set()
+      if (prefs?.notify_messages === false) mutedTypes.add('message')
+      if (prefs?.notify_reservations === false) {
+        mutedTypes.add('reservation')
+        mutedTypes.add('payment')
+      }
+      if (prefs?.notify_reviews === false) mutedTypes.add('review')
+
+      setNotifications((data ?? []).filter((n) => !mutedTypes.has(n.type)))
     }
     setLoading(false)
   }, [user])

@@ -10,6 +10,7 @@ import { supabase } from '../lib/supabaseClient'
 import { getCategoryIcon } from '../lib/categoryIcons'
 import { getItemPhotoUrl } from '../lib/photos'
 import AuroraBlobs from '../components/background/AuroraBlobs'
+import useSmartBack from '../hooks/useSmartBack'
 
 const MAX_PHOTOS = 6
 
@@ -29,6 +30,7 @@ export default function PublishItem() {
   const navigate = useNavigate()
   const { itemId } = useParams()
   const isEditing = Boolean(itemId)
+  const goBack = useSmartBack(isEditing ? '/my-listings' : '/explore')
 
   const [categories, setCategories] = useState([])
   const [categoriesError, setCategoriesError] = useState('')
@@ -358,13 +360,14 @@ export default function PublishItem() {
       <header className="glass sticky top-0 z-50">
         <div className="h-px bg-linear-to-r from-transparent via-lavender/50 to-transparent" />
         <div className="mx-auto flex max-w-2xl items-center gap-3 px-6 py-4 sm:px-10">
-          <Link
-            to={isEditing ? '/my-listings' : '/explore'}
+          <button
+            type="button"
+            onClick={goBack}
             aria-label={isEditing ? 'Back to my listings' : 'Back to Explore'}
             className="flex h-9 w-9 items-center justify-center rounded-full border border-lavender/15 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple"
           >
             <ArrowLeft className="h-4 w-4" />
-          </Link>
+          </button>
           <div>
             <h1 className="font-display text-lg font-semibold text-jet-black">
               {isEditing ? 'Edit listing' : 'Publish an item'}

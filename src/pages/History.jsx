@@ -44,6 +44,7 @@ export default function History() {
   const [error, setError] = useState('')
   const [confirmCancelId, setConfirmCancelId] = useState(null)
   const [cancelling, setCancelling] = useState(false)
+  const [cancelStatus, setCancelStatus] = useState({ type: '', text: '' })
 
   const [myReviews, setMyReviews] = useState({})
   const [openReviewId, setOpenReviewId] = useState(null)
@@ -132,11 +133,30 @@ export default function History() {
 
   async function handleConfirmCancel(id) {
     setCancelling(true)
+    setCancelStatus({ type: '', text: '' })
     const { error } = await supabase.from('reservations').update({ status: 'cancelled' }).eq('id', id)
     setCancelling(false)
-    if (error) return
+
+    if (error) {
+      // guard_reservation_client_update (see migration 0024) raises these
+      // exact codes as the Postgres exception message when the client
+      // tries a transition it can't do itself.
+      const code = error.message?.trim()
+      setCancelStatus({
+        type: 'error',
+        text:
+          code === 'CANNOT_CANCEL_AFTER_DROPOFF'
+            ? 'This item has already been dropped off at the locker, so it can’t be cancelled here. Contact support if you need help.'
+            : code === 'INVALID_STATUS_TRANSITION'
+              ? 'This reservation can no longer be cancelled.'
+              : 'Could not cancel this reservation. Please try again.',
+      })
+      return
+    }
+
     setRentals((prev) => prev.map((r) => (r.id === id ? { ...r, status: 'cancelled' } : r)))
     setConfirmCancelId(null)
+    setCancelStatus({ type: 'success', text: 'Reservation cancelled — refund simulated, no real charge was made.' })
   }
 
   function openReviewForm(row) {
@@ -206,6 +226,11 @@ export default function History() {
           </div>
 
           {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+          {cancelStatus.text && (
+            <div className="mt-4" aria-live="polite" role="status">
+              <StatusMessage type={cancelStatus.type} text={cancelStatus.text} />
+            </div>
+          )}
 
           {loading ? (
             <p className="mt-8 text-center text-sm text-jet-black/40">Loading activity…</p>

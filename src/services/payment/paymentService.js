@@ -17,6 +17,8 @@ const RPC_ERROR_MESSAGES = {
   ITEM_NOT_AVAILABLE: 'Este artículo ya no está disponible.',
   CANNOT_RENT_OWN_ITEM: 'No puedes reservar tu propio artículo.',
   DATES_UNAVAILABLE: 'Esas fechas se acaban de reservar. Elige otras.',
+  ITEM_TOO_LARGE_FOR_LOCKERS: 'Este artículo no cabe en nuestros lockers.',
+  NO_LOCKER_CAPACITY: 'No hay lockers del tamaño necesario libres para esas fechas. Prueba con otras fechas.',
 }
 
 // payments-checkout returns { error: 'CODE', message?: '...' } as its
@@ -96,6 +98,22 @@ export async function createCheckout({ itemId, startDate, endDate }) {
   }
 
   return data?.[0] ?? null
+}
+
+// Advisory-only pre-check before the renter fills in card details: does
+// any compartment of the required size exist and sit free for these
+// dates? create_checkout is still the authoritative check (it raises
+// NO_LOCKER_CAPACITY itself) -- this just avoids sending someone through
+// a whole card form only to hit that wall. Fails open (assumes capacity)
+// on any error so a flaky check never blocks booking on its own.
+export async function checkLockerCapacity({ itemId, startDate, endDate }) {
+  const { data, error } = await supabase.rpc('has_locker_capacity_for_item', {
+    p_item_id: itemId,
+    p_start: startDate,
+    p_end: endDate,
+  })
+  if (error) return true
+  return data !== false
 }
 
 // Charges a pending checkout's card. Resolves with the Edge Function's

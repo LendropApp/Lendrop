@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Eye, EyeOff, PackagePlus, Pencil, Trash2 } from 'lucide-react'
+import { AlertTriangle, Eye, EyeOff, PackagePlus, Pencil, Trash2 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import { getItemPhotoUrl } from '../lib/photos'
@@ -40,7 +40,7 @@ export default function MyListings() {
     const { data, error: loadError } = await supabase
       .from('items')
       .select(
-        `id, title, price_per_day, is_available, created_at,
+        `id, title, price_per_day, is_available, created_at, required_locker_size,
          category:categories(name, slug),
          photos:item_photos(storage_path, display_order)`
       )
@@ -217,6 +217,15 @@ export default function MyListings() {
                           >
                             {meta.label}
                           </span>
+                          {!item.required_locker_size && (
+                            <span
+                              title="This item doesn't fit in any of our lockers yet — fix its measurements in Edit."
+                              className="flex shrink-0 items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold text-red-700"
+                            >
+                              <AlertTriangle className="h-2.5 w-2.5" />
+                              Too large
+                            </span>
+                          )}
                         </div>
                         <p className="mt-1 flex items-center gap-1.5 text-xs text-jet-black/50">
                           <CategoryIcon className="h-3 w-3" />

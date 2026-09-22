@@ -10,35 +10,35 @@ import { supabase } from '../../lib/supabaseClient'
 // create_checkout raises the error code itself as the Postgres exception
 // message (no JSON body) — e.g. error.message === 'IDENTITY_NOT_VERIFIED'.
 const RPC_ERROR_MESSAGES = {
-  NOT_AUTHENTICATED: 'Debes iniciar sesión para continuar.',
-  IDENTITY_NOT_VERIFIED: 'Verifica tu identidad antes de reservar.',
-  INVALID_DATE_RANGE: 'Elige un rango de fechas válido.',
-  START_DATE_IN_PAST: 'La fecha de inicio ya pasó. Elige otra.',
-  ITEM_NOT_AVAILABLE: 'Este artículo ya no está disponible.',
-  CANNOT_RENT_OWN_ITEM: 'No puedes reservar tu propio artículo.',
-  DATES_UNAVAILABLE: 'Esas fechas se acaban de reservar. Elige otras.',
-  ITEM_TOO_LARGE_FOR_LOCKERS: 'Este artículo no cabe en nuestros lockers.',
-  NO_LOCKER_CAPACITY: 'No hay lockers del tamaño necesario libres para esas fechas. Prueba con otras fechas.',
+  NOT_AUTHENTICATED: 'You need to sign in to continue.',
+  IDENTITY_NOT_VERIFIED: 'Verify your identity before booking a rental.',
+  INVALID_DATE_RANGE: 'Choose a valid date range.',
+  START_DATE_IN_PAST: 'That start date has already passed. Pick another.',
+  ITEM_NOT_AVAILABLE: 'This item is no longer available.',
+  CANNOT_RENT_OWN_ITEM: 'You can’t rent your own item.',
+  DATES_UNAVAILABLE: 'Those dates were just booked. Please pick different ones.',
+  ITEM_TOO_LARGE_FOR_LOCKERS: 'This item doesn’t fit in our lockers.',
+  NO_LOCKER_CAPACITY: 'No lockers of the size this item needs are free for those dates. Try different dates.',
 }
 
 // payments-checkout returns { error: 'CODE', message?: '...' } as its
 // JSON body on any non-2xx response.
 const FUNCTION_ERROR_MESSAGES = {
-  UNAUTHORIZED: 'Tu sesión expiró. Inicia sesión de nuevo.',
-  MISSING_FIELDS: 'Faltan datos para procesar el pago.',
-  INVALID_JSON: 'No se pudo leer la solicitud de pago.',
-  PAYMENT_NOT_FOUND: 'No encontramos ese pago.',
-  PAYMENT_ALREADY_PROCESSED: 'Este pago ya fue procesado.',
-  CHECKOUT_EXPIRED: 'El tiempo para pagar venció. Vuelve a elegir tus fechas.',
-  ENVIRONMENT_MISMATCH: 'Error de configuración de la pasarela. Intenta más tarde.',
-  INVALID_CARD_NUMBER: 'El número de tarjeta no es válido.',
-  INVALID_EXPIRY: 'La fecha de vencimiento no es válida.',
-  CARD_EXPIRED: 'La tarjeta está vencida.',
-  INVALID_CVC: 'El código de seguridad no es válido.',
-  INVALID_HOLDER: 'Escribe el nombre como aparece en la tarjeta.',
-  GATEWAY_UNAVAILABLE: 'La pasarela no respondió. Intenta de nuevo.',
-  PAYMENT_APPLY_FAILED: 'No se pudo aplicar el resultado del pago. Contacta a soporte.',
-  METHOD_NOT_ALLOWED: 'Solicitud inválida.',
+  UNAUTHORIZED: 'Your session expired. Please sign in again.',
+  MISSING_FIELDS: 'Some payment details are missing.',
+  INVALID_JSON: 'Could not read the payment request.',
+  PAYMENT_NOT_FOUND: 'We couldn’t find that payment.',
+  PAYMENT_ALREADY_PROCESSED: 'This payment was already processed.',
+  CHECKOUT_EXPIRED: 'The time to pay ran out. Please pick your dates again.',
+  ENVIRONMENT_MISMATCH: 'Gateway configuration error. Please try again later.',
+  INVALID_CARD_NUMBER: 'That card number isn’t valid.',
+  INVALID_EXPIRY: 'That expiry date isn’t valid.',
+  CARD_EXPIRED: 'That card has expired.',
+  INVALID_CVC: 'That security code isn’t valid.',
+  INVALID_HOLDER: 'Enter the name exactly as it appears on the card.',
+  GATEWAY_UNAVAILABLE: 'The payment gateway didn’t respond. Please try again.',
+  PAYMENT_APPLY_FAILED: 'Could not apply the payment result. Please contact support.',
+  METHOD_NOT_ALLOWED: 'Invalid request.',
 }
 
 // A charge can come back as a normal (2xx) response with outcome
@@ -46,14 +46,14 @@ const FUNCTION_ERROR_MESSAGES = {
 // checkout screen renders. These map payments.failure_reason /
 // apply_payment_result's p_failure_reason to copy for that case.
 const FAILURE_REASON_MESSAGES = {
-  card_declined: 'Tu banco rechazó la tarjeta.',
-  insufficient_funds: 'Fondos insuficientes en la tarjeta.',
-  processing_error: 'Hubo un error al procesar el pago con la pasarela.',
-  checkout_expired: 'El tiempo para pagar venció.',
-  late_approval_auto_refund: 'El pago llegó después de vencer el checkout y fue reembolsado automáticamente.',
+  card_declined: 'Your bank declined the card.',
+  insufficient_funds: 'Insufficient funds on that card.',
+  processing_error: 'The payment gateway had a processing error.',
+  checkout_expired: 'The time to pay ran out.',
+  late_approval_auto_refund: 'The payment arrived after the checkout expired and was refunded automatically.',
 }
 
-const DEFAULT_MESSAGE = 'Algo salió mal. Intenta de nuevo.'
+const DEFAULT_MESSAGE = 'Something went wrong. Please try again.'
 
 function normalizeRpcError(error) {
   const code = error?.message?.trim() || 'UNKNOWN'

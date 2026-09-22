@@ -3,9 +3,9 @@ import { AlertTriangle, Info, Ruler, Sparkles, Weight } from 'lucide-react'
 import { estimateItemSize, computeRequiredLockerSize, getLockerSizeClasses } from '../../services/items/sizeService'
 
 const CONFIDENCE_COPY = {
-  high: { label: 'Estimación precisa', tone: 'text-emerald-700 bg-emerald-100' },
-  medium: { label: 'Estimación aproximada', tone: 'text-amber-700 bg-amber-100' },
-  low: { label: 'Verifica las medidas', tone: 'text-red-700 bg-red-100' },
+  high: { label: 'Accurate estimate', tone: 'text-emerald-700 bg-emerald-100' },
+  medium: { label: 'Approximate estimate', tone: 'text-amber-700 bg-amber-100' },
+  low: { label: 'Double-check the measurements', tone: 'text-red-700 bg-red-100' },
 }
 
 const XLARGE_LIMITS = { height: 190, width: 110, depth: 60, weight: 40 }
@@ -91,7 +91,7 @@ export default function ItemSizeStep({ category, title, description, initialDime
       }
     } catch (err) {
       setPhase('error')
-      setErrorMessage(err?.message || 'No se pudo estimar el tamaño.')
+      setErrorMessage(err?.message || 'Could not estimate the size.')
     }
   })
 
@@ -156,9 +156,9 @@ export default function ItemSizeStep({ category, title, description, initialDime
   if (!category || title.trim().length < 3) {
     return (
       <section aria-live="polite">
-        <label className="mb-2 block text-sm font-medium text-jet-black">Tamaño</label>
+        <label className="mb-2 block text-sm font-medium text-jet-black">Size</label>
         <p className="text-xs text-jet-black/45">
-          Elige una categoría y escribe un título para estimar el tamaño de tu artículo.
+          Pick a category and write a title to estimate your item's size.
         </p>
       </section>
     )
@@ -166,19 +166,19 @@ export default function ItemSizeStep({ category, title, description, initialDime
 
   return (
     <section aria-live="polite">
-      <label className="mb-2 block text-sm font-medium text-jet-black">Tamaño</label>
+      <label className="mb-2 block text-sm font-medium text-jet-black">Size</label>
 
       {phase === 'loading' && (
         <div className="animate-pulse space-y-2 rounded-2xl border border-lavender/15 bg-white p-4">
           <div className="h-3 w-40 rounded bg-jet-black/10" />
           <div className="h-16 rounded bg-jet-black/5" />
-          <p className="pt-1 text-xs text-jet-black/40">Estimando el tamaño de tu artículo…</p>
+          <p className="pt-1 text-xs text-jet-black/40">Estimating your item's size…</p>
         </div>
       )}
 
       {phase === 'error' && (
         <div className="rounded-2xl border border-jet-black/10 bg-jet-black/[0.02] p-4 text-xs text-jet-black/50">
-          {errorMessage} Puedes ingresar las medidas manualmente abajo.
+          {errorMessage} You can enter the measurements manually below.
         </div>
       )}
 
@@ -209,14 +209,14 @@ export default function ItemSizeStep({ category, title, description, initialDime
 
           {estimate.recommendedSize && (
             <p className="text-xs text-jet-black/50">
-              Compartimiento interior: {estimate.recommendedSize.innerCm.height}×{estimate.recommendedSize.innerCm.width}×
-              {estimate.recommendedSize.innerCm.depth} cm · hasta {estimate.recommendedSize.maxWeightKg} kg
+              Inner compartment: {estimate.recommendedSize.innerCm.height}×{estimate.recommendedSize.innerCm.width}×
+              {estimate.recommendedSize.innerCm.depth} cm · up to {estimate.recommendedSize.maxWeightKg} kg
             </p>
           )}
 
           {estimate.dimensions && (
             <p className="text-xs text-jet-black/60">
-              Medidas estimadas empacado:{' '}
+              Estimated packed measurements:{' '}
               <span className="font-mono">
                 {estimate.dimensions.lengthCm}×{estimate.dimensions.widthCm}×{estimate.dimensions.heightCm} cm
               </span>
@@ -238,7 +238,7 @@ export default function ItemSizeStep({ category, title, description, initialDime
               onClick={() => setEditing(true)}
               className="text-xs font-semibold text-deep-purple hover:text-lavender"
             >
-              Ajustar medidas
+              Adjust measurements
             </button>
           ) : null}
         </div>
@@ -248,12 +248,12 @@ export default function ItemSizeStep({ category, title, description, initialDime
         <div className="mt-3 space-y-3 rounded-2xl border border-lavender/15 bg-white p-4">
           <p className="flex items-center gap-1.5 text-xs font-semibold text-jet-black/60">
             <Ruler className="h-3.5 w-3.5" />
-            Medidas del artículo empacado
+            Packed item measurements
           </p>
           <div className="grid grid-cols-3 gap-2">
             <div>
               <label htmlFor="size-length" className="mb-1 block text-[11px] text-jet-black/50">
-                Largo (cm)
+                Length (cm)
               </label>
               <input
                 id="size-length"
@@ -269,7 +269,7 @@ export default function ItemSizeStep({ category, title, description, initialDime
             </div>
             <div>
               <label htmlFor="size-width" className="mb-1 block text-[11px] text-jet-black/50">
-                Ancho (cm)
+                Width (cm)
               </label>
               <input
                 id="size-width"
@@ -285,7 +285,7 @@ export default function ItemSizeStep({ category, title, description, initialDime
             </div>
             <div>
               <label htmlFor="size-height" className="mb-1 block text-[11px] text-jet-black/50">
-                Alto (cm)
+                Height (cm)
               </label>
               <input
                 id="size-height"
@@ -303,7 +303,7 @@ export default function ItemSizeStep({ category, title, description, initialDime
           <div>
             <label htmlFor="size-weight" className="mb-1 flex items-center gap-1.5 text-[11px] text-jet-black/50">
               <Weight className="h-3 w-3" />
-              Peso (kg)
+              Weight (kg)
             </label>
             <input
               id="size-weight"
@@ -320,7 +320,7 @@ export default function ItemSizeStep({ category, title, description, initialDime
 
           {previewFit && (
             <p className="text-xs text-jet-black/60">
-              Con estas medidas cabe en: <span className="font-mono font-semibold text-deep-purple">Locker {previewFit.label}</span>
+              With these measurements it fits in: <span className="font-mono font-semibold text-deep-purple">Locker {previewFit.label}</span>
             </p>
           )}
         </div>
@@ -331,10 +331,10 @@ export default function ItemSizeStep({ category, title, description, initialDime
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
           <div>
             <p className="font-semibold">
-              Este artículo es demasiado grande para nuestros lockers (máx. {XLARGE_LIMITS.height}×{XLARGE_LIMITS.width}×
+              This item is too large for our lockers (max {XLARGE_LIMITS.height}×{XLARGE_LIMITS.width}×
               {XLARGE_LIMITS.depth} cm, {XLARGE_LIMITS.weight} kg).
             </p>
-            <p className="mt-1 text-xs text-red-600">No se puede publicar como disponible. Revisa las medidas ingresadas.</p>
+            <p className="mt-1 text-xs text-red-600">It can't be published as available. Please review the measurements you entered.</p>
           </div>
         </div>
       )}

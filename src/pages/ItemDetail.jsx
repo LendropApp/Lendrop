@@ -467,8 +467,8 @@ export default function ItemDetail() {
                 </span>
                 {item.required_locker_size && (
                   <span className="rounded-full bg-lavender/15 px-2.5 py-1 font-mono text-[11px] font-semibold text-deep-purple">
-                    Cabe en locker {sizeClasses.find((s) => s.code === item.required_locker_size)?.label ?? item.required_locker_size}
-                    {item.dimensions_source === 'category_default' ? ' (estimado)' : ''}
+                    Fits in locker {sizeClasses.find((s) => s.code === item.required_locker_size)?.label ?? item.required_locker_size}
+                    {item.dimensions_source === 'category_default' ? ' (estimated)' : ''}
                   </span>
                 )}
               </div>
@@ -595,7 +595,7 @@ export default function ItemDetail() {
 
                           {!hasCapacity && (
                             <p className="rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-700">
-                              No hay lockers del tamaño necesario libres para esas fechas. Prueba con otras fechas.
+                              No lockers of the size this item needs are free for those dates. Try different dates.
                             </p>
                           )}
 

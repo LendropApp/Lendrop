@@ -5,10 +5,10 @@ import { supabase } from '../../lib/supabaseClient'
 import StatusMessage from '../StatusMessage'
 
 const TEST_CARDS = [
-  { number: '4242 4242 4242 4242', label: 'Aprobada' },
-  { number: '4000 0000 0000 0002', label: 'Rechazada' },
-  { number: '4000 0000 0000 9995', label: 'Fondos insuficientes' },
-  { number: '4000 0000 0000 0119', label: 'Error de pasarela' },
+  { number: '4242 4242 4242 4242', label: 'Approved' },
+  { number: '4000 0000 0000 0002', label: 'Declined' },
+  { number: '4000 0000 0000 9995', label: 'Insufficient funds' },
+  { number: '4000 0000 0000 0119', label: 'Gateway error' },
 ]
 
 // Same BIN-range detection as AddCardForm.jsx — kept local instead of
@@ -91,11 +91,11 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
     setFatalError('')
     try {
       const data = await createCheckout({ itemId, startDate, endDate })
-      if (!data) throw { message: 'No se pudo iniciar el pago. Intenta de nuevo.' }
+      if (!data) throw { message: 'Could not start the payment. Please try again.' }
       setCheckout(data)
       setPhase('form')
     } catch (err) {
-      setFatalError(err?.message || 'No se pudo iniciar el pago. Intenta de nuevo.')
+      setFatalError(err?.message || 'Could not start the payment. Please try again.')
       setPhase('fatal')
     }
   }, [itemId, startDate, endDate])
@@ -130,35 +130,35 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
   function validateCard() {
     if (digits.length < 13 || digits.length > 19 || !passesLuhn(digits)) {
       numberRef.current?.focus()
-      return { error: 'El número de tarjeta no es válido.' }
+      return { error: 'That card number isn’t valid.' }
     }
 
     const match = /^(\d{1,2})\/(\d{2,4})$/.exec(expiry.trim())
     if (!match) {
       expiryRef.current?.focus()
-      return { error: 'Usa el formato MM/AA.' }
+      return { error: 'Use the MM/YY format.' }
     }
     const month = Number(match[1])
     let year = Number(match[2])
     if (year < 100) year += 2000
     if (month < 1 || month > 12) {
       expiryRef.current?.focus()
-      return { error: 'El mes de vencimiento no es válido.' }
+      return { error: 'That expiry month isn’t valid.' }
     }
     const now = new Date()
     if (year < now.getFullYear() || (year === now.getFullYear() && month < now.getMonth() + 1)) {
       expiryRef.current?.focus()
-      return { error: 'La tarjeta está vencida.' }
+      return { error: 'That card has expired.' }
     }
 
     const cvcLen = expectedCvcLength(brand)
     if (cvc.length !== cvcLen) {
       cvcRef.current?.focus()
-      return { error: `El código de seguridad debe tener ${cvcLen} dígitos.` }
+      return { error: `The security code must be ${cvcLen} digits.` }
     }
     if (holderName.trim().length < 3) {
       nameRef.current?.focus()
-      return { error: 'Escribe el nombre como aparece en la tarjeta.' }
+      return { error: 'Enter the name exactly as it appears on the card.' }
     }
 
     return { card: { number: digits, expMonth: month, expYear: year, cvc, holderName: holderName.trim() } }
@@ -204,7 +204,7 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
         setPhase('expired')
         return
       }
-      setPayStatus({ type: 'error', text: err?.message || 'No se pudo procesar el pago.' })
+      setPayStatus({ type: 'error', text: err?.message || 'Could not process the payment.' })
     }
   }
 
@@ -217,7 +217,7 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
   if (phase === 'creating') {
     return (
       <div className="rounded-2xl border border-lavender/15 bg-white p-6 text-center">
-        <p className="text-sm text-jet-black/50">Preparando tu pago…</p>
+        <p className="text-sm text-jet-black/50">Preparing your payment…</p>
       </div>
     )
   }
@@ -231,7 +231,7 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
           onClick={onBackToDates}
           className="rounded-xl border border-red-200 px-4 py-2 text-xs font-semibold text-red-700 transition hover:bg-red-100"
         >
-          Volver a elegir fechas
+          Back to dates
         </button>
       </div>
     )
@@ -240,14 +240,14 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
   if (phase === 'expired') {
     return (
       <div className="space-y-3 rounded-2xl border border-jet-black/10 bg-jet-black/[0.02] p-4 text-center">
-        <p className="text-sm font-semibold text-jet-black">El tiempo para pagar venció</p>
-        <p className="text-xs text-jet-black/50">Las fechas fueron liberadas. Puedes intentarlo de nuevo.</p>
+        <p className="text-sm font-semibold text-jet-black">Time to pay ran out</p>
+        <p className="text-xs text-jet-black/50">The dates were released. You can try again.</p>
         <button
           type="button"
           onClick={onBackToDates}
           className="rounded-xl bg-deep-purple px-4 py-2 text-xs font-semibold text-white transition hover:bg-deep-purple/90"
         >
-          Volver a elegir fechas
+          Back to dates
         </button>
       </div>
     )
@@ -259,9 +259,9 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
       <div className="space-y-3 rounded-2xl border border-emerald-100 bg-emerald-50 p-4 text-center">
         <CheckCircle2 className="mx-auto h-8 w-8 text-emerald-600" />
         <div>
-          <p className="text-sm font-semibold text-emerald-800">¡Reserva confirmada!</p>
+          <p className="text-sm font-semibold text-emerald-800">Booking confirmed!</p>
           <p className="mt-1 text-xs text-emerald-700">
-            Pago aprobado ({checkout.environment === 'mock' ? 'modo prueba' : checkout.environment}).
+            Payment approved ({checkout.environment === 'mock' ? 'test mode' : checkout.environment}).
           </p>
         </div>
 
@@ -269,27 +269,27 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
           <div className="flex items-start gap-2 rounded-xl bg-white p-3 text-left text-xs text-jet-black/70">
             <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-deep-purple" />
             <span>
-              {locker.name} · Compartimiento {reservation.compartment.compartment_code}
+              {locker.name} · Compartment {reservation.compartment.compartment_code}
               <br />
               {locker.address}, {locker.city}
             </span>
           </div>
         ) : (
-          <p className="text-xs text-emerald-700">Te asignaremos un locker en breve — revisa Track pickup.</p>
+          <p className="text-xs text-emerald-700">We'll assign a locker shortly — check Track pickup.</p>
         )}
 
         <a
           href={`/rental-tracking?reservationId=${reservation?.id ?? ''}`}
           className="flex w-full items-center justify-center gap-2 rounded-xl bg-deep-purple px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-deep-purple/90"
         >
-          Ver seguimiento de mi alquiler
+          View my rental tracking
         </a>
         <button
           type="button"
           onClick={onClose}
           className="text-xs font-semibold text-emerald-700/70 hover:text-emerald-800"
         >
-          Listo
+          Done
         </button>
       </div>
     )
@@ -303,12 +303,12 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
     <div className="space-y-3 rounded-2xl border border-lavender/15 bg-white p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <span className="inline-flex items-center gap-1.5 rounded-full border border-lavender/30 bg-lavender/10 px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-deep-purple">
-          Checkout Wompi · Modo prueba
+          Wompi checkout · Test mode
         </span>
         <span
           className="font-mono text-xs font-semibold text-jet-black/60"
           role="timer"
-          aria-label={`Tiempo restante para pagar: ${formatCountdown(remaining)}`}
+          aria-label={`Time left to pay: ${formatCountdown(remaining)}`}
         >
           {formatCountdown(remaining)}
         </span>
@@ -316,22 +316,22 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
 
       <div className="space-y-1.5 rounded-xl bg-jet-black/5 p-3 text-xs">
         <div className="flex items-center justify-between text-jet-black/70">
-          <span>Subtotal del alquiler</span>
+          <span>Rental subtotal</span>
           <span className="font-mono">${Number(checkout.rental_subtotal).toFixed(2)}</span>
         </div>
         <div className="flex items-center justify-between text-jet-black/70">
-          <span>Tarifa de protección</span>
+          <span>Protection fee</span>
           <span className="font-mono">${Number(checkout.protection_fee_amount).toFixed(2)}</span>
         </div>
         <div className="flex items-center justify-between border-t border-jet-black/10 pt-1.5 font-semibold text-jet-black">
-          <span>Total a pagar hoy</span>
+          <span>Total charged today</span>
           <span className="font-mono">${Number(checkout.amount).toFixed(2)} {checkout.currency}</span>
         </div>
         <div className="flex items-start gap-1.5 border-t border-jet-black/10 pt-1.5 text-jet-black/50">
           <ShieldCheck className="mt-0.5 h-3 w-3 shrink-0" />
           <span>
-            ${Number(checkout.damage_liability_amount).toFixed(2)} de depósito de garantía retenido — no se cobra
-            ahora, se libera automáticamente si el artículo vuelve sin daños.
+            ${Number(checkout.damage_liability_amount).toFixed(2)} damage-liability deposit held — not charged now,
+            released automatically if the item comes back with no damage.
           </span>
         </div>
       </div>
@@ -341,7 +341,7 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
         onClick={() => setShowTestCards((v) => !v)}
         className="text-xs font-semibold text-deep-purple underline decoration-dotted hover:text-lavender"
       >
-        {showTestCards ? 'Ocultar tarjetas de prueba' : 'Ver tarjetas de prueba'}
+        {showTestCards ? 'Hide test cards' : 'View test cards'}
       </button>
       {showTestCards && (
         <ul className="space-y-1 rounded-xl bg-jet-black/[0.03] p-3 text-[11px] text-jet-black/60">
@@ -357,7 +357,7 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
       <form onSubmit={handlePay} className="space-y-3">
         <div>
           <label htmlFor="checkout-holder-name" className="text-xs font-semibold text-jet-black/60">
-            Nombre en la tarjeta
+            Name on card
           </label>
           <input
             id="checkout-holder-name"
@@ -368,14 +368,14 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
             value={holderName}
             onChange={(e) => setHolderName(e.target.value)}
             className="mt-1 w-full rounded-lg border border-jet-black/10 px-3 py-2 text-sm focus:border-lavender focus:outline-none"
-            placeholder="Como aparece en la tarjeta"
+            placeholder="As it appears on the card"
           />
         </div>
 
         <div>
           <div className="flex items-center justify-between">
             <label htmlFor="checkout-card-number" className="text-xs font-semibold text-jet-black/60">
-              Número de tarjeta
+              Card number
             </label>
             {brand && <span className="text-xs font-semibold text-deep-purple">{brand}</span>}
           </div>
@@ -397,7 +397,7 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
         <div className="flex gap-3">
           <div className="flex-1">
             <label htmlFor="checkout-expiry" className="text-xs font-semibold text-jet-black/60">
-              Vencimiento
+              Expiry
             </label>
             <input
               id="checkout-expiry"
@@ -410,7 +410,7 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
               value={expiry}
               onChange={(e) => setExpiry(formatExpiryInput(e.target.value))}
               className="mt-1 w-full rounded-lg border border-jet-black/10 px-3 py-2 font-mono text-sm focus:border-lavender focus:outline-none"
-              placeholder="MM/AA"
+              placeholder="MM/YY"
             />
           </div>
           <div className="flex-1">
@@ -443,7 +443,7 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
             onClick={handleTryAnotherCard}
             className="text-xs font-semibold text-deep-purple hover:text-lavender"
           >
-            Intentar con otra tarjeta →
+            Try another card →
           </button>
         )}
 
@@ -453,10 +453,10 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
           className="flex w-full items-center justify-center gap-2 rounded-xl bg-deep-purple px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-deep-purple/90 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Lock className="h-3.5 w-3.5" />
-          {paying ? 'Procesando…' : `Pagar $${Number(checkout.amount).toFixed(2)}`}
+          {paying ? 'Processing…' : `Pay $${Number(checkout.amount).toFixed(2)}`}
         </button>
         <p className="text-center text-[11px] text-jet-black/40">
-          Pasarela en modo prueba — ninguna tarjeta real es cobrada.
+          Test-mode gateway — no real card is ever charged.
         </p>
       </form>
     </div>

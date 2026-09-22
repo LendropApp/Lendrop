@@ -7,12 +7,12 @@ import { computeRequiredLockerSize } from './lockerFit'
 export { computeRequiredLockerSize }
 
 const ERROR_MESSAGES = {
-  UNAUTHORIZED: 'Tu sesión expiró. Inicia sesión de nuevo.',
-  TITLE_REQUIRED: 'Escribe el nombre del artículo para estimar su tamaño.',
-  CATEGORY_REQUIRED: 'Elige una categoría antes de estimar el tamaño.',
-  UNKNOWN_CATEGORY: 'Esa categoría no existe.',
+  UNAUTHORIZED: 'Your session expired. Please sign in again.',
+  TITLE_REQUIRED: 'Enter the item’s name to estimate its size.',
+  CATEGORY_REQUIRED: 'Pick a category before estimating size.',
+  UNKNOWN_CATEGORY: 'That category doesn’t exist.',
 }
-const DEFAULT_MESSAGE = 'No se pudo estimar el tamaño. Intenta de nuevo.'
+const DEFAULT_MESSAGE = 'Could not estimate the size. Please try again.'
 
 // functions.invoke() puts the real response on error.context (a Response
 // object) instead of a parsed body — read it as JSON to get what the
@@ -60,7 +60,7 @@ export async function getLockerSizeClasses() {
     .eq('is_active', true)
     .order('rank')
 
-  if (error) throw { code: 'UNKNOWN', message: 'No se pudieron cargar los tamaños de locker.' }
+  if (error) throw { code: 'UNKNOWN', message: 'Could not load locker sizes.' }
 
   cachedSizeClasses = data ?? []
   return cachedSizeClasses

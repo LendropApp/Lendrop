@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabaseClient'
 import { getCategoryIcon } from '../lib/categoryIcons'
 import { getItemPhotoUrl } from '../lib/photos'
 import CheckoutPanel from '../components/checkout/CheckoutPanel'
+import { checkLockerCapacity } from '../services/payment/paymentService'
 import LockerAvatar from '../components/LockerAvatar'
 import StarRating from '../components/StarRating'
 import StatusMessage from '../components/StatusMessage'
@@ -14,6 +15,7 @@ import VerificationNotice from '../components/VerificationNotice'
 import MobileNav from '../components/MobileNav'
 import AuroraBlobs from '../components/background/AuroraBlobs'
 import useSmartBack from '../hooks/useSmartBack'
+import { getLockerSizeClasses } from '../services/items/sizeService'
 
 function photoUrl(photo) {
   return getItemPhotoUrl(photo.storage_path)
@@ -41,6 +43,7 @@ export default function ItemDetail() {
   const goBack = useSmartBack('/explore')
 
   const [item, setItem] = useState(null)
+  const [sizeClasses, setSizeClasses] = useState([])
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
   const [activePhoto, setActivePhoto] = useState(0)
@@ -64,12 +67,14 @@ export default function ItemDetail() {
   const [breakdown, setBreakdown] = useState(null)
   const [breakdownLoading, setBreakdownLoading] = useState(false)
   const [checkoutActive, setCheckoutActive] = useState(false)
+  const [hasCapacity, setHasCapacity] = useState(true)
 
   const loadItem = useCallback(async () => {
     const { data, error } = await supabase
       .from('items')
       .select(`
         id, title, description, price_per_day, original_price_per_day, declared_value, location_city, is_available, condition, created_at,
+        required_locker_size, dimensions_source,
         category:categories(id, name, slug),
         photos:item_photos(id, storage_path, display_order),
         owner:profiles!items_owner_id_fkey(id, full_name, avatar_url, bio, verification_status, average_rating, total_reviews, is_premium)
@@ -104,6 +109,10 @@ export default function ItemDetail() {
   useEffect(() => {
     loadItem()
   }, [loadItem])
+
+  useEffect(() => {
+    getLockerSizeClasses().then(setSizeClasses).catch(() => setSizeClasses([]))
+  }, [])
 
   useEffect(() => {
     loadReviews()
@@ -194,6 +203,27 @@ export default function ItemDetail() {
       cancelled = true
     }
   }, [item, days])
+
+  // Advisory-only: warn before the renter goes through a whole card form
+  // just to hit NO_LOCKER_CAPACITY at checkout. create_checkout is still
+  // the real gate.
+  useEffect(() => {
+    if (!selectedRange.start || !selectedRange.end) {
+      setHasCapacity(true)
+      return
+    }
+    let cancelled = false
+    checkLockerCapacity({
+      itemId,
+      startDate: toISODate(selectedRange.start),
+      endDate: toISODate(selectedRange.end),
+    }).then((ok) => {
+      if (!cancelled) setHasCapacity(ok)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [itemId, selectedRange])
 
   function handleStartBooking() {
     if (!user) {
@@ -430,9 +460,17 @@ export default function ItemDetail() {
                 </p>
               )}
 
-              <div className="mt-2 flex items-center gap-1.5 text-xs text-jet-black/50">
-                <MapPin className="h-3.5 w-3.5" />
-                {item.location_city}
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <span className="flex items-center gap-1.5 text-xs text-jet-black/50">
+                  <MapPin className="h-3.5 w-3.5" />
+                  {item.location_city}
+                </span>
+                {item.required_locker_size && (
+                  <span className="rounded-full bg-lavender/15 px-2.5 py-1 font-mono text-[11px] font-semibold text-deep-purple">
+                    Cabe en locker {sizeClasses.find((s) => s.code === item.required_locker_size)?.label ?? item.required_locker_size}
+                    {item.dimensions_source === 'category_default' ? ' (estimado)' : ''}
+                  </span>
+                )}
               </div>
 
               {/* Owner card */}
@@ -555,10 +593,16 @@ export default function ItemDetail() {
                             </div>
                           </div>
 
+                          {!hasCapacity && (
+                            <p className="rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-700">
+                              No hay lockers del tamaño necesario libres para esas fechas. Prueba con otras fechas.
+                            </p>
+                          )}
+
                           <button
                             type="button"
                             onClick={handleContinueToPayment}
-                            disabled={!selectedRange.end}
+                            disabled={!selectedRange.end || !hasCapacity}
                             className="w-full rounded-xl bg-deep-purple px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-deep-purple/90 disabled:cursor-not-allowed disabled:opacity-50"
                           >
                             Continue to payment

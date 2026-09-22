@@ -192,25 +192,41 @@ create table public.categories (
   display_order integer not null default 0,
   is_active boolean not null default true,
   created_at timestamptz not null default now(),
-  damage_liability_cap numeric(10, 2) null check (damage_liability_cap is null or damage_liability_cap > 0)
+  damage_liability_cap numeric(10, 2) null check (damage_liability_cap is null or damage_liability_cap > 0),
+  -- References locker_size_classes(code) -- that table doesn't exist yet
+  -- at this point in the file (section 8), so the FK is added there via
+  -- ALTER once it does. The column itself lives here since it's
+  -- conceptually part of categories.
+  default_locker_size text
 );
 
 comment on column public.categories.damage_liability_cap is 'Max USD damage-liability hold for items in this category. NULL = no cap (35% of declared_value applies uncapped).';
+comment on column public.categories.default_locker_size is 'Fallback locker size for items in this category with no owner-provided dimensions yet.';
 
-insert into public.categories (name, slug, display_order) values
-  ('Ropa', 'ropa', 1),
-  ('Herramientas', 'herramientas', 2),
-  ('Cámaras', 'camaras', 3),
-  ('Drones', 'drones', 4),
-  ('Instrumentos musicales', 'instrumentos-musicales', 5),
-  ('Bicicletas', 'bicicletas', 6),
-  ('Equipo deportivo', 'equipo-deportivo', 7),
-  ('Electrónicos', 'electronicos', 8),
-  ('Equipo de camping', 'equipo-camping', 9),
-  ('Maletas', 'maletas', 10),
-  ('Disfraces', 'disfraces', 11);
+-- NOTA DE DESVIACIÓN DEL ESTADO EN VIVO: los nombres/slugs originales de
+-- este seed eran en español (Ropa/ropa, Cámaras/camaras, etc.) — en algún
+-- punto de la historia del proyecto se renombraron a inglés directamente
+-- en la base de datos en vivo, sin que ninguna migración (0001-0026) lo
+-- capturara. Esta lista ya refleja los valores reales en vivo, verificados
+-- por consulta directa. El nombre real de "Musical Instruments" en vivo
+-- tiene un espacio final (' Musical Instruments '); se omite aquí a
+-- propósito por la misma razón que la sección de RLS más abajo no
+-- reproduce el bug de messages_select_participant: este archivo es la
+-- referencia de instalación limpia, no debe perpetuar errores de datos.
+insert into public.categories (name, slug, display_order, default_locker_size) values
+  ('Clothing', 'clothing', 1, 'medium'),
+  ('Tools', 'tools', 2, 'medium'),
+  ('Cameras', 'cameras', 3, 'small'),
+  ('Drones', 'drones', 4, 'medium'),
+  ('Musical Instruments', 'musical-instruments', 5, 'xlarge'),
+  ('Bicycles', 'bicycles', 6, 'xlarge'),
+  ('Sports Equipment', 'sports-equipment', 7, 'large'),
+  ('Electronics', 'electronics', 8, 'small'),
+  ('Camping Equipment', 'camping-equipment', 9, 'large'),
+  ('Suitcase', 'suitcases', 10, 'large'),
+  ('Costumes', 'costumes', 11, 'medium');
 
-update public.categories set damage_liability_cap = 500 where slug in ('camaras', 'drones', 'electronicos');
+update public.categories set damage_liability_cap = 500 where slug in ('cameras', 'drones', 'electronics');
 
 
 -- ────────────────────────────────────────────────────────────────────
@@ -238,10 +254,26 @@ create table public.items (
     to_tsvector('spanish', coalesce(title, '') || ' ' || coalesce(description, ''))
   ) stored,
   created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
+  updated_at timestamptz not null default now(),
+  -- Packed dimensions/weight (all 3 dims together or none) and the
+  -- locker size they require -- the latter two are ALWAYS computed by
+  -- set_item_required_locker_size() (section 8), never set by the
+  -- client. required_locker_size references locker_size_classes(code),
+  -- added via ALTER in section 8 once that table exists.
+  length_cm numeric(6, 1) check (length_cm is null or (length_cm > 0 and length_cm <= 300)),
+  width_cm  numeric(6, 1) check (width_cm  is null or (width_cm  > 0 and width_cm  <= 300)),
+  height_cm numeric(6, 1) check (height_cm is null or (height_cm > 0 and height_cm <= 300)),
+  weight_kg numeric(6, 2) check (weight_kg is null or (weight_kg > 0 and weight_kg <= 200)),
+  required_locker_size text,
+  dimensions_source text not null default 'category_default' check (dimensions_source in ('owner', 'category_default')),
+  constraint items_dimensions_all_or_none check (
+    (length_cm is null and width_cm is null and height_cm is null)
+    or (length_cm is not null and width_cm is not null and height_cm is not null)
+  )
 );
 
 comment on column public.items.declared_value is 'Replacement value declared by the lender at publish time. Base for the damage-liability hold (35%, capped per category).';
+comment on column public.items.required_locker_size is 'Smallest locker size the packed item fits in. Computed by a trigger; NULL means it does not fit in any locker.';
 
 create trigger set_items_updated_at
   before update on public.items
@@ -287,6 +319,106 @@ create table public.item_photos (
 -- ────────────────────────────────────────────────────────────────────
 -- 8. LOCKERS Y COMPARTIMIENTOS
 -- ────────────────────────────────────────────────────────────────────
+-- Catálogo de tamaños de compartimento (medidas internas en cm) --
+-- tamaños como DATOS, no hardcodeados: cambiar de fabricante o de país
+-- es editar filas, no desplegar código.
+create table public.locker_size_classes (
+  code text primary key,             -- mismo valor que locker_compartments.size
+  label text not null,               -- lo que ve el usuario: S, M, L, XL
+  rank smallint not null unique,     -- orden de menor a mayor
+  inner_height_cm numeric(6, 1) not null check (inner_height_cm > 0),
+  inner_width_cm  numeric(6, 1) not null check (inner_width_cm > 0),
+  inner_depth_cm  numeric(6, 1) not null check (inner_depth_cm > 0),
+  max_weight_kg   numeric(6, 1) not null check (max_weight_kg > 0),
+  is_active boolean not null default true
+);
+
+comment on table public.locker_size_classes is 'Tamaños de compartimento (medidas internas). Ajustar a las del fabricante real cuando se elija hardware.';
+
+insert into public.locker_size_classes (code, label, rank, inner_height_cm, inner_width_cm, inner_depth_cm, max_weight_kg) values
+  ('small',  'S',  1,  12,  42, 60, 10),
+  ('medium', 'M',  2,  30,  42, 60, 20),
+  ('large',  'L',  3,  60,  42, 60, 30),
+  ('xlarge', 'XL', 4, 190, 110, 60, 40);
+
+-- Deferred FKs: categories.default_locker_size (section 5) and
+-- items.required_locker_size (section 6) are declared as plain text
+-- columns because this table didn't exist yet at that point in the file.
+alter table public.categories
+  add constraint categories_default_locker_size_fkey foreign key (default_locker_size) references public.locker_size_classes(code);
+alter table public.items
+  add constraint items_required_locker_size_fkey foreign key (required_locker_size) references public.locker_size_classes(code);
+
+-- ¿Cabe? -- compara las 3 medidas de cada lado ordenadas de mayor a
+-- menor, así que el artículo se puede rotar para entrar.
+create function public.item_fits_size(
+  p_l numeric, p_w numeric, p_h numeric, p_kg numeric, p_size text)
+returns boolean
+language sql
+stable
+set search_path = public
+as $$
+  with item as (
+    select greatest(p_l, p_w, p_h) a1,
+           p_l + p_w + p_h - greatest(p_l, p_w, p_h) - least(p_l, p_w, p_h) a2,
+           least(p_l, p_w, p_h) a3
+  ), box as (
+    select greatest(inner_height_cm, inner_width_cm, inner_depth_cm) b1,
+           inner_height_cm + inner_width_cm + inner_depth_cm
+             - greatest(inner_height_cm, inner_width_cm, inner_depth_cm)
+             - least(inner_height_cm, inner_width_cm, inner_depth_cm) b2,
+           least(inner_height_cm, inner_width_cm, inner_depth_cm) b3,
+           max_weight_kg
+    from public.locker_size_classes where code = p_size and is_active
+  )
+  select coalesce((select a1 <= b1 and a2 <= b2 and a3 <= b3 and coalesce(p_kg, 0) <= max_weight_kg
+                   from item, box), false);
+$$;
+
+-- Tamaño más pequeño donde cabe (NULL si no cabe en ninguno)
+create function public.compute_required_locker_size(
+  p_l numeric, p_w numeric, p_h numeric, p_kg numeric)
+returns text
+language sql
+stable
+set search_path = public
+as $$
+  select code from public.locker_size_classes
+  where is_active and public.item_fits_size(p_l, p_w, p_h, p_kg, code)
+  order by rank
+  limit 1;
+$$;
+
+grant execute on function public.item_fits_size(numeric, numeric, numeric, numeric, text) to anon, authenticated;
+grant execute on function public.compute_required_locker_size(numeric, numeric, numeric, numeric) to anon, authenticated;
+
+-- El tamaño requerido siempre lo calcula la BD, nunca el cliente: si el
+-- dueño dio medidas, se calcula con ellas; si no, se usa el tamaño por
+-- defecto de la categoría.
+create function public.set_item_required_locker_size()
+returns trigger
+language plpgsql
+set search_path = public
+as $$
+begin
+  if new.length_cm is not null then
+    new.required_locker_size := public.compute_required_locker_size(new.length_cm, new.width_cm, new.height_cm, new.weight_kg);
+    new.dimensions_source := 'owner';
+  else
+    select c.default_locker_size into new.required_locker_size
+    from public.categories c where c.id = new.category_id;
+    new.dimensions_source := 'category_default';
+  end if;
+  return new;
+end;
+$$;
+revoke execute on function public.set_item_required_locker_size() from public, anon, authenticated;
+
+create trigger set_item_required_locker_size
+  before insert or update of length_cm, width_cm, height_cm, weight_kg, category_id, required_locker_size, dimensions_source
+  on public.items
+  for each row execute function public.set_item_required_locker_size();
+
 create table public.lockers (
   id uuid primary key default gen_random_uuid(),
   name text not null unique,
@@ -302,9 +434,10 @@ create table public.locker_compartments (
   id uuid primary key default gen_random_uuid(),
   locker_id uuid not null references public.lockers(id) on delete cascade,
   compartment_code text not null,
-  size text not null default 'medium' check (size in ('small', 'medium', 'large')),
+  size text not null default 'medium' references public.locker_size_classes(code),
   status compartment_status not null default 'available',
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  unique (locker_id, compartment_code)
 );
 
 
@@ -342,45 +475,162 @@ create trigger set_reservations_updated_at
   before update on public.reservations
   for each row execute function public.set_updated_at();
 
--- Asigna automáticamente un compartimiento libre (preferimos uno en la
--- misma ciudad del artículo) apenas la reserva pasa a 'confirmed'.
+-- Reserva de compartimentos por VENTANA DE FECHAS, no por el ciclo de
+-- vida entero de la reserva -- un compartimento usado en un alquiler de
+-- 3 días no debe quedar bloqueado por 30 días si la reserva es a futuro.
+-- compartment_bookings = planificación (qué compartimento, qué fechas);
+-- locker_compartments.status = estado FÍSICO (available/occupied/
+-- maintenance), no se toca por reservar/liberar una ventana.
+-- Ventana = [inicio - 1 día (el dueño deposita), fin + 1 día (margen de
+-- devolución)].
+create table public.compartment_bookings (
+  id uuid primary key default gen_random_uuid(),
+  compartment_id uuid not null references public.locker_compartments(id) on delete restrict,
+  reservation_id uuid not null unique references public.reservations(id) on delete cascade,
+  window_dates daterange not null,
+  status text not null default 'active' check (status in ('active', 'released')),
+  created_at timestamptz not null default now(),
+  released_at timestamptz,
+  constraint compartment_bookings_no_overlap
+    exclude using gist (compartment_id with =, window_dates with &&) where (status = 'active')
+);
+comment on table public.compartment_bookings is 'Planificación de uso de compartimentos por fechas. La restricción de exclusión garantiza que un compartimento nunca tenga dos reservas activas traslapadas.';
+create index compartment_bookings_compartment_idx on public.compartment_bookings (compartment_id) where status = 'active';
+
+create function public.compartment_window(p_start date, p_end date)
+returns daterange
+language sql
+immutable
+set search_path = public
+as $$
+  select daterange(p_start - 1, p_end + 1, '[]');
+$$;
+
+-- Compartimento libre más pequeño donde cabe, para una ventana dada
+create function public.find_free_compartment(
+  p_required_size text, p_city text, p_window daterange)
+returns uuid
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select c.id
+  from public.locker_compartments c
+  join public.lockers l on l.id = c.locker_id and l.is_active
+  join public.locker_size_classes s on s.code = c.size and s.is_active
+  join public.locker_size_classes req on req.code = p_required_size
+  where s.rank >= req.rank
+    and c.status <> 'maintenance'
+    -- si la ventana empieza ya, el compartimento tiene que estar físicamente vacío
+    and not (c.status = 'occupied' and lower(p_window) <= current_date + 1)
+    and not exists (
+      select 1 from public.compartment_bookings b
+      where b.compartment_id = c.id and b.status = 'active' and b.window_dates && p_window)
+  order by (l.city = p_city) desc, s.rank asc, random()
+  limit 1;
+$$;
+revoke execute on function public.find_free_compartment(text, text, daterange) from public, anon, authenticated;
+
+-- Asigna compartimento a UNA reserva (reutilizable: trigger, reintentos, backfill)
+create function public.assign_compartment_for_reservation(p_reservation_id uuid)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_res record;
+  v_window daterange;
+  v_comp uuid;
+  v_attempt int := 0;
+begin
+  select r.id, r.status, r.compartment_id, r.start_date, r.end_date, i.required_locker_size, i.location_city
+    into v_res
+  from public.reservations r join public.items i on i.id = r.item_id
+  where r.id = p_reservation_id
+  for update of r;
+
+  if v_res.id is null or v_res.status not in ('confirmed', 'active') then
+    return null;
+  end if;
+  if v_res.compartment_id is not null then
+    return v_res.compartment_id;
+  end if;
+  if v_res.required_locker_size is null then
+    return null;
+  end if;
+
+  v_window := public.compartment_window(v_res.start_date, v_res.end_date);
+
+  -- Reintento ante carrera: si otra transacción tomó el mismo compartimento,
+  -- la exclusión lo rechaza y probamos con el siguiente.
+  loop
+    v_attempt := v_attempt + 1;
+    v_comp := public.find_free_compartment(v_res.required_locker_size, v_res.location_city, v_window);
+    exit when v_comp is null;
+    begin
+      insert into public.compartment_bookings (compartment_id, reservation_id, window_dates)
+      values (v_comp, v_res.id, v_window);
+      update public.reservations set compartment_id = v_comp where id = v_res.id;
+      return v_comp;
+    exception when exclusion_violation then
+      exit when v_attempt >= 5;
+    end;
+  end loop;
+  return null;
+end;
+$$;
+revoke execute on function public.assign_compartment_for_reservation(uuid) from public, anon, authenticated;
+
+-- Reintento automático (cron, sección 31): reservas confirmadas que
+-- quedaron sin locker asignado en el primer intento.
+create function public.retry_unassigned_compartments()
+returns integer
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_row record;
+  v_count int := 0;
+begin
+  for v_row in
+    select id from public.reservations
+    where status in ('confirmed', 'active') and compartment_id is null and end_date >= current_date
+    order by start_date
+  loop
+    if public.assign_compartment_for_reservation(v_row.id) is not null then
+      v_count := v_count + 1;
+    end if;
+  end loop;
+  return v_count;
+end;
+$$;
+revoke execute on function public.retry_unassigned_compartments() from public, anon, authenticated;
+grant  execute on function public.retry_unassigned_compartments() to service_role;
+
 create function public.assign_compartment_on_confirm()
 returns trigger
 language plpgsql
 security definer
 set search_path = public
 as $$
-declare
-  chosen_id uuid;
-  item_city text;
 begin
-  if new.status <> 'confirmed' or new.compartment_id is not null then
-    return new;
+  if new.status = 'confirmed' and new.compartment_id is null then
+    perform public.assign_compartment_for_reservation(new.id);
   end if;
-
-  select location_city into item_city from public.items where id = new.item_id;
-
-  select c.id into chosen_id
-  from public.locker_compartments c
-  join public.lockers l on l.id = c.locker_id
-  where c.status = 'available'
-  order by (l.city = item_city) desc, random()
-  limit 1
-  for update of c skip locked;
-
-  if chosen_id is not null then
-    update public.locker_compartments set status = 'reserved' where id = chosen_id;
-    update public.reservations set compartment_id = chosen_id where id = new.id;
-  end if;
-
   return new;
 end;
 $$;
+revoke execute on function public.assign_compartment_on_confirm() from public, anon, authenticated;
 
 create trigger assign_compartment_after_confirm
   after insert or update on public.reservations
   for each row execute function public.assign_compartment_on_confirm();
 
+-- Libera la reserva de compartimento (no el estado físico) al cancelar,
+-- completar o disputar.
 create function public.release_compartment_on_cancel()
 returns trigger
 language plpgsql
@@ -388,19 +638,22 @@ security definer
 set search_path = public
 as $$
 begin
-  if new.status = 'cancelled' and new.compartment_id is not null then
-    update public.locker_compartments
-    set status = 'available'
-    where id = new.compartment_id;
+  if new.status in ('cancelled', 'completed', 'disputed') and old.status is distinct from new.status then
+    update public.compartment_bookings
+      set status = 'released', released_at = now()
+    where reservation_id = new.id and status = 'active';
   end if;
   return new;
 end;
 $$;
+revoke execute on function public.release_compartment_on_cancel() from public, anon, authenticated;
 
 create trigger release_compartment_after_cancel
   after update on public.reservations
   for each row execute function public.release_compartment_on_cancel();
 
+-- Al borrar la reserva, el booking se borra por cascade; ya no hay
+-- estado físico que tocar aquí (eso lo maneja locker-access).
 create function public.release_compartment_on_reservation_delete()
 returns trigger
 language plpgsql
@@ -408,14 +661,10 @@ security definer
 set search_path = public
 as $$
 begin
-  if old.compartment_id is not null then
-    update public.locker_compartments
-    set status = 'available'
-    where id = old.compartment_id;
-  end if;
   return old;
 end;
 $$;
+revoke execute on function public.release_compartment_on_reservation_delete() from public, anon, authenticated;
 
 create trigger release_compartment_after_delete
   after delete on public.reservations
@@ -756,10 +1005,29 @@ comment on table public.payment_events is 'Registro inmutable de cada evento de 
 
 create index payment_events_payment_idx on public.payment_events (payment_id);
 
+-- ¿Hay algún compartimento del tamaño necesario libre para esas fechas?
+create function public.has_locker_capacity_for_item(p_item_id uuid, p_start date, p_end date)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select public.find_free_compartment(i.required_locker_size, i.location_city,
+                                      public.compartment_window(p_start, p_end)) is not null
+  from public.items i
+  where i.id = p_item_id and i.required_locker_size is not null;
+$$;
+revoke execute on function public.has_locker_capacity_for_item(uuid, date, date) from public, anon;
+grant  execute on function public.has_locker_capacity_for_item(uuid, date, date) to authenticated;
+
 -- Lo llama el cliente al pulsar "Pagar": crea (o reutiliza, si hay un
 -- checkout vigente) la reserva 'pending' + el pago 'pending' con 15
 -- minutos para completar el pago -- bloqueando esas fechas mientras
--- tanto vía el exclusion constraint de reservations.
+-- tanto vía el exclusion constraint de reservations. Bloquea artículos
+-- que no caben en ningún locker (ITEM_TOO_LARGE_FOR_LOCKERS) o que no
+-- tienen un compartimento de su tamaño libre en esas fechas
+-- (NO_LOCKER_CAPACITY).
 create function public.create_checkout(p_item_id uuid, p_start_date date, p_end_date date)
 returns table (
   reservation_id uuid,
@@ -798,7 +1066,7 @@ begin
     raise exception 'START_DATE_IN_PAST' using errcode = '22023';
   end if;
 
-  select i.owner_id, i.price_per_day, i.declared_value, i.category_id, p.is_premium
+  select i.owner_id, i.price_per_day, i.declared_value, i.category_id, i.required_locker_size, p.is_premium
     into v_item
   from public.items i
   join public.profiles p on p.id = i.owner_id
@@ -810,6 +1078,9 @@ begin
   if v_item.owner_id = v_uid then
     raise exception 'CANNOT_RENT_OWN_ITEM' using errcode = '22023';
   end if;
+  if v_item.required_locker_size is null then
+    raise exception 'ITEM_TOO_LARGE_FOR_LOCKERS' using errcode = '22023';
+  end if;
 
   -- Idempotencia: si el usuario reintenta con un checkout vigente, se reutiliza
   select r.id, pay.id into v_res_id, v_pay_id
@@ -820,6 +1091,11 @@ begin
     and r.status = 'pending' and pay.status = 'pending'
     and pay.checkout_expires_at > now()
   limit 1;
+
+  if v_res_id is null and not coalesce(public.has_locker_capacity_for_item(p_item_id, p_start_date, p_end_date), false) then
+    raise exception 'NO_LOCKER_CAPACITY' using errcode = 'P0002',
+      hint = 'No hay compartimentos del tamaño necesario libres para esas fechas.';
+  end if;
 
   select * into v_bd from public.calculate_pricing_breakdown(
     v_item.price_per_day, (p_end_date - p_start_date + 1),
@@ -1743,6 +2019,26 @@ comment on table public.price_suggestions_cache is 'Cached price-range suggestio
 
 
 -- ────────────────────────────────────────────────────────────────────
+-- 23.1 SIZE ESTIMATES CACHE  (medidas estimadas con IA)
+-- ────────────────────────────────────────────────────────────────────
+-- Misma idea que price_suggestions_cache, 30 días de TTL. Solo la
+-- escribe/lee la Edge Function estimate-item-size con service role.
+create table public.size_estimates_cache (
+  cache_key text primary key,              -- sha256(categoría:título:descripción normalizados)
+  length_cm numeric(6, 1) not null,
+  width_cm  numeric(6, 1) not null,
+  height_cm numeric(6, 1) not null,
+  weight_kg numeric(6, 2) not null,
+  confidence text not null check (confidence in ('high', 'medium', 'low')),
+  packaging text,
+  reasoning text,
+  created_at timestamptz not null default now()
+);
+
+comment on table public.size_estimates_cache is 'Caché de 30 días de medidas estimadas por IA. Sin policies a propósito: solo service role.';
+
+
+-- ────────────────────────────────────────────────────────────────────
 -- 24. USER PREFERENCES
 -- ────────────────────────────────────────────────────────────────────
 create table public.user_preferences (
@@ -1804,9 +2100,11 @@ alter table public.profile_private enable row level security;
 alter table public.categories enable row level security;
 alter table public.items enable row level security;
 alter table public.item_photos enable row level security;
+alter table public.locker_size_classes enable row level security;
 alter table public.lockers enable row level security;
 alter table public.locker_compartments enable row level security;
 alter table public.reservations enable row level security;
+alter table public.compartment_bookings enable row level security;
 alter table public.locker_events enable row level security;
 alter table public.payments enable row level security;
 alter table public.payment_events enable row level security;
@@ -1824,6 +2122,7 @@ alter table public.host_onboarding enable row level security;
 alter table public.item_reviews enable row level security;
 alter table public.payment_methods enable row level security;
 alter table public.price_suggestions_cache enable row level security;
+alter table public.size_estimates_cache enable row level security;
 alter table public.user_preferences enable row level security;
 
 -- PROFILES: cualquiera puede ver perfiles públicos; solo el dueño edita el suyo.
@@ -1864,6 +2163,11 @@ create policy "item_photos_manage_own" on public.item_photos
     exists (select 1 from public.items i where i.id = item_photos.item_id and i.owner_id = auth.uid())
   );
 
+-- LOCKER SIZE CLASSES: catálogo público (necesario para estimar y
+-- previsualizar tamaños antes de iniciar sesión con un formulario largo).
+create policy "locker_size_classes_select_all" on public.locker_size_classes
+  for select to anon, authenticated using (true);
+
 -- LOCKERS / COMPARTMENTS: lectura para cualquier usuario autenticado
 -- (necesario para mostrar cobertura de lockers). Sin policies de
 -- escritura para el cliente — los gestiona el service role.
@@ -1871,6 +2175,16 @@ create policy "lockers_select_authenticated" on public.lockers
   for select using (auth.role() = 'authenticated');
 create policy "compartments_select_authenticated" on public.locker_compartments
   for select using (auth.role() = 'authenticated');
+
+-- COMPARTMENT BOOKINGS: los participantes de la reserva (o un admin) ven
+-- su planificación de compartimento.
+create policy "compartment_bookings_select_involved" on public.compartment_bookings
+  for select to authenticated using (
+    exists (select 1 from public.reservations r join public.items i on i.id = r.item_id
+            where r.id = compartment_bookings.reservation_id
+              and (r.renter_id = auth.uid() or i.owner_id = auth.uid()))
+    or exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin)
+  );
 
 -- RESERVATIONS: el arrendatario ve las suyas; el dueño del artículo ve
 -- las reservas hechas sobre SUS artículos; un admin ve TODAS.
@@ -2260,6 +2574,7 @@ create policy "identity_documents_select_own" on storage.objects for select
 -- ════════════════════════════════════════════════════════════════════
 select cron.schedule('recordatorio-devolucion-diario', '0 9 * * *', $$select public.send_return_reminders();$$);
 select cron.schedule('expirar-checkouts', '*/5 * * * *', $$select public.expire_stale_checkouts();$$);
+select cron.schedule('reintentar-lockers', '*/15 * * * *', $$select public.retry_unassigned_compartments();$$);
 
 
 -- ════════════════════════════════════════════════════════════════════

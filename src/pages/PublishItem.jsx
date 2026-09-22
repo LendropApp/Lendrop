@@ -5,6 +5,7 @@ import StatusMessage from '../components/StatusMessage'
 import VerificationNotice from '../components/VerificationNotice'
 import { isVerificationError } from '../lib/verification'
 import PriceSuggestionButton from '../components/PriceSuggestionButton'
+import ItemSizeStep from '../components/publish/ItemSizeStep'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import { getCategoryIcon } from '../lib/categoryIcons'
@@ -50,6 +51,8 @@ export default function PublishItem() {
   const [status, setStatus] = useState({ type: '', text: '' })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [published, setPublished] = useState(null)
+  const [sizeValues, setSizeValues] = useState({ lengthCm: null, widthCm: null, heightCm: null, weightKg: null, blocked: false })
+  const [initialSizeValues, setInitialSizeValues] = useState(null)
 
   useEffect(() => {
     let cancelled = false
@@ -103,6 +106,14 @@ export default function PublishItem() {
         setPricePerDay(String(data.price_per_day ?? ''))
         setDeclaredValue(data.declared_value ? String(data.declared_value) : '')
         setLocationCity(data.location_city ?? 'San Salvador')
+        if (data.length_cm != null) {
+          setInitialSizeValues({
+            lengthCm: Number(data.length_cm),
+            widthCm: Number(data.width_cm),
+            heightCm: Number(data.height_cm),
+            weightKg: data.weight_kg != null ? Number(data.weight_kg) : '',
+          })
+        }
         setExistingPhotos(
           [...(data.photos ?? [])].sort((a, b) => a.display_order - b.display_order)
         )
@@ -181,6 +192,10 @@ export default function PublishItem() {
       setStatus({ type: 'error', text: 'Enter a price per day greater than 0.' })
       return
     }
+    if (sizeValues.blocked) {
+      setStatus({ type: 'error', text: 'This item is too large for our lockers. Adjust its measurements before publishing.' })
+      return
+    }
 
     // Only creating a listing is gated on verification — editing one you
     // already own isn't, which matches items_update_own server-side.
@@ -207,6 +222,16 @@ export default function PublishItem() {
       declared_value: Number(declaredValue) || 0,
       currency: 'USD',
       location_city: locationCity.trim() || 'San Salvador',
+      // required_locker_size / dimensions_source are never sent -- the
+      // set_item_required_locker_size trigger always computes them.
+      ...(sizeValues.lengthCm != null
+        ? {
+            length_cm: sizeValues.lengthCm,
+            width_cm: sizeValues.widthCm,
+            height_cm: sizeValues.heightCm,
+            weight_kg: sizeValues.weightKg,
+          }
+        : {}),
     }
 
     const { data: item, error: itemError } = isEditing
@@ -530,6 +555,15 @@ export default function PublishItem() {
             />
           </div>
         </section>
+
+        {/* ================= SIZE ================= */}
+        <ItemSizeStep
+          category={categorySlug}
+          title={title}
+          description={description}
+          initialDimensions={initialSizeValues}
+          onChange={setSizeValues}
+        />
 
         {/* ================= CONDITION ================= */}
         <section>

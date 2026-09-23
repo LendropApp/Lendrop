@@ -1,25 +1,112 @@
 @import "tailwindcss";
 
-@theme {
-  /* Brand colors */
-  --color-deep-purple: #433075;
-  --color-lavender: #a58cf4;
-  --color-soft-white: #fafafa;
-  --color-jet-black: #0d0d0d;
+/* ── Locker Brutalism tokens (DESIGN.md sec. 11) ──────────────────────
+   DESIGN.md is the source of truth. Nothing here is invented: every
+   value traces back to a row in sec. 2 (colour), 3 (type), 4 (shape) or
+   8 (motion). Add it there first, then here.
 
-  /* Typography */
-  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
-  --font-body: "Manrope", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+   The pre-redesign names (deep-purple / lavender / soft-white /
+   jet-black / font-body) survive as ALIASES so the ~400 call sites that
+   still use them keep rendering while the screens migrate. They are
+   lossless — each old hex is identical to its new counterpart. Phase 5
+   deletes them. */
+
+@theme {
+  /* Colour — sec. 2 */
+  --color-ink: #0d0d0d;
+  --color-steel: #ecebf2;
+  --color-steel-300: #d6d4e0;
+  --color-steel-600: #6b6880;
+  --color-panel: #fafafa;
+  --color-violet: #433075;
+  --color-violet-700: #33245c;
+  --color-violet-50: #eeeaf8;
+  --color-lilac: #a58cf4;
+  --color-lilac-200: #ddd2fb;
+  --color-signal: #ffd23f;
+  --color-night: #17112b;
+  --color-alert: #e5484d;
+  --color-go: #2fbf71;
+
+  /* Typography — sec. 3 */
+  --font-display: "Big Shoulders", Impact, "Arial Narrow", sans-serif;
+  --font-stencil: "Big Shoulders Stencil", Impact, sans-serif;
+  --font-sans: "Manrope", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* Type scale — sec. 3. The mobile→desktop ranges interpolate across a
+     360px→1280px viewport, the three widths the redesign is tested at. */
+  --text-display-xl: clamp(3rem, 2.022rem + 4.348vw, 5.5rem);
+  --text-display-xl--line-height: 0.92;
+  --text-display-xl--letter-spacing: 0.01em;
+  --text-display-xl--font-weight: 900;
+
+  --text-display-l: clamp(2.25rem, 1.761rem + 2.174vw, 3.5rem);
+  --text-display-l--line-height: 0.95;
+  --text-display-l--letter-spacing: 0.01em;
+  --text-display-l--font-weight: 800;
+
+  --text-display-m: clamp(1.625rem, 1.429rem + 0.87vw, 2.125rem);
+  --text-display-m--line-height: 1;
+  --text-display-m--letter-spacing: 0.01em;
+  --text-display-m--font-weight: 800;
+
+  --text-title: clamp(1.125rem, 1.076rem + 0.217vw, 1.25rem);
+  --text-title--line-height: 1.3;
+  --text-title--font-weight: 700;
+
+  --text-body: 1rem;
+  --text-body--line-height: 1.55;
+
+  --text-small: 0.875rem;
+  --text-small--line-height: 1.45;
+  --text-small--font-weight: 500;
+
+  --text-label: 0.75rem;
+  --text-label--line-height: 1.2;
+  --text-label--letter-spacing: 0.08em;
+  --text-label--font-weight: 500;
+
+  /* sec. 3 gives `data` as a 15–28px RANGE rather than one size, so it
+     resolves to the two ends: the inline price and the hero amount. */
+  --text-data: 0.9375rem;
+  --text-data--line-height: 1.2;
+  --text-data--font-weight: 500;
+
+  --text-data-lg: 1.75rem;
+  --text-data-lg--line-height: 1.1;
+  --text-data-lg--font-weight: 500;
+
+  /* Shape — sec. 4 */
+  --radius-door: 6px;
+  --shadow-hard-sm: 3px 3px 0 0 var(--color-ink);
+  --shadow-hard-md: 5px 5px 0 0 var(--color-ink);
+  --shadow-hard-lg: 8px 8px 0 0 var(--color-ink);
+
+  /* Motion — sec. 8 */
+  --ease-door: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* Migration aliases — delete in Phase 5 */
+  --color-deep-purple: var(--color-violet);
+  --color-lavender: var(--color-lilac);
+  --color-soft-white: var(--color-panel);
+  --color-jet-black: var(--color-ink);
+  --font-body: var(--font-sans);
 }
 
 @layer base {
   html {
-    font-family: var(--font-body);
+    font-family: var(--font-sans);
+
+    /* WCAG 2.2 "focus not obscured": the fixed mobile control panel and
+       the sticky headers would otherwise scroll a focused control under
+       themselves during keyboard navigation. */
+    scroll-padding-bottom: 6rem;
+    scroll-padding-top: 5rem;
   }
 
   body {
-    @apply bg-soft-white text-jet-black antialiased;
+    @apply bg-steel text-ink antialiased;
   }
 
   h1,
@@ -29,10 +116,97 @@
     font-family: var(--font-display);
   }
 
+  /* Visible focus on every interactive control — sec. 10. :where() keeps
+     specificity at 0 so a component can still restyle its own ring. */
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 3px solid var(--color-lilac);
+    outline-offset: 3px;
+  }
 
   .locker-code {
     font-family: var(--font-mono);
     letter-spacing: 0.05em;
+  }
+}
+
+@layer utilities {
+  /* ── Physical press — sec. 4 + sec. 8 ───────────────────────────────
+     :active sinks the element translate(3px,3px) while its hard shadow
+     shrinks by the same 3px, so the shadow's far edge stays put and the
+     surface reads as pushed toward the page. Desktop hover lifts it the
+     other way: translate(-1px,-1px), shadow +1px.
+
+     One class per shadow size because the shrink is absolute, not
+     proportional: md's 5px becomes 2px, lg's 8px becomes 5px, and sm's
+     3px lands flat on the page. */
+
+  .press-sm,
+  .press-md,
+  .press-lg {
+    transition:
+      transform 90ms ease-out,
+      box-shadow 90ms ease-out;
+  }
+
+  .press-sm {
+    box-shadow: var(--shadow-hard-sm);
+  }
+
+  .press-sm:active {
+    transform: translate(3px, 3px);
+    box-shadow: 0 0 0 0 var(--color-ink);
+  }
+
+  .press-md {
+    box-shadow: var(--shadow-hard-md);
+  }
+
+  .press-md:active {
+    transform: translate(3px, 3px);
+    box-shadow: 2px 2px 0 0 var(--color-ink);
+  }
+
+  .press-lg {
+    box-shadow: var(--shadow-hard-lg);
+  }
+
+  .press-lg:active {
+    transform: translate(3px, 3px);
+    box-shadow: 5px 5px 0 0 var(--color-ink);
+  }
+
+  /* hover:hover only — on touch, :hover sticks after a tap and would
+     leave the element lifted until the next tap elsewhere. */
+  @media (hover: hover) {
+    .press-sm,
+    .press-md,
+    .press-lg {
+      transition:
+        transform 120ms ease-out,
+        box-shadow 120ms ease-out;
+    }
+
+    .press-sm:hover {
+      transform: translate(-1px, -1px);
+      box-shadow: 4px 4px 0 0 var(--color-ink);
+    }
+
+    .press-md:hover {
+      transform: translate(-1px, -1px);
+      box-shadow: 6px 6px 0 0 var(--color-ink);
+    }
+
+    .press-lg:hover {
+      transform: translate(-1px, -1px);
+      box-shadow: 9px 9px 0 0 var(--color-ink);
+    }
+
+    /* Press still wins over hover when both match. */
+    .press-sm:active,
+    .press-md:active,
+    .press-lg:active {
+      transform: translate(3px, 3px);
+    }
   }
 }
 
@@ -119,5 +293,41 @@
       transition: none;
       transform: none;
     }
+  }
+}
+
+/* ── Global reduced-motion — sec. 8 ───────────────────────────────────
+   Last in the file on purpose: it has to beat every transition declared
+   above, including the ones inside @media (hover: hover). Transitions
+   collapse to 1ms rather than 0 so transitionend still fires and any
+   handler waiting on it doesn't hang. Infinite animations (the LED
+   blink, the skeleton sweep) run once and stop.
+
+   Individual components still opt out where a rule can't express it —
+   split-flap doesn't animate at all under this preference, it renders
+   its final characters directly. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .press-sm,
+  .press-md,
+  .press-lg {
+    transition: none;
+  }
+
+  .press-sm:hover,
+  .press-md:hover,
+  .press-lg:hover,
+  .press-sm:active,
+  .press-md:active,
+  .press-lg:active {
+    transform: none;
   }
 }

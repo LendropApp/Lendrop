@@ -8,7 +8,7 @@ de la base de datos.
 | Bucket | Qué guarda | ¿Se vacía? |
 |---|---|---|
 | `item-photos` | Fotos de las publicaciones | **Sí** |
-| `evidence-photos` | Fotos de depósito/retiro/devolución de una reserva | **Decisión pendiente** — ver abajo |
+| `evidence-photos` | Fotos de depósito/retiro/devolución de una reserva | **Sí** |
 | `avatars` | Fotos de perfil | **No** |
 | `profile-avatars` | Fotos de perfil | **No** |
 | `identity-documents` | DUI y selfies de verificación | **No, nunca** |
@@ -85,19 +85,21 @@ where bucket_id = 'item-photos'
 order by created_at desc;
 ```
 
-## Decisión pendiente: `evidence-photos`
+## `evidence-photos`: también se vacía
 
-`photo_evidence` se borra con el purgado porque cuelga de `reservations`. Sus
-archivos en `evidence-photos` quedarían huérfanos: sin fila que los referencie,
-nadie los puede volver a mostrar.
+**Decidido (Diego): se borra.**
 
-No los borré por mi cuenta porque son **prueba documental de un alquiler** (estado
-del artículo al depositarlo y al devolverlo) y podrían hacer falta para una
-reclamación ya cerrada. Dos caminos:
+`photo_evidence` desaparece con el purgado porque cuelga de `reservations`, así que
+sus archivos quedarían huérfanos igual. Se vacía con el **mismo procedimiento** de
+arriba, cambiando el bucket:
 
-1. **Vaciar también `evidence-photos`**, mismo procedimiento que arriba. Coherente
-   con dejar la base sin rastro de publicaciones.
-2. **Conservarlo** y aceptar los huérfanos, si quieres guardar el respaldo de
-   disputas pasadas.
+- Dashboard: **Storage → `evidence-photos` → seleccionar todo → Delete**.
+- Script: la misma función, con `.from('evidence-photos')`.
 
-Dime cuál y lo dejo escrito aquí.
+Ojo: las fotos de evidencia suelen guardarse en subcarpetas por reserva
+(`{reservation_id}/...`), así que por script hay que recorrer carpetas — `list('')`
+solo devuelve el primer nivel. Por el dashboard no importa.
+
+Después de vaciar ambos buckets, `2026_count_listings.sql` debe mostrar 0 objetos
+en `item-photos` y en `evidence-photos`, y los conteos de `avatars`,
+`profile-avatars` e `identity-documents` sin cambios.

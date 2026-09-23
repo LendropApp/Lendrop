@@ -3,8 +3,9 @@
  *
  * Props:
  *   variant  'primary' | 'secondary' | 'signal' | 'danger' | 'ghost'  (default 'primary')
- *   size     'md' | 'sm'   'md' is the 48px touch target; 'sm' (40px) is for dense
- *                          toolbars only, never for a primary page action.
+ *   size     'md' | 'sm'   'md' is 48px; 'sm' is 44px, the floor sec. 10 sets for a
+ *                          touch target. 'sm' is for dense toolbars only, never for
+ *                          a primary page action.
  *   loading  boolean       swaps the label for the compartment spinner + loadingLabel
  *   disabled boolean
  *   as       'button' | 'a' | React component (e.g. react-router Link)
@@ -35,7 +36,7 @@ const DISABLED = 'bg-steel-300 text-steel-600 border-2 border-steel-600/40 shado
 
 const SIZES = {
   md: 'min-h-12 px-5 text-body',
-  sm: 'min-h-10 px-3.5 text-small',
+  sm: 'min-h-11 px-3.5 text-small',
 }
 
 /**

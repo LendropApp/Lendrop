@@ -16,6 +16,15 @@ import SizeTag from './SizeTag'
  *   estimated   items.dimensions_source === 'category_default'
  *   status      LedStatus status
  *   category    string shown above the title
+ *   action      node pinned to the photo's bottom-right (save, owner menu).
+ *               Both top corners are spoken for, and the handle slot owns the
+ *               right edge at mid-height, so this is the only free corner.
+ *               Whatever goes here must stopPropagation if the card is a link.
+ *               Rendered outside the card's own <Tag> hit area is impossible, so
+ *               an interactive `action` inside an interactive card must be a
+ *               <button> that swallows the click.
+ *   meta        node under the price (owner, rating)
+ *   overlay     node covering the photo (an inline confirmation)
  *   as, to, href, onClick — forwarded; pass react-router's Link as `as`
  */
 function money(value) {
@@ -34,6 +43,9 @@ export default function DoorCard({
   estimated = false,
   status = 'available',
   category,
+  action,
+  meta,
+  overlay,
   as: Tag = 'div',
   className = '',
   ...rest
@@ -81,9 +93,13 @@ export default function DoorCard({
           aria-hidden="true"
           className="absolute right-0 top-1/2 h-7 w-1 -translate-y-1/2 rounded-[2px] bg-ink"
         />
+
+        {action && <div className="absolute bottom-2 right-2">{action}</div>}
+
+        {overlay && <div className="absolute inset-0">{overlay}</div>}
       </div>
 
-      <div className="flex flex-col gap-1 p-3">
+      <div className="flex flex-1 flex-col gap-1 p-3">
         {category && (
           <span className="font-mono text-label uppercase text-steel-600">{category}</span>
         )}
@@ -96,6 +112,9 @@ export default function DoorCard({
             <span className="text-small text-steel-600">{unit}</span>
           </p>
         )}
+        {/* mt-auto so the meta row sits on the bottom edge of every card in a
+            row, however many lines the title above it took. */}
+        {meta && <div className="mt-auto pt-2">{meta}</div>}
       </div>
     </Tag>
   )

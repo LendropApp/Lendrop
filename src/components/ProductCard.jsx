@@ -2,7 +2,17 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Heart, Star, Trash2 } from 'lucide-react'
 import { getItemPhotoUrl } from '../lib/photos'
+import DoorCard from './ui/DoorCard'
 import LockerAvatar from './LockerAvatar'
+
+/**
+ * The item card used by Explore and Favorites.
+ *
+ * Purely a composition over ui/DoorCard now — the door anatomy, the press and
+ * the LED all come from the design system, and this file only maps an `items`
+ * row onto it and owns the save/delete interactions. Same props and same
+ * behaviour as before the redesign; nothing here talks to Supabase itself.
+ */
 
 export function coverUrlFor(photos) {
   if (!photos?.length) return null
@@ -10,7 +20,21 @@ export function coverUrlFor(photos) {
   return getItemPhotoUrl(cover.storage_path)
 }
 
-export default function ProductCard({ item, isOwner, isFavorited, isCurrentlyRented, onDelete, onToggleFavorite }) {
+// Corner button sitting on the photo: square, 2px ink, like every other
+// pressable surface (sec. 4) — not the floating translucent circle it replaced.
+// 44px because sec. 10 puts a floor under every touch target, even one this
+// incidental.
+const CORNER_BUTTON =
+  'flex size-11 items-center justify-center rounded-door border-2 border-ink bg-panel text-ink press-sm disabled:opacity-60'
+
+export default function ProductCard({
+  item,
+  isOwner,
+  isFavorited,
+  isCurrentlyRented,
+  onDelete,
+  onToggleFavorite,
+}) {
   const coverUrl = coverUrlFor(item.photos)
   const hasReviews = (item.owner?.total_reviews ?? 0) > 0
 
@@ -40,117 +64,114 @@ export default function ProductCard({ item, isOwner, isFavorited, isCurrentlyRen
     setFavoriteBusy(false)
   }
 
-  return (
-    <Link
-      to={`/item/${item.id}`}
-      className="lift group block cursor-pointer"
+  // The LED reads the same two fields the list already filters on, so a card
+  // never claims a state the grid disagrees with.
+  const status = isCurrentlyRented ? 'reserved' : item.is_available ? 'available' : 'unavailable'
+
+  const action = isOwner ? (
+    <button
+      type="button"
+      aria-label="Delete listing"
+      onClick={(e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        setConfirming(true)
+      }}
+      className={CORNER_BUTTON}
     >
-      <div className="glow-sm relative aspect-4/3 w-full overflow-hidden rounded-2xl bg-jet-black/5 transition duration-300 group-hover:shadow-[0_24px_60px_-16px_rgba(67,48,117,0.45),0_8px_24px_-8px_rgba(165,140,244,0.5)]">
-        {coverUrl && (
-          <img
-            src={coverUrl}
-            alt={item.title}
-            className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-          />
-        )}
-        <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-jet-black/5 transition group-hover:ring-lavender/50" />
+      <Trash2 className="size-4" strokeWidth={2} aria-hidden="true" />
+    </button>
+  ) : (
+    <button
+      type="button"
+      aria-label={isFavorited ? 'Remove from saved' : 'Save'}
+      aria-pressed={isFavorited}
+      onClick={handleToggleFavorite}
+      disabled={favoriteBusy}
+      className={CORNER_BUTTON}
+    >
+      <Heart
+        className={`size-4 ${isFavorited ? 'fill-lilac text-lilac' : ''}`}
+        strokeWidth={2}
+        aria-hidden="true"
+      />
+    </button>
+  )
 
-        {isCurrentlyRented && (
-          <span className="absolute left-2.5 top-2.5 rounded-full bg-jet-black/70 px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-soft-white backdrop-blur">
-            Currently rented
+  const meta = (
+    <div className="flex items-center justify-between gap-2">
+      <span className="flex min-w-0 items-center gap-1.5">
+        <LockerAvatar
+          label={item.owner?.full_name}
+          photoUrl={item.owner?.avatar_url}
+          verified={item.owner?.verification_status === 'verified'}
+          size="sm"
+        />
+        <span className="truncate text-small text-steel-600">{item.owner?.full_name}</span>
+      </span>
+
+      {hasReviews ? (
+        <span className="flex shrink-0 items-center gap-1">
+          <Star className="size-3.5 fill-ink text-ink" aria-hidden="true" />
+          <span className="font-mono text-small text-ink">
+            {Number(item.owner.average_rating).toFixed(1)}
           </span>
-        )}
+        </span>
+      ) : (
+        <span className="shrink-0 rounded-tag border-2 border-ink bg-lilac-200 px-1.5 py-0.5 font-mono text-label uppercase text-ink">
+          New
+        </span>
+      )}
+    </div>
+  )
 
-        {isOwner ? (
-          <button
-            type="button"
-            aria-label="Delete listing"
-            onClick={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              setConfirming(true)
-            }}
-            className="absolute right-2.5 top-2.5 flex h-7 w-7 items-center justify-center rounded-full bg-jet-black/40 text-soft-white backdrop-blur transition hover:bg-red-500/80"
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-          </button>
-        ) : (
-          <button
-            type="button"
-            aria-label={isFavorited ? 'Remove from saved' : 'Save'}
-            onClick={handleToggleFavorite}
-            disabled={favoriteBusy}
-            className="absolute right-2.5 top-2.5 flex h-7 w-7 items-center justify-center rounded-full bg-jet-black/40 text-soft-white backdrop-blur transition hover:bg-jet-black/60 disabled:opacity-60"
-          >
-            <Heart className={`h-3.5 w-3.5 ${isFavorited ? 'fill-lavender text-lavender' : ''}`} />
-          </button>
-        )}
-
-        {confirming && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-2xl bg-jet-black/75 p-3 text-center backdrop-blur-sm">
-            <p className="text-xs font-medium text-white">Delete this listing?</p>
-            {deleteError && <p className="text-[11px] text-red-300">{deleteError}</p>}
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  setConfirming(false)
-                  setDeleteError('')
-                }}
-                disabled={deleting}
-                className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-white/20 disabled:opacity-50"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleConfirmDelete}
-                disabled={deleting}
-                className="rounded-full bg-red-500 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-red-600 disabled:opacity-50"
-              >
-                {deleting ? 'Deleting…' : 'Delete'}
-              </button>
-            </div>
-          </div>
-        )}
+  // Inline confirmation rather than a dialog: it is a two-tap decision scoped to
+  // one card, and a modal would lose which card it belonged to.
+  const overlay = confirming ? (
+    <div className="flex size-full flex-col items-center justify-center gap-2 border-b-2 border-ink bg-night/90 p-3 text-center">
+      <p className="text-small font-bold text-panel">Delete this listing?</p>
+      {deleteError && <p className="text-label font-mono uppercase text-signal">{deleteError}</p>}
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            setConfirming(false)
+            setDeleteError('')
+          }}
+          disabled={deleting}
+          className="rounded-door border-2 border-ink bg-panel px-3 py-1.5 text-small font-bold text-ink press-sm disabled:opacity-50"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={handleConfirmDelete}
+          disabled={deleting}
+          className="rounded-door border-2 border-ink bg-alert-700 px-3 py-1.5 text-small font-bold text-panel press-sm disabled:opacity-50"
+        >
+          {deleting ? 'Deleting…' : 'Delete'}
+        </button>
       </div>
+    </div>
+  ) : null
 
-      <div className="mt-3 flex items-start justify-between gap-2">
-        <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-jet-black">{item.title}</p>
-          <div className="mt-1 flex items-center gap-1.5">
-            <LockerAvatar
-              label={item.owner?.full_name}
-              photoUrl={item.owner?.avatar_url}
-              verified={item.owner?.verification_status === 'verified'}
-              size="sm"
-            />
-            <span className="truncate text-xs text-jet-black/50">{item.owner?.full_name}</span>
-          </div>
-        </div>
-
-        <div className="flex shrink-0 items-center gap-1 pt-0.5">
-          {hasReviews ? (
-            <>
-              <Star className="h-3.5 w-3.5 fill-jet-black text-jet-black" />
-              <span className="font-mono text-xs font-medium text-jet-black">
-                {Number(item.owner.average_rating).toFixed(1)}
-              </span>
-            </>
-          ) : (
-            <span className="rounded-full bg-lavender/15 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-deep-purple">
-              New
-            </span>
-          )}
-        </div>
-      </div>
-
-      <p className="mt-1.5 font-mono text-sm font-semibold text-jet-black">
-        ${item.price_per_day}
-        <span className="font-body font-normal text-jet-black/45"> / day</span>
-      </p>
-    </Link>
+  return (
+    <DoorCard
+      as={Link}
+      to={`/item/${item.id}`}
+      title={item.title}
+      photoUrl={coverUrl}
+      alt={item.title}
+      price={Number(item.price_per_day)}
+      category={item.category?.name}
+      status={status}
+      size={item.required_locker_size}
+      estimated={item.dimensions_source === 'category_default'}
+      action={action}
+      meta={meta}
+      overlay={overlay}
+    />
   )
 }

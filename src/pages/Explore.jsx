@@ -24,11 +24,15 @@ import {
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import { getCategoryIcon } from '../lib/categoryIcons'
-import { getExploreHeroImage } from '../lib/exploreHero'
 import LockerAvatar from '../components/LockerAvatar'
 import ProductCard from '../components/ProductCard'
+import Button from '../components/ui/Button'
+import EmptyState from '../components/ui/EmptyState'
+import Plate from '../components/ui/Plate'
+import Select from '../components/ui/Select'
+import Skeleton from '../components/ui/Skeleton'
+import Toast from '../components/ui/Toast'
 import MobileNav from '../components/MobileNav'
-import AuroraBlobs from '../components/background/AuroraBlobs'
 import { buildSteps } from '../components/ProfileCompletion'
 
 const ROUTES = {
@@ -66,7 +70,6 @@ export default function Explore() {
 
   const isVerified = Boolean(user)
   const hasUnreadNotifications = unreadNotifications > 0
-  const heroImage = useMemo(() => getExploreHeroImage(), [])
 
   useEffect(() => {
     let cancelled = false
@@ -264,82 +267,83 @@ export default function Explore() {
       ? categories.find((c) => c.slug === selectedCategory)?.name
       : 'Recommended for you'
 
-  return (
-    <div className="min-h-screen bg-soft-white pb-28 md:pb-0">
-      {/* ================= HEADER ================= */}
-      <header className="glass sticky top-0 z-50 shadow-[0_8px_24px_-18px_rgba(67,48,117,0.35)]">
-        <div className="h-px bg-linear-to-r from-transparent via-lavender/50 to-transparent" />
+  // Square plate, 2px ink, physical press — the shared skin for every small
+  // control in the header and the filter row (sec. 4).
+  const CHIP =
+    'inline-flex min-h-11 items-center gap-1.5 rounded-door border-2 border-ink bg-panel px-3 text-small font-bold text-ink press-sm'
 
+  return (
+    <div className="min-h-screen bg-steel pb-28 md:pb-0">
+      {/* ================= HEADER ================= */}
+      <header className="sticky top-0 z-50 border-b-[3px] border-ink bg-panel">
         {!scrolled && (
-          <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-6 pt-4 sm:px-10">
-            <Link to="/" className="shrink-0">
+          <div className="mx-auto flex max-w-[1200px] items-center justify-between gap-3 px-4 pt-4 md:px-8">
+            <Link to="/" className="flex min-h-11 shrink-0 items-center rounded-door">
               <img src="/logo-lendrop.png" alt="Lendrop" className="h-7 w-auto" />
             </Link>
 
-            {/* Main nav — centered, like Airbnb's top tabs. Desktop only:
-                on mobile every one of these lives in MobileNav instead,
-                so the two never show the same link twice. */}
-            <nav className="hidden items-center gap-1 rounded-full border border-jet-black/10 bg-white p-1 shadow-sm md:flex">
+            {/* Desktop only: on mobile every one of these lives in MobileNav
+                instead, so the two never show the same link twice. */}
+            <nav className="hidden items-center gap-2 lg:flex">
               {isHost && (
-                <Link
-                  to={ROUTES.publish}
-                  className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-jet-black/60 transition hover:bg-lavender/10 hover:text-deep-purple"
-                >
-                  <Plus className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">Publish</span>
+                <Link to={ROUTES.publish} className={CHIP}>
+                  <Plus className="size-4" strokeWidth={2} aria-hidden="true" />
+                  Publish
                 </Link>
               )}
-              <Link
-                to={ROUTES.favorites}
-                className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-jet-black/60 transition hover:bg-lavender/10 hover:text-deep-purple"
-              >
-                <Heart className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Saved</span>
+              <Link to={ROUTES.favorites} className={CHIP}>
+                <Heart className="size-4" strokeWidth={2} aria-hidden="true" />
+                Saved
               </Link>
-              <Link
-                to={ROUTES.messages}
-                className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-jet-black/60 transition hover:bg-lavender/10 hover:text-deep-purple"
-              >
-                <MessageCircle className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Messages</span>
+              <Link to={ROUTES.messages} className={CHIP}>
+                <MessageCircle className="size-4" strokeWidth={2} aria-hidden="true" />
+                Messages
               </Link>
-              <Link
-                to={ROUTES.notifications}
-                className="relative flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-jet-black/60 transition hover:bg-lavender/10 hover:text-deep-purple"
-              >
-                <Bell className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Alerts</span>
+              <Link to={ROUTES.notifications} className={`relative ${CHIP}`}>
+                <Bell className="size-4" strokeWidth={2} aria-hidden="true" />
+                Alerts
                 {hasUnreadNotifications && (
-                  <span className="absolute right-1.5 top-1 h-1.5 w-1.5 animate-pulse rounded-full bg-lavender ring-2 ring-white" />
+                  <>
+                    {/* LED, not a pulsing dot: same vocabulary as every other
+                        state in the app (sec. 7.3). */}
+                    <span
+                      aria-hidden="true"
+                      className="absolute -right-1 -top-1 size-2.5 rounded-full border-[1.5px] border-ink bg-lilac ring-3 ring-lilac/35"
+                    />
+                    <span className="sr-only">Unread</span>
+                  </>
                 )}
               </Link>
-              <Link
-                to={ROUTES.tracking}
-                className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-jet-black/60 transition hover:bg-lavender/10 hover:text-deep-purple"
-              >
-                <PackageSearch className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Track</span>
+              <Link to={ROUTES.tracking} className={CHIP}>
+                <PackageSearch className="size-4" strokeWidth={2} aria-hidden="true" />
+                Track
               </Link>
             </nav>
 
+            {/* Wrapper carries the breakpoint, not the Button: Button's own base
+                class sets `inline-flex`, and whether a caller's `hidden` beats it
+                depends on stylesheet order rather than attribute order -- here it
+                lost, and the CTA showed at 360px. */}
             {!isHost && (
-              <Link
-                to={ROUTES.becomeLender}
-                className="hidden shrink-0 items-center gap-1.5 rounded-full bg-linear-to-r from-deep-purple to-lavender px-4 py-2 text-xs font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(67,48,117,0.5)] transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.6)] hover:brightness-105 md:flex"
-              >
-                <Store className="h-3.5 w-3.5" />
-                Become a Lender
-              </Link>
+              <div className="hidden lg:block">
+                <Button as={Link} to={ROUTES.becomeLender} size="sm" icon={Store}>
+                  Become a Lender
+                </Button>
+              </div>
             )}
 
-            {/* Profile, next to the hamburger with the rest of the options */}
             <div className="relative flex shrink-0 items-center gap-2">
               <Link
                 to={ROUTES.profile}
                 aria-label="Your account"
-                className="rounded-full transition hover:ring-2 hover:ring-lavender/40"
+                className="flex size-11 items-center justify-center rounded-door"
               >
-                <LockerAvatar label={firstName} photoUrl={profile?.avatar_url} verified={isVerified} size="md" />
+                <LockerAvatar
+                  label={firstName}
+                  photoUrl={profile?.avatar_url}
+                  verified={isVerified}
+                  size="md"
+                />
               </Link>
               <MobileNav />
               <button
@@ -347,82 +351,45 @@ export default function Explore() {
                 aria-label="More options"
                 aria-expanded={menuOpen}
                 onClick={() => setMenuOpen((v) => !v)}
-                className="hidden h-9 w-9 items-center justify-center rounded-full border border-jet-black/10 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple md:flex"
+                className="hidden size-11 items-center justify-center rounded-door border-2 border-ink bg-panel text-ink press-sm lg:flex"
               >
-                <Menu className="h-4 w-4" />
+                <Menu className="size-4" strokeWidth={2} aria-hidden="true" />
               </button>
 
               {menuOpen && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
-                  <div className="absolute right-0 top-full z-50 mt-2 w-60 overflow-hidden rounded-2xl border border-jet-black/10 bg-white py-1.5 shadow-xl">
-                    <Link
-                      to="/history"
-                      onClick={() => setMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-jet-black transition hover:bg-lavender/5"
-                    >
-                      <History className="h-4 w-4 text-jet-black/50" />
-                      Activity
-                    </Link>
-                    {isHost && (
+                  <div className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-door border-[3px] border-ink bg-panel py-1 shadow-hard-md">
+                    {[
+                      { to: '/history', icon: History, label: 'Activity' },
+                      ...(isHost
+                        ? [{ to: '/owner-delivery', icon: Truck, label: 'Drop-offs & returns' }]
+                        : []),
+                      { to: '/payment-methods', icon: CreditCard, label: 'Payment methods' },
+                      { to: '/verification', icon: ShieldCheck, label: 'Verification' },
+                      { to: '/premium', icon: Sparkles, label: 'Premium' },
+                      { to: '/settings', icon: SettingsIcon, label: 'Settings' },
+                      ...(profile?.is_admin
+                        ? [{ to: '/admin', icon: LayoutDashboard, label: 'Admin panel' }]
+                        : []),
+                    ].map(({ to, icon: Icon, label }) => (
                       <Link
-                        to="/owner-delivery"
+                        key={to}
+                        to={to}
                         onClick={() => setMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-jet-black transition hover:bg-lavender/5"
+                        className="flex items-center gap-3 px-4 py-2.5 text-body font-medium text-ink transition-colors hover:bg-lilac-200"
                       >
-                        <Truck className="h-4 w-4 text-jet-black/50" />
-                        Drop-offs & returns
+                        <Icon className="size-4 text-steel-600" strokeWidth={2} aria-hidden="true" />
+                        {label}
                       </Link>
-                    )}
-                    <Link
-                      to="/payment-methods"
-                      onClick={() => setMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-jet-black transition hover:bg-lavender/5"
-                    >
-                      <CreditCard className="h-4 w-4 text-jet-black/50" />
-                      Payment methods
-                    </Link>
-                    <Link
-                      to="/verification"
-                      onClick={() => setMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-jet-black transition hover:bg-lavender/5"
-                    >
-                      <ShieldCheck className="h-4 w-4 text-jet-black/50" />
-                      Verification
-                    </Link>
-                    <Link
-                      to="/premium"
-                      onClick={() => setMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-jet-black transition hover:bg-lavender/5"
-                    >
-                      <Sparkles className="h-4 w-4 text-jet-black/50" />
-                      Premium
-                    </Link>
-                    <Link
-                      to="/settings"
-                      onClick={() => setMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-jet-black transition hover:bg-lavender/5"
-                    >
-                      <SettingsIcon className="h-4 w-4 text-jet-black/50" />
-                      Settings
-                    </Link>
-                    {profile?.is_admin && (
-                      <Link
-                        to="/admin"
-                        onClick={() => setMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-jet-black transition hover:bg-lavender/5"
-                      >
-                        <LayoutDashboard className="h-4 w-4 text-jet-black/50" />
-                        Admin panel
-                      </Link>
-                    )}
-                    <div className="my-1.5 border-t border-jet-black/5" />
+                    ))}
+                    <div className="my-1 border-t-2 border-ink" />
                     <button
                       type="button"
                       onClick={handleSignOut}
-                      className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-500 transition hover:bg-red-50"
+                      className="flex w-full items-center gap-3 px-4 py-2.5 text-body font-medium text-alert transition-colors hover:bg-lilac-200"
                     >
-                      <LogOut className="h-4 w-4" />
+                      <LogOut className="size-4" strokeWidth={2} aria-hidden="true" />
                       Sign out
                     </button>
                   </div>
@@ -433,79 +400,56 @@ export default function Explore() {
         )}
 
         {/* Search — the one thing that stays visible once you scroll */}
-        <div className={`mx-auto max-w-2xl px-6 sm:px-10 ${scrolled ? 'py-3' : 'pb-4 pt-3'}`}>
-          <div className="flex items-center gap-2 rounded-full border border-jet-black/10 bg-white px-4 py-2.5 shadow-sm transition hover:shadow-md focus-within:border-lavender focus-within:shadow-[0_0_0_1px_rgba(165,140,244,0.4),0_8px_24px_-8px_rgba(165,140,244,0.5)] focus-within:ring-2 focus-within:ring-lavender/30">
-            <Search className="h-4 w-4 shrink-0 text-jet-black/35" />
+        <div className={`mx-auto max-w-[1200px] px-4 md:px-8 ${scrolled ? 'py-3' : 'pb-4 pt-3'}`}>
+          <div className="relative">
+            <Search
+              className="pointer-events-none absolute inset-y-0 left-3 my-auto size-4 text-steel-600"
+              strokeWidth={2}
+              aria-hidden="true"
+            />
             <input
-              type="text"
+              type="search"
               value={searchTerm}
               onChange={handleSearchChange}
+              aria-label="Search listings"
               placeholder="Search cameras, tools, gear…"
-              className="w-full bg-transparent text-sm outline-none placeholder:text-jet-black/35"
+              className="min-h-12 w-full rounded-door border-2 border-ink bg-panel pl-10 pr-3 text-body text-ink shadow-hard-sm transition-colors placeholder:text-steel-600 focus:border-violet"
             />
           </div>
         </div>
       </header>
 
-      {/* ================= GREETING ================= */}
-      <section className="relative isolate overflow-hidden border-b border-jet-black/5">
-        <AuroraBlobs className="opacity-40" />
-        <div className="relative mx-auto grid max-w-6xl gap-8 px-6 pt-10 pb-12 sm:px-10 sm:pt-14 sm:pb-16 lg:grid-cols-[1.3fr_1fr] lg:items-center lg:gap-12">
-          <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-lavender/30 bg-lavender/10 px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-widest text-deep-purple">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-lavender" />
-              Live inventory · San Salvador
-            </span>
-            <h1 className="mt-3 font-display text-2xl font-bold text-jet-black sm:text-3xl">
-              {firstName ? `Welcome back, ${firstName}.` : 'Find what you need, nearby.'}
-            </h1>
-            <p className="mt-3 max-w-md text-sm leading-relaxed text-jet-black/50">
-              Every listing below is verified and ready to pick up from a locker near you.
-            </p>
-          </div>
+      <main className="mx-auto max-w-[1200px] px-4 py-8 md:px-8">
+        {/* ================= SCREEN TITLE ================= */}
+        <h1 className="font-display text-display-l uppercase text-ink">Explore</h1>
+        <p className="mt-2 max-w-prose text-body text-steel-600">
+          {firstName
+            ? `Welcome back, ${firstName}. Everything below is ready to pick up from a locker near you.`
+            : 'Everything below is ready to pick up from a locker near you.'}
+        </p>
 
-          <div className="relative aspect-4/3 overflow-hidden rounded-3xl shadow-[0_24px_60px_-24px_rgba(67,48,117,0.45)]">
-            <img
-              src={heroImage.src}
-              alt={heroImage.alt}
-              className="h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-linear-to-t from-jet-black/45 via-transparent to-transparent" />
-            <span className="absolute bottom-4 left-4 rounded-full border border-white/30 bg-white/20 px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-white backdrop-blur-md">
-              Ready for pickup
-            </span>
-          </div>
-        </div>
-      </section>
-
-      {/* ================= PROFILE COMPLETION NUDGE ================= */}
-      {profileIncomplete && (
-        <section className="mx-auto max-w-6xl px-6 pt-6 sm:px-10">
-          <div className="flex flex-col items-start gap-3 rounded-2xl border border-lavender/30 bg-lavender/10 p-4 sm:flex-row sm:items-center sm:justify-between">
+        {/* ================= PROFILE COMPLETION NUDGE ================= */}
+        {profileIncomplete && (
+          <div className="mt-6 flex flex-col items-start gap-3 rounded-door border-2 border-ink bg-lilac-200 p-4 shadow-hard-sm sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-deep-purple">
-                <UserCircle2 className="h-5 w-5" />
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-door border-2 border-ink bg-panel text-violet">
+                <UserCircle2 className="size-5" strokeWidth={2} aria-hidden="true" />
               </span>
               <div>
-                <p className="text-sm font-semibold text-jet-black">Finish setting up your profile</p>
-                <p className="text-xs text-jet-black/55">
+                <p className="text-title text-ink">Finish setting up your profile</p>
+                <p className="text-small text-ink/70">
                   Renters trust completed profiles more. Add what's missing to keep using Lendrop.
                 </p>
               </div>
             </div>
-            <Link
-              to="/profile/edit"
-              className="shrink-0 rounded-full bg-linear-to-r from-deep-purple to-lavender px-4 py-2 text-xs font-semibold text-soft-white glow-sm transition hover:brightness-105"
-            >
+            <Button as={Link} to="/profile/edit" size="sm" variant="secondary">
               Complete profile
-            </Link>
+            </Button>
           </div>
-        </section>
-      )}
+        )}
 
-      {/* ================= CATEGORIES ================= */}
-      <section className="mx-auto max-w-6xl px-6 sm:px-10">
-        <div className="mt-6 flex gap-5 overflow-x-auto pb-1 sm:gap-7">
+        {/* ================= CATEGORIES ================= */}
+        <div className="mt-8 flex gap-2 overflow-x-auto pb-2">
           {categories.map((cat) => {
             const active = selectedCategory === cat.slug
             const Icon = getCategoryIcon(cat.slug)
@@ -514,153 +458,170 @@ export default function Explore() {
                 key={cat.id}
                 type="button"
                 onClick={() => handleCategoryClick(cat.slug)}
-                className={`flex shrink-0 flex-col items-center gap-1.5 border-b-2 pb-2 pt-1 text-[11px] font-semibold transition ${
-                  active
-                    ? 'border-deep-purple text-deep-purple'
-                    : 'border-transparent text-jet-black/50 hover:border-jet-black/15 hover:text-jet-black'
-                }`}
+                aria-pressed={active}
+                className={`shrink-0 ${CHIP} ${active ? 'bg-lilac-200' : ''}`}
               >
-                <Icon className="h-5 w-5" strokeWidth={active ? 2.25 : 1.6} />
+                <Icon className="size-4" strokeWidth={2} aria-hidden="true" />
                 {cat.name}
               </button>
             )
           })}
         </div>
 
-        {/* City + availability filters */}
-        <div className="mt-3 flex flex-wrap items-center gap-2">
+        {/* ================= FILTERS ================= */}
+        <div className="mt-4 flex flex-wrap items-end gap-3">
           {cities.length > 1 && (
-            <div className="flex items-center gap-1.5 rounded-full border border-jet-black/10 px-3 py-1.5">
-              <MapPin className="h-3.5 w-3.5 text-jet-black/40" />
-              <select
-                value={selectedCity ?? ''}
-                onChange={(e) => setSelectedCity(e.target.value || null)}
-                className="bg-transparent text-xs font-medium text-jet-black/70 outline-none"
-              >
-                <option value="">All cities</option>
-                {cities.map((city) => (
-                  <option key={city} value={city}>
-                    {city}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <Select
+              label="City"
+              value={selectedCity ?? ''}
+              onChange={(e) => setSelectedCity(e.target.value || null)}
+              options={[
+                { value: '', label: 'All cities' },
+                ...cities.map((city) => ({ value: city, label: city })),
+              ]}
+              className="min-w-44"
+            />
           )}
 
           <button
             type="button"
             onClick={() => setOnlyAvailable((prev) => !prev)}
-            className={`rounded-full border px-3.5 py-1.5 text-xs font-semibold transition ${
-              onlyAvailable
-                ? 'border-lavender/40 bg-lavender/10 text-deep-purple'
-                : 'border-jet-black/10 text-jet-black/50 hover:border-lavender hover:text-deep-purple'
-            }`}
+            aria-pressed={onlyAvailable}
+            className={`${CHIP} ${onlyAvailable ? 'bg-lilac-200' : ''}`}
           >
+            <MapPin className="size-4" strokeWidth={2} aria-hidden="true" />
             {onlyAvailable ? 'Available now' : 'Showing all'}
           </button>
-        </div>
-      </section>
 
-      {/* ================= LISTINGS ================= */}
-      <section className="mx-auto max-w-6xl px-6 py-8 sm:px-10">
-        <div className="mb-6 flex items-center justify-between">
-          <h2 className="font-display text-xl font-semibold text-jet-black">
-            {sectionTitle}
-          </h2>
           {isFiltering && (
-            <button
-              type="button"
-              onClick={clearFilters}
-              className="text-sm font-medium text-deep-purple hover:text-lavender"
-            >
+            <Button variant="ghost" size="sm" onClick={clearFilters}>
               Clear filters
-            </button>
+            </Button>
           )}
         </div>
 
-        {itemsError ? (
-          <p className="py-20 text-center text-sm text-red-600">{itemsError}</p>
-        ) : itemsLoading ? (
-          <p className="py-20 text-center text-sm text-jet-black/40">Loading listings…</p>
-        ) : filteredListings.length > 0 ? (
-          <div className="grid grid-cols-2 gap-x-5 gap-y-8 sm:grid-cols-3 lg:grid-cols-4">
-            {filteredListings.map((item) => (
-              <ProductCard
-                key={item.id}
-                item={item}
-                isOwner={Boolean(user) && item.owner?.id === user.id}
-                isFavorited={favoriteIds.has(item.id)}
-                isCurrentlyRented={rentedItemIds.has(item.id)}
-                onDelete={handleDeleteItem}
-                onToggleFavorite={handleToggleFavorite}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="flex flex-col items-center gap-1 py-20 text-center">
-            <p className="font-display text-lg font-semibold text-jet-black">
-              No items found
-            </p>
-            <p className="text-sm text-jet-black/50">
-              Try a different search, or browse another category.
-            </p>
-          </div>
-        )}
-      </section>
+        {/* ================= LISTINGS ================= */}
+        <Plate
+          title={sectionTitle}
+          meta={itemsLoading ? 'LOADING' : `${filteredListings.length} SHOWN`}
+          className="mt-8"
+        />
+
+        <div className="mt-6">
+          {itemsError ? (
+            <Toast tone="error" message={itemsError} />
+          ) : itemsLoading ? (
+            // Door-shaped skeletons in the real grid, so nothing jumps when the
+            // listings land (sec. 7.12 + sec. 10 on layout shift).
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 lg:gap-5">
+              <Skeleton variant="door" count={8} />
+            </div>
+          ) : filteredListings.length > 0 ? (
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 lg:gap-5">
+              {filteredListings.map((item) => (
+                <ProductCard
+                  key={item.id}
+                  item={item}
+                  isOwner={Boolean(user) && item.owner?.id === user.id}
+                  isFavorited={favoriteIds.has(item.id)}
+                  isCurrentlyRented={rentedItemIds.has(item.id)}
+                  onDelete={handleDeleteItem}
+                  onToggleFavorite={handleToggleFavorite}
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              title="Nothing matches that"
+              body="Try a different search, or browse another category."
+              action={
+                isFiltering ? (
+                  <Button variant="secondary" onClick={clearFilters}>
+                    Clear filters
+                  </Button>
+                ) : null
+              }
+            />
+          )}
+        </div>
+      </main>
 
       {/* ================= FOOTER ================= */}
-      <footer className="border-t border-jet-black/5 bg-white">
-        <div className="mx-auto max-w-6xl px-6 py-12 sm:px-10">
+      <footer className="border-t-[3px] border-ink bg-panel">
+        <div className="mx-auto max-w-[1200px] px-4 py-12 md:px-8">
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
             <div className="col-span-2 sm:col-span-1">
               <img src="/logo-lendrop.png" alt="Lendrop" className="h-7 w-auto" />
-              <p className="mt-3 max-w-40 text-xs leading-relaxed text-jet-black/50">
+              <p className="mt-3 max-w-40 text-small text-steel-600">
                 Rent what you need, from people near you in El Salvador.
               </p>
-              <div className="mt-4 flex items-center gap-2">
-                <a
-                  href="mailto:hola@lendrop.app"
-                  aria-label="Email"
-                  className="flex h-8 w-8 items-center justify-center rounded-full border border-jet-black/10 text-jet-black/50 transition hover:border-lavender hover:text-deep-purple"
-                >
-                  <Mail className="h-3.5 w-3.5" />
-                </a>
+              <a
+                href="mailto:hola@lendrop.app"
+                aria-label="Email Lendrop"
+                className="mt-4 flex size-11 items-center justify-center rounded-door border-2 border-ink bg-panel text-ink press-sm"
+              >
+                <Mail className="size-4" strokeWidth={2} aria-hidden="true" />
+              </a>
+            </div>
+
+            {[
+              {
+                title: 'Explore',
+                links: [
+                  { to: '/categories', label: 'Browse categories' },
+                  { to: ROUTES.becomeLender, label: 'Become a Lender' },
+                  { to: '/locker-coverage', label: 'Locker locations' },
+                ],
+              },
+              {
+                title: 'Support',
+                links: [
+                  { to: '/help', label: 'Help center' },
+                  { to: '/history', label: 'Your activity' },
+                ],
+              },
+              {
+                title: 'Account',
+                links: [
+                  { to: ROUTES.profile, label: 'Your profile' },
+                  { to: '/payment-methods', label: 'Payment methods' },
+                  { to: '/verification', label: 'Verification' },
+                ],
+              },
+            ].map((col) => (
+              <div key={col.title}>
+                <p className="font-mono text-label uppercase text-steel-600">{col.title}</p>
+                <ul className="mt-1 text-body text-ink">
+                  {col.links.map((link) => (
+                    <li key={link.to}>
+                      <Link
+                        to={link.to}
+                        className="flex min-h-11 min-w-11 items-center hover:text-violet hover:underline"
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
               </div>
-            </div>
-
-            <div>
-              <p className="font-display text-xs font-semibold uppercase tracking-wide text-jet-black/40">Explore</p>
-              <ul className="mt-3 space-y-2 text-sm text-jet-black/60">
-                <li><Link to="/categories" className="hover:text-deep-purple">Browse categories</Link></li>
-                <li><Link to={ROUTES.becomeLender} className="hover:text-deep-purple">Become a Lender</Link></li>
-                <li><Link to="/locker-coverage" className="hover:text-deep-purple">Locker locations</Link></li>
-              </ul>
-            </div>
-
-            <div>
-              <p className="font-display text-xs font-semibold uppercase tracking-wide text-jet-black/40">Support</p>
-              <ul className="mt-3 space-y-2 text-sm text-jet-black/60">
-                <li><Link to="/help" className="hover:text-deep-purple">Help center</Link></li>
-                <li><Link to="/history" className="hover:text-deep-purple">Your activity</Link></li>
-                <li><a href="mailto:hola@lendrop.app" className="hover:text-deep-purple">Contact us</a></li>
-              </ul>
-            </div>
-
-            <div>
-              <p className="font-display text-xs font-semibold uppercase tracking-wide text-jet-black/40">Account</p>
-              <ul className="mt-3 space-y-2 text-sm text-jet-black/60">
-                <li><Link to={ROUTES.profile} className="hover:text-deep-purple">Your profile</Link></li>
-                <li><Link to="/payment-methods" className="hover:text-deep-purple">Payment methods</Link></li>
-                <li><Link to="/verification" className="hover:text-deep-purple">Verification</Link></li>
-              </ul>
-            </div>
+            ))}
           </div>
 
-          <div className="mt-10 flex flex-col items-center gap-3 border-t border-jet-black/5 pt-6 text-xs text-jet-black/40 sm:flex-row sm:justify-between">
+          <div className="mt-10 flex flex-col items-center gap-3 border-t-2 border-ink pt-6 text-small text-steel-600 sm:flex-row sm:justify-between">
             <span>© {new Date().getFullYear()} Lendrop · San Salvador, El Salvador</span>
             <div className="flex items-center gap-4">
-              <a href="#" className="hover:text-deep-purple">Terms</a>
-              <a href="#" className="hover:text-deep-purple">Privacy</a>
+              <Link
+                to="/settings"
+                className="flex min-h-11 min-w-11 items-center hover:text-violet hover:underline"
+              >
+                Terms
+              </Link>
+              <Link
+                to="/settings"
+                className="flex min-h-11 min-w-11 items-center hover:text-violet hover:underline"
+              >
+                Privacy
+              </Link>
             </div>
           </div>
         </div>

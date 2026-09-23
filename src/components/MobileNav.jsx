@@ -11,17 +11,19 @@ import LockerAvatar from './LockerAvatar'
 const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
 
-const VERIFICATION_PILL = {
-  verified: 'bg-emerald-100 text-emerald-700',
-  pending: 'bg-amber-100 text-amber-700',
-  rejected: 'bg-red-100 text-red-600',
-  unverified: 'bg-jet-black/10 text-jet-black/50',
+const VERIFICATION_PLATE = {
+  verified: 'bg-go',
+  pending: 'bg-signal',
+  rejected: 'bg-alert-700 text-panel',
+  unverified: 'bg-steel-300',
 }
 
 /**
  * The mobile navigation drawer — every destination in the app, grouped
- * by role (see buildNavSections). Mobile only: on md and up the page's
- * own header keeps its inline nav, so this whole component is hidden.
+ * by role (see buildNavSections). Shown below lg, where the page header's
+ * own inline nav takes over: at md the header row (logo, five chips, the
+ * become-a-lender CTA, avatar and menu) no longer fits without overflowing
+ * the viewport, so the handover happens at lg instead.
  *
  * Renders nothing for signed-out visitors, which is why pages can drop
  * it into a header unconditionally.
@@ -113,7 +115,7 @@ export default function MobileNav() {
   function badgeFor(kind) {
     if (kind === 'notifications' && unreadNotifications > 0) {
       return (
-        <span className="ml-auto min-w-5 rounded-full bg-lavender px-1.5 py-0.5 text-center font-mono text-[10px] font-semibold text-soft-white">
+        <span className="ml-auto min-w-5 rounded-tag border-2 border-ink bg-lilac px-1.5 py-0.5 text-center font-mono text-label text-ink">
           {unreadNotifications > 9 ? '9+' : unreadNotifications}
         </span>
       )
@@ -121,7 +123,7 @@ export default function MobileNav() {
     if (kind === 'verification' && verificationStatus !== 'verified') {
       return (
         <span
-          className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-semibold ${VERIFICATION_PILL[verificationStatus] ?? VERIFICATION_PILL.unverified}`}
+          className={`ml-auto rounded-tag border-2 border-ink px-2 py-0.5 font-mono text-label uppercase text-ink ${VERIFICATION_PLATE[verificationStatus] ?? VERIFICATION_PLATE.unverified}`}
         >
           {verification.label}
         </span>
@@ -130,18 +132,20 @@ export default function MobileNav() {
     return null
   }
 
-  // Portalled to <body> on purpose: every app header carries the .glass
-  // class, whose backdrop-filter makes the header a containing block for
-  // fixed-position descendants. Rendered in place, the overlay gets
-  // clipped to the header's box instead of covering the screen.
+  // Portalled to <body> on purpose. This started as a workaround for the
+  // .glass header, whose backdrop-filter made the header a containing block
+  // for fixed-position descendants and clipped the overlay to its box. The
+  // redesign dropped backdrop-filter, but the portal stays: the header is
+  // still sticky and still establishes a stacking context, so an overlay
+  // rendered inside it would sit under the page rather than over it.
   const drawer = (
-    <div className="fixed inset-0 z-[60] md:hidden">
+    <div className="fixed inset-0 z-[60] lg:hidden">
       <button
         type="button"
         aria-label="Close menu"
         tabIndex={-1}
         onClick={() => setOpen(false)}
-        className="absolute inset-0 h-full w-full cursor-default bg-jet-black/40 backdrop-blur-sm"
+        className="absolute inset-0 size-full cursor-default bg-night/60"
       />
 
       <div
@@ -149,14 +153,12 @@ export default function MobileNav() {
         role="dialog"
         aria-modal="true"
         aria-label="Main menu"
-        className="absolute inset-y-0 right-0 flex w-[86%] max-w-sm flex-col overflow-y-auto bg-soft-white shadow-[0_0_60px_-12px_rgba(13,13,13,0.45)]"
+        className="anim-sheet absolute inset-y-0 right-0 flex w-[86%] max-w-sm flex-col overflow-y-auto border-l-[3px] border-ink bg-panel"
       >
-        <div className="h-px shrink-0 bg-linear-to-r from-transparent via-lavender to-transparent" />
-
         <div className="flex items-start justify-between gap-3 px-5 pb-4 pt-5">
           <Link
             to="/profile"
-            className="flex min-w-0 items-center gap-3 rounded-2xl p-1 transition hover:bg-lavender/10"
+            className="flex min-w-0 items-center gap-3 rounded-door p-1 transition-colors hover:bg-lilac-200"
           >
             <LockerAvatar
               label={firstName}
@@ -165,10 +167,10 @@ export default function MobileNav() {
               size="md"
             />
             <span className="min-w-0">
-              <span className="block truncate font-display text-base font-semibold text-jet-black">
+              <span className="block truncate text-title text-ink">
                 {profile?.full_name ?? firstName}
               </span>
-              <span className="block font-mono text-[10px] uppercase tracking-widest text-lavender">
+              <span className="block font-mono text-label uppercase text-steel-600">
                 {isHost ? 'Lender & renter' : 'Renter'}
               </span>
             </span>
@@ -178,9 +180,9 @@ export default function MobileNav() {
             type="button"
             onClick={() => setOpen(false)}
             aria-label="Close menu"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-jet-black/10 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple"
+            className="flex size-11 shrink-0 items-center justify-center rounded-door border-2 border-ink bg-panel text-ink press-sm"
           >
-            <X className="h-4 w-4" />
+            <X className="size-4" strokeWidth={2} aria-hidden="true" />
           </button>
         </div>
 
@@ -188,9 +190,9 @@ export default function MobileNav() {
           <div className="px-5 pb-2">
             <Link
               to={BECOME_HOST_CTA.to}
-              className="flex items-center justify-center gap-2 rounded-xl bg-linear-to-r from-deep-purple to-lavender px-4 py-2.5 text-sm font-semibold text-soft-white glow-sm transition hover:brightness-105"
+              className="flex min-h-12 items-center justify-center gap-2 rounded-door border-[3px] border-ink bg-violet px-4 text-body font-bold text-panel press-md"
             >
-              <BecomeHostIcon className="h-4 w-4" />
+              <BecomeHostIcon className="size-4" strokeWidth={2} aria-hidden="true" />
               {BECOME_HOST_CTA.label}
             </Link>
           </div>
@@ -199,7 +201,7 @@ export default function MobileNav() {
         <nav className="flex-1 px-2 pb-4">
           {sections.map((section) => (
             <div key={section.id} className="mt-4 first:mt-2">
-              <p className="px-3 pb-1 font-mono text-[10px] font-semibold uppercase tracking-widest text-jet-black/35">
+              <p className="mx-3 border-b-2 border-ink pb-1 font-mono text-label uppercase text-steel-600">
                 {section.title}
               </p>
               <ul>
@@ -210,17 +212,19 @@ export default function MobileNav() {
                       <NavLink
                         to={item.to}
                         className={({ isActive }) =>
-                          `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
+                          `flex min-h-11 items-center gap-3 rounded-door px-3 py-2.5 text-body font-medium transition-colors ${
                             isActive
-                              ? 'bg-lavender/15 text-deep-purple'
-                              : 'text-jet-black hover:bg-lavender/5 hover:text-deep-purple'
+                              ? 'bg-lilac-200 text-violet'
+                              : 'text-ink hover:bg-lilac-200'
                           }`
                         }
                       >
                         {({ isActive }) => (
                           <>
                             <Icon
-                              className={`h-4 w-4 shrink-0 ${isActive ? 'text-deep-purple' : 'text-jet-black/45'}`}
+                              strokeWidth={2}
+                              aria-hidden="true"
+                              className={`size-4 shrink-0 ${isActive ? 'text-violet' : 'text-steel-600'}`}
                             />
                             <span className="truncate">{item.label}</span>
                             {badgeFor(item.badge)}
@@ -235,16 +239,16 @@ export default function MobileNav() {
           ))}
         </nav>
 
-        <div className="border-t border-jet-black/5 px-2 py-3">
+        <div className="border-t-2 border-ink px-2 py-3">
           <button
             type="button"
             onClick={() => {
               setOpen(false)
               signOut()
             }}
-            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-500 transition hover:bg-red-50"
+            className="flex min-h-11 w-full items-center gap-3 rounded-door px-3 py-2.5 text-body font-medium text-alert transition-colors hover:bg-lilac-200"
           >
-            <LogOut className="h-4 w-4" />
+            <LogOut className="size-4" strokeWidth={2} aria-hidden="true" />
             Sign out
           </button>
         </div>
@@ -253,16 +257,16 @@ export default function MobileNav() {
   )
 
   return (
-    <div className="md:hidden">
+    <div className="lg:hidden">
       <button
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Open menu"
         aria-expanded={open}
         aria-haspopup="dialog"
-        className="flex h-9 w-9 items-center justify-center rounded-full border border-jet-black/10 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple"
+        className="flex size-11 items-center justify-center rounded-door border-2 border-ink bg-panel text-ink press-sm"
       >
-        <Menu className="h-4 w-4" />
+        <Menu className="size-4" strokeWidth={2} aria-hidden="true" />
       </button>
 
       {open && createPortal(drawer, document.body)}

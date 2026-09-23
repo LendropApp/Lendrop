@@ -40,6 +40,7 @@ import PaymentMethods from "./pages/PaymentMethods";
 import PaymentReturn from "./pages/PaymentReturn";
 import Premium from "./pages/Premium";
 import Admin from "./pages/Admin";
+import Styleguide from "./pages/Styleguide";
 
 export default function App() {
   return (
@@ -266,6 +267,13 @@ export default function App() {
               </AdminRoute>
             }
           />
+
+          {/* Design-system reference, dev server only -- import.meta.env.DEV is
+              statically false in a production build, so the route and its import
+              are dropped by tree-shaking rather than shipped and hidden. */}
+          {import.meta.env.DEV ? (
+            <Route path="/styleguide" element={<Styleguide />} />
+          ) : null}
 
           {/* Fallback */}
           <Route

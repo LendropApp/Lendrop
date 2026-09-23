@@ -79,6 +79,8 @@
 
   /* Shape — sec. 4 */
   --radius-door: 6px;
+  /* sec. 7.4 gives SizeTag a 4px radius, the one exception to the 6px rule. */
+  --radius-tag: 4px;
   --shadow-hard-sm: 3px 3px 0 0 var(--color-ink);
   --shadow-hard-md: 5px 5px 0 0 var(--color-ink);
   --shadow-hard-lg: 8px 8px 0 0 var(--color-ink);
@@ -293,6 +295,84 @@
       transition: none;
       transform: none;
     }
+  }
+}
+
+@layer utilities {
+  /* Component animations. Keyframes Tailwind cannot express, kept here so the
+     design system owns them rather than each component inventing its own
+     timing. All four are neutralised by the global reduced-motion rule at the
+     end of this file. */
+
+  /* Button loading, sec. 7.1: four compartments lighting in sequence. Each
+     cell carries its own animation-delay inline. */
+  @keyframes cell-load {
+    0%,
+    100% {
+      opacity: 0.25;
+    }
+    25% {
+      opacity: 1;
+    }
+  }
+
+  .anim-cell {
+    background-color: currentColor;
+    animation: cell-load 560ms ease-in-out infinite;
+  }
+
+  /* LED "ready for pickup", sec. 7.3: slow 2s blink, never fully dark. */
+  @keyframes led-blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.45;
+    }
+  }
+
+  .anim-led {
+    animation: led-blink 2s ease-in-out infinite;
+  }
+
+  /* Skeleton sweep, sec. 7.12: 1.6s, riding over the steel-300 fill the
+     element already carries. */
+  @keyframes door-sweep {
+    from {
+      background-position: -150% 0;
+    }
+    to {
+      background-position: 250% 0;
+    }
+  }
+
+  .anim-sweep {
+    background-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgb(250 250 250 / 0.75) 50%,
+      transparent 100%
+    );
+    background-repeat: no-repeat;
+    background-size: 60% 100%;
+    animation: door-sweep 1.6s ease-in-out infinite;
+  }
+
+  /* Bottom sheet / modal entrance, sec. 8: 240ms on the door easing. */
+  @keyframes sheet-in {
+    from {
+      transform: translateY(12px) scale(0.98);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+  }
+
+  .anim-sheet {
+    animation: sheet-in 240ms var(--ease-door) both;
   }
 }
 

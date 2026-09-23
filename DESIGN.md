@@ -377,6 +377,33 @@ migración y se eliminan en la Fase 5 junto con los alias.
   anterior. Las transiciones bajan a 1ms (no a 0) para que `transitionend` siga
   disparando y ningún manejador que lo espere se quede colgado.
 
+### Añadido en la Fase 2 — componentes base
+
+- `--radius-tag: 4px`. La sección 4 fija radio 6px en todo, pero la 7.4 le da 4px al
+  `SizeTag`. Se tokeniza la excepción en vez de dejar un valor suelto.
+- Cuatro keyframes que Tailwind no puede expresar, en `src/index.css`: `.anim-cell`
+  (spinner de 4 compartimentos, 7.1), `.anim-led` (parpadeo lento de 2s, 7.3),
+  `.anim-sweep` (barrido de skeleton de 1.6s, 7.12) y `.anim-sheet` (entrada del bottom
+  sheet, 240ms sobre `--ease-door`, secciones 7.8 y 8). Las cuatro las anula la regla
+  global de `prefers-reduced-motion`.
+- El halo del LED se hace con `ring-3 ring-<color>/35`, no con una sombra escrita a
+  mano: así el color sale del token y no se duplica el literal.
+
+### PENDIENTE de la Fase 2 — el botón `danger` no cumple AA
+
+La sección 7.1 define `danger` como relleno `alert` (#E5484D) con texto `panel`
+(#FAFAFA). Esa combinación mide **3.75:1**. La sección 10 exige AA, que para texto de
+16px en negrita pide 4.5:1 — la excepción de "texto grande" empieza en 18.66px en
+negrita, y la etiqueta de un botón no llega. Las dos reglas del documento se
+contradicen entre sí.
+
+Propuesta: añadir `--color-alert-700: #D13B40` y usarlo como RELLENO cuando lleva texto
+`panel` encima; mide **4.56:1** y conserva el tono. `alert` sigue igual para bordes,
+iconos y texto de error sobre `panel` (donde mide 4.52:1 y sí cumple).
+
+El botón está implementado tal como lo dice la sección 7.1, o sea que hoy **no cumple**.
+Decidir antes de la Fase 3.
+
 > Si ya existen tokens con los nombres anteriores (`deep-purple`, `lavender`,
 > `soft-white`, `jet-black`), mantenlos como ALIAS de los nuevos durante la migración
 > y elimínalos cuando ninguna pantalla los use.

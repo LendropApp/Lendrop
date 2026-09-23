@@ -42,15 +42,15 @@ export default function ProfileCompletion({ user, profile }) {
   const complete = done === total
 
   return (
-    <section className="rounded-2xl border border-lavender/15 bg-white p-5">
+    <section className="rounded-2xl border border-border bg-surface p-5">
       <div className="flex items-center justify-between gap-3">
-        <h2 className="font-display text-base font-semibold text-jet-black">
+        <h2 className="font-display text-base font-semibold text-text">
           {complete ? 'Your profile is ready' : 'Get your profile ready'}
         </h2>
-        <span className="font-mono text-xs font-semibold text-deep-purple">{pct}%</span>
+        <span className="font-mono text-xs font-semibold text-primary">{pct}%</span>
       </div>
 
-      <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-jet-black/5">
+      <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-surface-raised">
         <div
           className="h-1.5 rounded-full bg-linear-to-r from-deep-purple to-lavender transition-all duration-300"
           style={{ width: `${pct}%` }}
@@ -58,8 +58,8 @@ export default function ProfileCompletion({ user, profile }) {
       </div>
 
       {complete ? (
-        <p className="mt-3 flex items-center gap-1.5 text-sm text-jet-black/60">
-          <PartyPopper className="h-4 w-4 text-lavender" />
+        <p className="mt-3 flex items-center gap-1.5 text-sm text-text-muted">
+          <PartyPopper className="h-4 w-4 text-primary" />
           You've completed every step. Renters will see a trustworthy, full profile.
         </p>
       ) : (
@@ -67,15 +67,15 @@ export default function ProfileCompletion({ user, profile }) {
           {steps.map((step) => (
             <li key={step.id} className="flex items-center gap-2.5 text-sm">
               {step.done ? (
-                <CheckCircle2 className="h-4 w-4 shrink-0 text-lavender" />
+                <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
               ) : (
-                <Circle className="h-4 w-4 shrink-0 text-jet-black/20" />
+                <Circle className="h-4 w-4 shrink-0 text-text-muted" />
               )}
-              <span className={step.done ? 'flex-1 text-jet-black/40 line-through' : 'flex-1 text-jet-black/80'}>
+              <span className={step.done ? 'flex-1 text-text-muted line-through' : 'flex-1 text-text-muted'}>
                 {step.label}
               </span>
               {!step.done && step.to && (
-                <Link to={step.to} className="shrink-0 text-xs font-semibold text-deep-purple hover:text-lavender">
+                <Link to={step.to} className="shrink-0 text-xs font-semibold text-primary hover:underline">
                   Add
                 </Link>
               )}
@@ -85,11 +85,11 @@ export default function ProfileCompletion({ user, profile }) {
       )}
 
       {!isHost && (
-        <div className="mt-4 flex items-center justify-between gap-3 rounded-xl bg-lavender/10 px-3.5 py-2.5">
-          <span className="text-xs text-jet-black/60">
+        <div className="mt-4 flex items-center justify-between gap-3 rounded-xl bg-surface-raised px-3.5 py-2.5">
+          <span className="text-xs text-text-muted">
             Bonus: become a lender and start earning from your things.
           </span>
-          <Link to="/become-host" className="shrink-0 text-xs font-semibold text-deep-purple hover:text-lavender">
+          <Link to="/become-host" className="shrink-0 text-xs font-semibold text-primary hover:underline">
             Start
           </Link>
         </div>

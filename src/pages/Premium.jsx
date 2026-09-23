@@ -14,7 +14,7 @@ export default function Premium() {
   const [joined, setJoined] = useState(false)
 
   return (
-    <div className="min-h-screen bg-soft-white pb-28 md:pb-16">
+    <div className="min-h-screen bg-bg pb-28 md:pb-16">
       <PageHeader backTo="/profile" backLabel="Back to Profile" />
 
       <div className="relative isolate overflow-hidden">
@@ -28,23 +28,23 @@ export default function Premium() {
 
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
             {FEATURES.map(({ icon: Icon, title, desc }) => (
-              <div key={title} className="rounded-2xl border border-lavender/15 bg-white p-5">
-                <Icon className="h-5 w-5 text-deep-purple" />
-                <p className="mt-3 font-display text-sm font-semibold text-jet-black">{title}</p>
-                <p className="mt-1 text-xs text-jet-black/50">{desc}</p>
+              <div key={title} className="rounded-2xl border border-border bg-surface p-5">
+                <Icon className="h-5 w-5 text-primary" />
+                <p className="mt-3 font-display text-sm font-semibold text-text">{title}</p>
+                <p className="mt-1 text-xs text-text-muted">{desc}</p>
               </div>
             ))}
           </div>
 
-          <div className="mt-6 rounded-2xl border border-lavender/15 bg-white p-6 text-center">
-            <p className="text-sm text-jet-black/60">
+          <div className="mt-6 rounded-2xl border border-border bg-surface p-6 text-center">
+            <p className="text-sm text-text-muted">
               Be the first to know when Premium launches for lenders in El Salvador.
             </p>
             <button
               type="button"
               disabled={joined}
               onClick={() => setJoined(true)}
-              className="mt-4 w-full rounded-xl bg-deep-purple px-5 py-3 text-sm font-semibold text-white transition hover:bg-deep-purple/90 disabled:cursor-default disabled:bg-jet-black/10 disabled:text-jet-black/40"
+              className="mt-4 w-full rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-default disabled:bg-jet-black/10 disabled:text-text-muted"
             >
               {joined ? "You're on the waitlist ✓" : 'Join the waitlist'}
             </button>

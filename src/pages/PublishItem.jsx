@@ -321,21 +321,21 @@ export default function PublishItem() {
 
   if (published) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-soft-white px-6">
-        <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-lavender/15 bg-white p-8 text-center shadow-[0_16px_48px_-16px_rgba(67,48,117,0.35)]">
+      <div className="flex min-h-screen items-center justify-center bg-bg px-6">
+        <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-border bg-surface p-8 text-center shadow-[0_16px_48px_-16px_rgba(67,48,117,0.35)]">
           <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-lavender to-transparent" />
-          <div className="mx-auto mb-4 h-16 w-16 overflow-hidden rounded-xl bg-jet-black/5 shadow-[0_0_0_3px_rgba(165,140,244,0.25)]">
+          <div className="mx-auto mb-4 h-16 w-16 overflow-hidden rounded-xl bg-surface-raised shadow-[0_0_0_3px_rgba(165,140,244,0.25)]">
             {published.coverUrl && (
               <img src={published.coverUrl} alt="" className="h-full w-full object-cover" />
             )}
           </div>
-          <span className="font-mono text-[10px] font-semibold uppercase tracking-widest text-lavender">
+          <span className="font-mono text-[10px] font-semibold uppercase tracking-widest text-primary">
             Live on Lendrop
           </span>
-          <p className="mt-1 font-display text-lg font-semibold text-jet-black">
+          <p className="mt-1 font-display text-lg font-semibold text-text">
             Item published
           </p>
-          <p className="mt-2 text-sm text-jet-black/60">
+          <p className="mt-2 text-sm text-text-muted">
             "{published.title}" is now listed at{' '}
             <span className="font-mono">${published.price_per_day}/day</span>.
           </p>
@@ -343,7 +343,7 @@ export default function PublishItem() {
             <button
               type="button"
               onClick={() => navigate('/explore')}
-              className="w-full rounded-xl border border-lavender/15 py-2.5 text-sm font-semibold text-jet-black transition hover:bg-jet-black/5"
+              className="w-full rounded-xl border border-border py-2.5 text-sm font-semibold text-text transition hover:bg-surface-raised"
             >
               Go to Explore
             </button>
@@ -362,26 +362,26 @@ export default function PublishItem() {
 
   if (isEditing && (loadingItem || loadError)) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-soft-white px-6">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-bg px-6">
         {loadError ? (
           <>
             <p className="text-sm text-red-600">{loadError}</p>
             <Link
               to="/my-listings"
-              className="rounded-xl border border-lavender/15 px-4 py-2 text-sm font-semibold text-jet-black transition hover:bg-jet-black/5"
+              className="rounded-xl border border-border px-4 py-2 text-sm font-semibold text-text transition hover:bg-surface-raised"
             >
               Back to my listings
             </Link>
           </>
         ) : (
-          <p className="font-body text-sm text-jet-black/60">Loading…</p>
+          <p className="font-body text-sm text-text-muted">Loading…</p>
         )}
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-soft-white pb-28 md:pb-16">
+    <div className="min-h-screen bg-bg pb-28 md:pb-16">
       <header className="glass sticky top-0 z-50">
         <div className="h-px bg-linear-to-r from-transparent via-lavender/50 to-transparent" />
         <div className="mx-auto flex max-w-2xl items-center gap-3 px-6 py-4 sm:px-10">
@@ -389,15 +389,15 @@ export default function PublishItem() {
             type="button"
             onClick={goBack}
             aria-label={isEditing ? 'Back to my listings' : 'Back to Explore'}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-lavender/15 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-text-muted transition hover:border-primary hover:text-primary"
           >
             <ArrowLeft className="h-4 w-4" />
           </button>
           <div>
-            <h1 className="font-display text-lg font-semibold text-jet-black">
+            <h1 className="font-display text-lg font-semibold text-text">
               {isEditing ? 'Edit listing' : 'Publish an item'}
             </h1>
-            <p className="font-mono text-[10px] uppercase tracking-widest text-lavender">
+            <p className="font-mono text-[10px] uppercase tracking-widest text-primary">
               {isEditing ? 'Update details' : 'New listing'}
             </p>
           </div>
@@ -411,10 +411,10 @@ export default function PublishItem() {
 
         {/* ================= PHOTOS ================= */}
         <section>
-          <label className="mb-2 block text-sm font-medium text-jet-black">
+          <label className="mb-2 block text-sm font-medium text-text">
             Photos
           </label>
-          <p className="mb-3 text-xs text-jet-black/50">
+          <p className="mb-3 text-xs text-text-muted">
             Add up to {MAX_PHOTOS} photos. The first one is the cover.
           </p>
 
@@ -422,7 +422,7 @@ export default function PublishItem() {
             {keptExistingPhotos.map((photo, index) => (
               <div
                 key={photo.id}
-                className="group relative aspect-square overflow-hidden rounded-xl bg-jet-black/5"
+                className="group relative aspect-square overflow-hidden rounded-xl bg-surface-raised"
               >
                 <img
                   src={getItemPhotoUrl(photo.storage_path)}
@@ -448,7 +448,7 @@ export default function PublishItem() {
             {photos.map((photo, index) => (
               <div
                 key={photo.id}
-                className="group relative aspect-square overflow-hidden rounded-xl bg-jet-black/5"
+                className="group relative aspect-square overflow-hidden rounded-xl bg-surface-raised"
               >
                 <img
                   src={photo.previewUrl}
@@ -472,7 +472,7 @@ export default function PublishItem() {
             ))}
 
             {canAddMorePhotos && (
-              <label className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-lavender/25 text-jet-black/40 transition hover:border-lavender hover:bg-lavender/5 hover:text-deep-purple hover:shadow-[0_0_0_4px_rgba(165,140,244,0.12)]">
+              <label className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-border text-text-muted transition hover:border-primary hover:bg-surface-raised hover:text-primary hover:shadow-[0_0_0_4px_rgba(165,140,244,0.12)]">
                 <ImagePlus className="h-5 w-5" />
                 <span className="text-[11px] font-medium">Add photo</span>
                 <input
@@ -489,13 +489,13 @@ export default function PublishItem() {
 
         {/* ================= CATEGORY ================= */}
         <section>
-          <label className="mb-2 block text-sm font-medium text-jet-black">
+          <label className="mb-2 block text-sm font-medium text-text">
             Category
           </label>
           {categoriesError ? (
             <p className="text-sm text-red-600">{categoriesError}</p>
           ) : categories.length === 0 ? (
-            <p className="text-sm text-jet-black/40">Loading categories…</p>
+            <p className="text-sm text-text-muted">Loading categories…</p>
           ) : (
             <div className="flex flex-wrap gap-2">
               {categories.map((cat) => {
@@ -509,7 +509,7 @@ export default function PublishItem() {
                     className={`flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-xs font-medium transition ${
                       active
                         ? 'border-transparent bg-linear-to-r from-deep-purple to-lavender text-soft-white glow-sm'
-                        : 'border-lavender/15 text-jet-black/70 hover:border-lavender hover:text-deep-purple'
+                        : 'border-border text-text-muted hover:border-primary hover:text-primary'
                     }`}
                   >
                     <Icon className="h-3.5 w-3.5" strokeWidth={active ? 2.25 : 1.75} />
@@ -524,7 +524,7 @@ export default function PublishItem() {
         {/* ================= TITLE & DESCRIPTION ================= */}
         <section className="space-y-4">
           <div>
-            <label htmlFor="title" className="mb-1 block text-sm font-medium text-jet-black">
+            <label htmlFor="title" className="mb-1 block text-sm font-medium text-text">
               Title
             </label>
             <input
@@ -534,16 +534,16 @@ export default function PublishItem() {
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Canon EOS R6 camera, with 2 lenses"
               maxLength={80}
-              className="w-full rounded-xl border border-lavender/15 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+              className="w-full rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
             />
           </div>
 
           <div>
             <div className="mb-1 flex items-center justify-between">
-              <label htmlFor="description" className="block text-sm font-medium text-jet-black">
+              <label htmlFor="description" className="block text-sm font-medium text-text">
                 Description
               </label>
-              <span className="text-xs text-jet-black/40">{descriptionCount}/500</span>
+              <span className="text-xs text-text-muted">{descriptionCount}/500</span>
             </div>
             <textarea
               id="description"
@@ -551,7 +551,7 @@ export default function PublishItem() {
               onChange={(e) => setDescription(e.target.value.slice(0, 500))}
               placeholder="Condition, what's included, pickup notes…"
               rows={4}
-              className="w-full resize-none rounded-xl border border-lavender/15 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+              className="w-full resize-none rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
             />
           </div>
         </section>
@@ -567,7 +567,7 @@ export default function PublishItem() {
 
         {/* ================= CONDITION ================= */}
         <section>
-          <label className="mb-2 block text-sm font-medium text-jet-black">
+          <label className="mb-2 block text-sm font-medium text-text">
             Condition
           </label>
           <div className="grid grid-cols-4 gap-2">
@@ -580,8 +580,8 @@ export default function PublishItem() {
                   onClick={() => setCondition(c.value)}
                   className={`rounded-xl border py-2.5 text-xs font-semibold transition ${
                     active
-                      ? 'border-lavender bg-lavender/10 text-deep-purple shadow-[0_0_0_1px_rgba(165,140,244,0.4)_inset]'
-                      : 'border-lavender/15 text-jet-black/60 hover:border-lavender hover:text-deep-purple'
+                      ? 'border-primary bg-surface-raised text-primary shadow-[0_0_0_1px_rgba(165,140,244,0.4)_inset]'
+                      : 'border-border text-text-muted hover:border-primary hover:text-primary'
                   }`}
                 >
                   {c.label}
@@ -594,11 +594,11 @@ export default function PublishItem() {
         {/* ================= PRICE & DEPOSIT ================= */}
         <section className="grid grid-cols-2 gap-3">
           <div>
-            <label htmlFor="pricePerDay" className="mb-1 block text-sm font-medium text-jet-black">
+            <label htmlFor="pricePerDay" className="mb-1 block text-sm font-medium text-text">
               Price per day
             </label>
-            <div className="flex items-center rounded-xl border border-lavender/15 px-4 py-2.5 transition focus-within:border-lavender focus-within:ring-2 focus-within:ring-lavender/30">
-              <span className="font-mono text-sm text-jet-black/40">$</span>
+            <div className="flex items-center rounded-xl border border-border px-4 py-2.5 transition focus-within:border-primary focus-within:ring-2 focus-within:ring-lavender/30">
+              <span className="font-mono text-sm text-text-muted">$</span>
               <input
                 id="pricePerDay"
                 type="number"
@@ -619,11 +619,11 @@ export default function PublishItem() {
           </div>
 
           <div>
-            <label htmlFor="declaredValue" className="mb-1 block text-sm font-medium text-jet-black">
-              Declared value <span className="font-normal text-jet-black/40">(what it costs to replace)</span>
+            <label htmlFor="declaredValue" className="mb-1 block text-sm font-medium text-text">
+              Declared value <span className="font-normal text-text-muted">(what it costs to replace)</span>
             </label>
-            <div className="flex items-center rounded-xl border border-lavender/15 px-4 py-2.5 transition focus-within:border-lavender focus-within:ring-2 focus-within:ring-lavender/30">
-              <span className="font-mono text-sm text-jet-black/40">$</span>
+            <div className="flex items-center rounded-xl border border-border px-4 py-2.5 transition focus-within:border-primary focus-within:ring-2 focus-within:ring-lavender/30">
+              <span className="font-mono text-sm text-text-muted">$</span>
               <input
                 id="declaredValue"
                 type="number"
@@ -635,7 +635,7 @@ export default function PublishItem() {
                 className="w-full bg-transparent pl-1.5 font-mono text-sm outline-none"
               />
             </div>
-            <p className="mt-1 text-xs text-jet-black/40">
+            <p className="mt-1 text-xs text-text-muted">
               Used to set the renter's refundable damage-liability hold (35% of this, capped by category).
             </p>
           </div>
@@ -643,7 +643,7 @@ export default function PublishItem() {
 
         {/* ================= LOCATION ================= */}
         <section>
-          <label htmlFor="locationCity" className="mb-1 block text-sm font-medium text-jet-black">
+          <label htmlFor="locationCity" className="mb-1 block text-sm font-medium text-text">
             Pickup city
           </label>
           <input
@@ -652,16 +652,16 @@ export default function PublishItem() {
             value={locationCity}
             onChange={(e) => setLocationCity(e.target.value)}
             placeholder="San Salvador"
-            className="w-full rounded-xl border border-lavender/15 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+            className="w-full rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
           />
         </section>
 
         {/* ================= SUMMARY PREVIEW ================= */}
         {(photos[0] || title || pricePerDay) && (
           <section>
-            <p className="mb-2 text-sm font-medium text-jet-black">Preview</p>
-            <div className="flex items-center gap-3 rounded-2xl border border-lavender/15 bg-white p-3">
-              <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-jet-black/5">
+            <p className="mb-2 text-sm font-medium text-text">Preview</p>
+            <div className="flex items-center gap-3 rounded-2xl border border-border bg-surface p-3">
+              <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-surface-raised">
                 {photos[0] && (
                   <img
                     src={photos[0].previewUrl}
@@ -671,10 +671,10 @@ export default function PublishItem() {
                 )}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-jet-black">
+                <p className="truncate text-sm font-semibold text-text">
                   {title || 'Untitled item'}
                 </p>
-                <div className="mt-1 flex items-center gap-1.5 text-xs text-jet-black/50">
+                <div className="mt-1 flex items-center gap-1.5 text-xs text-text-muted">
                   {selectedCategory && (
                     <>
                       {(() => {
@@ -685,13 +685,13 @@ export default function PublishItem() {
                       <span>·</span>
                     </>
                   )}
-                  <Star className="h-3 w-3 fill-jet-black/30 text-jet-black/30" />
+                  <Star className="h-3 w-3 fill-jet-black/30 text-text-muted" />
                   <span>New listing</span>
                 </div>
               </div>
-              <p className="shrink-0 font-mono text-sm font-semibold text-jet-black">
+              <p className="shrink-0 font-mono text-sm font-semibold text-text">
                 ${pricePerDay || '0'}
-                <span className="font-body font-normal text-jet-black/45"> /day</span>
+                <span className="font-body font-normal text-text-muted"> /day</span>
               </p>
             </div>
           </section>

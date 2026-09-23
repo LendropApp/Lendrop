@@ -4,8 +4,8 @@ import { describeVerification } from '../lib/verification'
 
 const TONES = {
   neutral: {
-    wrap: 'border-lavender/25 bg-lavender/5',
-    icon: 'text-deep-purple',
+    wrap: 'border-border bg-surface-raised',
+    icon: 'text-primary',
     Icon: ShieldAlert,
   },
   pending: {
@@ -42,12 +42,12 @@ export default function VerificationNotice({ status, action = 'publish', classNa
       <div className="flex items-start gap-3">
         <Icon className={`mt-0.5 h-5 w-5 shrink-0 ${tone.icon}`} />
         <div className="min-w-0 flex-1">
-          <p className="font-display text-sm font-semibold text-jet-black">{copy.title}</p>
-          <p className="mt-1 text-sm text-jet-black/60">{copy.body}</p>
+          <p className="font-display text-sm font-semibold text-text">{copy.title}</p>
+          <p className="mt-1 text-sm text-text-muted">{copy.body}</p>
           <Link
             to="/verification"
             state={{ reason: action }}
-            className="mt-3 inline-flex items-center gap-1.5 rounded-xl bg-deep-purple px-4 py-2 text-xs font-semibold text-soft-white transition hover:bg-deep-purple/90"
+            className="mt-3 inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-xs font-semibold text-primary-contrast transition hover:opacity-90"
           >
             <ShieldCheck className="h-3.5 w-3.5" />
             {copy.cta}

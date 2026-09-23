@@ -9,14 +9,14 @@ import { PartyPopper, ArrowRight } from "lucide-react";
 export default function SuccessStep() {
   return (
     <div className="w-full max-w-md mx-auto px-6 text-center">
-      <span className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-lavender/20">
-        <PartyPopper className="w-6 h-6 text-deep-purple" strokeWidth={2} />
+      <span className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-surface-raised">
+        <PartyPopper className="w-6 h-6 text-primary" strokeWidth={2} />
       </span>
 
-      <h1 className="font-display text-2xl sm:text-3xl text-deep-purple leading-snug mb-3">
+      <h1 className="font-display text-2xl sm:text-3xl text-primary leading-snug mb-3">
         You're a Lendrop host now
       </h1>
-      <p className="text-jet-black/60 text-sm leading-relaxed mb-10">
+      <p className="text-text-muted text-sm leading-relaxed mb-10">
         You can start listing items for other people to rent. Publish your first one to get it in front of renters.
       </p>
 
@@ -30,7 +30,7 @@ export default function SuccessStep() {
         </Link>
         <Link
           to="/explore"
-          className="w-full flex items-center justify-center gap-2 text-deep-purple font-medium text-base py-3.5 rounded-xl hover:bg-lavender/10 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-lavender"
+          className="w-full flex items-center justify-center gap-2 text-primary font-medium text-base py-3.5 rounded-xl hover:bg-surface-raised transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-lavender"
         >
           Go to Explore
         </Link>

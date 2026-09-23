@@ -27,22 +27,22 @@ export default function TermsStep({ onNext, onBack, submitting }) {
 
   return (
     <div className="w-full max-w-md mx-auto px-6">
-      <h1 className="font-display text-2xl sm:text-3xl text-deep-purple leading-snug mb-2">
+      <h1 className="font-display text-2xl sm:text-3xl text-primary leading-snug mb-2">
         Host terms
       </h1>
-      <p className="text-jet-black/60 text-sm leading-relaxed mb-6">
+      <p className="text-text-muted text-sm leading-relaxed mb-6">
         A quick summary before you start listing items on Lendrop.
       </p>
 
-      <ul className="space-y-3 mb-6 rounded-xl border border-lavender/40 bg-white p-4">
+      <ul className="space-y-3 mb-6 rounded-xl border border-border bg-surface p-4">
         {[
           "You confirm you're the legal owner of items you list, or have permission to rent them out.",
           "Items are handed off and returned only through Lendrop lockers, never in person.",
           "You must accurately describe each item's condition and take photo evidence at drop off.",
           "Lendrop may hold your security deposit funds during a dispute until it's resolved.",
         ].map((text, i) => (
-          <li key={i} className="flex items-start gap-2.5 text-sm text-jet-black/70 leading-relaxed">
-            <ShieldCheck className="w-4 h-4 mt-0.5 shrink-0 text-deep-purple" strokeWidth={2} />
+          <li key={i} className="flex items-start gap-2.5 text-sm text-text-muted leading-relaxed">
+            <ShieldCheck className="w-4 h-4 mt-0.5 shrink-0 text-primary" strokeWidth={2} />
             {text}
           </li>
         ))}
@@ -57,9 +57,9 @@ export default function TermsStep({ onNext, onBack, submitting }) {
               setAgreed(e.target.checked);
               if (error) setError("");
             }}
-            className="mt-0.5 h-4 w-4 rounded border-lavender/60 text-deep-purple focus:ring-deep-purple"
+            className="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-deep-purple"
           />
-          <span className="text-sm text-jet-black/70 leading-relaxed">
+          <span className="text-sm text-text-muted leading-relaxed">
             I have read and accept Lendrop's Host Terms.
           </span>
         </label>
@@ -70,7 +70,7 @@ export default function TermsStep({ onNext, onBack, submitting }) {
             type="button"
             onClick={onBack}
             disabled={submitting}
-            className="flex items-center justify-center gap-1.5 px-4 py-3.5 rounded-xl text-deep-purple font-medium text-base hover:bg-lavender/10 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-lavender disabled:opacity-50"
+            className="flex items-center justify-center gap-1.5 px-4 py-3.5 rounded-xl text-primary font-medium text-base hover:bg-surface-raised transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-lavender disabled:opacity-50"
           >
             <ArrowLeft className="w-4 h-4" />
             Back

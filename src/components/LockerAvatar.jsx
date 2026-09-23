@@ -35,14 +35,14 @@ export default function LockerAvatar({
 
   return (
     <span
-      className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-full border border-jet-black/10 bg-lavender/15 font-mono font-bold text-deep-purple ${s.frame} ${s.text} ${className}`}
+      className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-surface-raised font-mono font-bold text-primary ${s.frame} ${s.text} ${className}`}
     >
       {photoUrl ? (
         <img src={photoUrl} alt={label || 'Avatar'} className="h-full w-full object-cover" />
       ) : label ? (
         label[0].toUpperCase()
       ) : (
-        <User className={`${s.icon} text-deep-purple/70`} strokeWidth={1.75} />
+        <User className={`${s.icon} text-primary`} strokeWidth={1.75} />
       )}
 
       {verified && (

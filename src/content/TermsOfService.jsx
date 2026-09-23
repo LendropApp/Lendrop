@@ -1,7 +1,7 @@
 function Section({ title, children }) {
   return (
     <section className="mb-6 last:mb-0">
-      <h3 className="mb-2 font-display text-sm font-semibold text-jet-black">{title}</h3>
+      <h3 className="mb-2 font-display text-sm font-semibold text-text">{title}</h3>
       <div className="space-y-2">{children}</div>
     </section>
   )
@@ -10,7 +10,7 @@ function Section({ title, children }) {
 export default function TermsOfService() {
   return (
     <div>
-      <p className="mb-6 text-xs font-medium uppercase tracking-wide text-lavender">
+      <p className="mb-6 text-xs font-medium uppercase tracking-wide text-primary">
         Last updated: September 15, 2026
       </p>
 
@@ -141,7 +141,7 @@ export default function TermsOfService() {
       <Section title="15. Contact">
         <p>
           Questions about these terms? Reach us at{' '}
-          <span className="font-medium text-deep-purple">lendrop2026@gmail.com</span>.
+          <span className="font-medium text-primary">lendrop2026@gmail.com</span>.
         </p>
       </Section>
     </div>

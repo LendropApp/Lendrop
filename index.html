@@ -4,8 +4,36 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#fafafa" />
     <meta name="description" content="Lendrop — rent what you need, hand-off without coordinating. Smart locker network in El Salvador." />
     <title>Lendrop</title>
+
+    <!-- Painted before the stylesheet resolves and before React mounts, so the
+         first frame is already the right theme. Without this the page flashes
+         light for one frame on a dark-mode reload.
+
+         Kept in sync BY NAME with src/context/ThemeContext.jsx: same storage
+         key, same colours as --bg in src/index.css. Deliberately inline and
+         un-bundled -- a module import would run too late to help. -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('lendrop_theme')
+          var theme = stored === 'light' || stored === 'dark' ? stored : 'system'
+          var dark =
+            theme === 'dark' ||
+            (theme === 'system' &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches)
+          var root = document.documentElement
+          if (dark) root.classList.add('dark')
+          root.style.colorScheme = dark ? 'dark' : 'light'
+          var meta = document.querySelector('meta[name="theme-color"]')
+          if (meta) meta.content = dark ? '#0d0d0d' : '#fafafa'
+        } catch (e) {
+          /* Private mode, blocked storage: fall through to light. */
+        }
+      })()
+    </script>
 
     <!-- Brand typography: Space Grotesk (display), Manrope (body), JetBrains Mono (data/codes) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

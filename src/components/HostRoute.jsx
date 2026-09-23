@@ -10,8 +10,8 @@ export default function HostRoute({ children }) {
 
   if (loading || profileLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-soft-white">
-        <p className="font-body text-sm text-jet-black/60">Loading…</p>
+      <div className="flex min-h-screen items-center justify-center bg-bg">
+        <p className="font-body text-sm text-text-muted">Loading…</p>
       </div>
     )
   }

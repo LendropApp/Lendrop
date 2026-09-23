@@ -1,7 +1,7 @@
 function Section({ title, children }) {
   return (
     <section className="mb-6 last:mb-0">
-      <h3 className="mb-2 font-display text-sm font-semibold text-jet-black">{title}</h3>
+      <h3 className="mb-2 font-display text-sm font-semibold text-text">{title}</h3>
       <div className="space-y-2">{children}</div>
     </section>
   )
@@ -10,18 +10,18 @@ function Section({ title, children }) {
 export default function PrivacyPolicy() {
   return (
     <div>
-      <p className="mb-6 text-xs font-medium uppercase tracking-wide text-lavender">
+      <p className="mb-6 text-xs font-medium uppercase tracking-wide text-primary">
         Last updated: September 15, 2026
       </p>
 
       <Section title="1. What we collect">
         <ul className="list-disc space-y-1.5 pl-5">
-          <li><span className="font-medium text-jet-black">Public profile:</span> full name, avatar, and your rental reputation (rating, review count).</li>
-          <li><span className="font-medium text-jet-black">Private verification data:</span> DUI number and date of birth, collected at signup to confirm you're a real, eligible adult.</li>
-          <li><span className="font-medium text-jet-black">Contact info:</span> email and, if you become a lender, a phone number.</li>
-          <li><span className="font-medium text-jet-black">Listings and transaction data:</span> items you list or rent, photos, prices, reservations, and payment records.</li>
-          <li><span className="font-medium text-jet-black">Locker activity:</span> which locker and compartment was opened, by whom, and when.</li>
-          <li><span className="font-medium text-jet-black">Photo evidence:</span> item condition photos taken at drop off and pickup.</li>
+          <li><span className="font-medium text-text">Public profile:</span> full name, avatar, and your rental reputation (rating, review count).</li>
+          <li><span className="font-medium text-text">Private verification data:</span> DUI number and date of birth, collected at signup to confirm you're a real, eligible adult.</li>
+          <li><span className="font-medium text-text">Contact info:</span> email and, if you become a lender, a phone number.</li>
+          <li><span className="font-medium text-text">Listings and transaction data:</span> items you list or rent, photos, prices, reservations, and payment records.</li>
+          <li><span className="font-medium text-text">Locker activity:</span> which locker and compartment was opened, by whom, and when.</li>
+          <li><span className="font-medium text-text">Photo evidence:</span> item condition photos taken at drop off and pickup.</li>
         </ul>
       </Section>
 
@@ -96,7 +96,7 @@ export default function PrivacyPolicy() {
       <Section title="10. Contact">
         <p>
           Questions about your data? Reach us at{' '}
-          <span className="font-medium text-deep-purple">lendrop2026@gmail.com</span>.
+          <span className="font-medium text-primary">lendrop2026@gmail.com</span>.
         </p>
       </Section>
     </div>

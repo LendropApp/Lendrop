@@ -223,7 +223,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-soft-white">
+    <div className="min-h-screen bg-bg">
 
       {/* ================= HEADER ================= */}
 
@@ -245,7 +245,7 @@ export default function Home() {
               <a
                 key={link.href}
                 href={link.href}
-                className="text-sm font-medium text-jet-black/70 transition hover:text-deep-purple"
+                className="text-sm font-medium text-text-muted transition hover:text-primary"
               >
                 {link.label}
               </a>
@@ -257,7 +257,7 @@ export default function Home() {
 
             <Link
               to="/login"
-              className="text-sm font-semibold text-jet-black/70 transition hover:text-deep-purple"
+              className="text-sm font-semibold text-text-muted transition hover:text-primary"
             >
               Log in
             </Link>
@@ -274,7 +274,7 @@ export default function Home() {
           <button
             type="button"
             onClick={() => setMenuOpen((open) => !open)}
-            className="text-jet-black md:hidden"
+            className="text-text md:hidden"
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
           >
             {menuOpen ? (
@@ -287,24 +287,24 @@ export default function Home() {
         </div>
 
         {menuOpen && (
-          <div className="flex flex-col gap-1 border-t border-jet-black/5 px-6 py-4 md:hidden">
+          <div className="flex flex-col gap-1 border-t border-border px-6 py-4 md:hidden">
 
             {navLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
                 onClick={() => setMenuOpen(false)}
-                className="rounded-lg px-2 py-2.5 text-sm font-medium text-jet-black/70 hover:bg-jet-black/5"
+                className="rounded-lg px-2 py-2.5 text-sm font-medium text-text-muted hover:bg-surface-raised"
               >
                 {link.label}
               </a>
             ))}
 
-            <div className="mt-2 flex flex-col gap-2 border-t border-jet-black/5 pt-3">
+            <div className="mt-2 flex flex-col gap-2 border-t border-border pt-3">
 
               <Link
                 to="/login"
-                className="rounded-lg px-2 py-2.5 text-sm font-semibold text-jet-black/70 hover:bg-jet-black/5"
+                className="rounded-lg px-2 py-2.5 text-sm font-semibold text-text-muted hover:bg-surface-raised"
               >
                 Log in
               </Link>
@@ -328,7 +328,7 @@ export default function Home() {
 
         <div className="pt-5 lg:pt-5">
 
-          <span className="inline-flex items-center gap-2 rounded-full border border-lavender/30 bg-lavender/10 px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-widest text-deep-purple">
+          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface-raised px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-widest text-primary">
 
             <span className="h-1.5 w-1.5 rounded-full bg-lavender" />
 
@@ -336,14 +336,14 @@ export default function Home() {
 
           </span>
 
-          <h1 className="mt-6 font-display text-5xl font-bold leading-[1.05] tracking-tight text-jet-black sm:text-6xl">
+          <h1 className="mt-6 font-display text-5xl font-bold leading-[1.05] tracking-tight text-text sm:text-6xl">
 
             Rent what you
             <br />
             need.
             <br />
 
-            <span className="text-deep-purple">
+            <span className="text-primary">
               Without coordinating
             </span>
 
@@ -353,7 +353,7 @@ export default function Home() {
 
           </h1>
 
-          <p className="mt-6 max-w-lg text-lg leading-relaxed text-jet-black/60">
+          <p className="mt-6 max-w-lg text-lg leading-relaxed text-text-muted">
             Cameras, tools, drones, bikes, and more. Reserve, pay, and pick
             them up from a smart locker near you. No messages, no waiting,
             no strangers.
@@ -371,7 +371,7 @@ export default function Home() {
 
             <a
               href="#how-it-works"
-              className="rounded-full border border-jet-black/15 px-6 py-3 text-sm font-semibold text-jet-black transition hover:bg-jet-black/5"
+              className="rounded-full border border-border px-6 py-3 text-sm font-semibold text-text transition hover:bg-surface-raised"
             >
               How it works
             </a>
@@ -381,28 +381,28 @@ export default function Home() {
           <div className="mt-10 flex items-center gap-8">
 
             <div>
-              <p className="font-display text-2xl font-bold text-jet-black">
+              <p className="font-display text-2xl font-bold text-text">
                 24/7
               </p>
-              <p className="text-xs font-medium uppercase tracking-wide text-jet-black/45">
+              <p className="text-xs font-medium uppercase tracking-wide text-text-muted">
                 Access
               </p>
             </div>
 
             <div>
-              <p className="font-display text-2xl font-bold text-jet-black">
+              <p className="font-display text-2xl font-bold text-text">
                 100%
               </p>
-              <p className="text-xs font-medium uppercase tracking-wide text-jet-black/45">
+              <p className="text-xs font-medium uppercase tracking-wide text-text-muted">
                 Secure
               </p>
             </div>
 
             <div>
-              <p className="font-display text-2xl font-bold text-jet-black">
+              <p className="font-display text-2xl font-bold text-text">
                 5K+
               </p>
-              <p className="text-xs font-medium uppercase tracking-wide text-jet-black/45">
+              <p className="text-xs font-medium uppercase tracking-wide text-text-muted">
                 Items
               </p>
             </div>
@@ -415,13 +415,13 @@ export default function Home() {
 
         <div className="flex justify-center lg:justify-end">
 
-          <div className="relative w-full max-w-md overflow-hidden rounded-[28px] border border-lavender/25 bg-white p-5 shadow-2xl shadow-lavender/20">
+          <div className="relative w-full max-w-md overflow-hidden rounded-[28px] border border-border bg-surface p-5 shadow-2xl shadow-lavender/20">
 
             <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-lavender/60 to-transparent" />
 
             {/* TERMINAL HEADER */}
 
-            <div className="flex items-center justify-between border-b border-lavender/25 pb-4">
+            <div className="flex items-center justify-between border-b border-border pb-4">
 
               <div className="flex items-center gap-2.5">
 
@@ -435,11 +435,11 @@ export default function Home() {
 
                 <div>
 
-                  <p className="font-mono text-[10px] font-bold tracking-[0.18em] text-deep-purple">
+                  <p className="font-mono text-[10px] font-bold tracking-[0.18em] text-primary">
                     SYSTEM ONLINE
                   </p>
 
-                  <p className="mt-0.5 text-[9px] text-jet-black/45">
+                  <p className="mt-0.5 text-[9px] text-text-muted">
                     SMART LOCKER NETWORK
                   </p>
 
@@ -447,7 +447,7 @@ export default function Home() {
 
               </div>
 
-              <span className="rounded-md border border-lavender/25 bg-white px-2 py-1 font-mono text-[9px] font-semibold text-deep-purple shadow-sm">
+              <span className="rounded-md border border-border bg-surface px-2 py-1 font-mono text-[9px] font-semibold text-primary shadow-sm">
                 LD-14
               </span>
 
@@ -459,17 +459,17 @@ export default function Home() {
 
               <div>
 
-                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-deep-purple">
+                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
                   Available nearby
                 </p>
 
-                <p className="mt-1 font-display text-base font-semibold text-jet-black">
+                <p className="mt-1 font-display text-base font-semibold text-text">
                   Downtown San Salvador
                 </p>
 
               </div>
 
-              <span className="font-mono text-[9px] font-medium text-jet-black/40">
+              <span className="font-mono text-[9px] font-medium text-text-muted">
                 09 ITEMS
               </span>
 
@@ -511,8 +511,8 @@ export default function Home() {
                     }
                     className={`group relative overflow-hidden rounded-xl border p-2 text-left transition-all duration-300 ${
                       isActive
-                        ? 'border-deep-purple bg-lavender/15 shadow-[0_8px_25px_-10px_rgba(165,140,244,0.55)]'
-                        : 'border-lavender/25 bg-white hover:border-lavender hover:bg-lavender/5'
+                        ? 'border-primary bg-surface-raised shadow-[0_8px_25px_-10px_rgba(165,140,244,0.55)]'
+                        : 'border-border bg-surface hover:border-primary hover:bg-surface-raised'
                     } ${
                       isFlashing
                         ? 'ring-2 ring-lavender/50'
@@ -525,8 +525,8 @@ export default function Home() {
                       <span
                         className={`font-mono text-[9px] font-bold tracking-widest ${
                           isActive
-                            ? 'text-deep-purple'
-                            : 'text-jet-black/45'
+                            ? 'text-primary'
+                            : 'text-text-muted'
                         }`}
                       >
                         {locker.id}
@@ -542,7 +542,7 @@ export default function Home() {
 
                     </div>
 
-                    <div className="relative aspect-[1.15] overflow-hidden rounded-lg border border-lavender/25 bg-lavender/15">
+                    <div className="relative aspect-[1.15] overflow-hidden rounded-lg border border-border bg-surface-raised">
 
                       <img
                         src={locker.image}
@@ -577,8 +577,8 @@ export default function Home() {
                       <p
                         className={`truncate text-[10px] font-semibold ${
                           isActive
-                            ? 'text-deep-purple'
-                            : 'text-jet-black/70'
+                            ? 'text-primary'
+                            : 'text-text-muted'
                         }`}
                       >
                         {locker.shortName}
@@ -588,7 +588,7 @@ export default function Home() {
                         className={`mt-0.5 font-mono text-[8px] uppercase tracking-wide ${
                           isAvailable
                             ? 'text-emerald-500'
-                            : 'text-jet-black/40'
+                            : 'text-text-muted'
                         }`}
                       >
                         {isAvailable
@@ -601,7 +601,7 @@ export default function Home() {
                     <div
                       className={`absolute right-1 top-1/2 h-8 w-0.5 -translate-y-1/2 rounded-full transition ${
                         isActive
-                          ? 'bg-deep-purple shadow-[0_0_8px_rgba(165,140,244,0.55)]'
+                          ? 'bg-primary shadow-[0_0_8px_rgba(165,140,244,0.55)]'
                           : 'bg-lavender/25'
                       }`}
                     />
@@ -614,13 +614,13 @@ export default function Home() {
 
             {/* PREVIEW */}
 
-            <div className="mt-4 overflow-hidden rounded-2xl border border-lavender/25 bg-white shadow-sm">
+            <div className="mt-4 overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
 
               {displayedLocker ? (
 
                 <div className="flex min-h-[150px]">
 
-                  <div className="relative w-[42%] shrink-0 overflow-hidden bg-lavender/15">
+                  <div className="relative w-[42%] shrink-0 overflow-hidden bg-surface-raised">
 
                     <img
                       src={displayedLocker.image}
@@ -630,7 +630,7 @@ export default function Home() {
 
                     <div className="absolute inset-0 bg-linear-to-r from-transparent to-white/80" />
 
-                    <span className="absolute left-2.5 top-2.5 rounded-md border border-white/70 bg-white/90 px-2 py-1 font-mono text-[8px] font-bold tracking-widest text-deep-purple shadow-sm">
+                    <span className="absolute left-2.5 top-2.5 rounded-md border border-white/70 bg-white/90 px-2 py-1 font-mono text-[8px] font-bold tracking-widest text-primary shadow-sm">
                       {displayedLocker.id}
                     </span>
 
@@ -642,7 +642,7 @@ export default function Home() {
 
                       <div className="flex items-center justify-between gap-2">
 
-                        <span className="font-mono text-[8px] uppercase tracking-[0.15em] text-deep-purple">
+                        <span className="font-mono text-[8px] uppercase tracking-[0.15em] text-primary">
                           Item preview
                         </span>
 
@@ -650,8 +650,8 @@ export default function Home() {
                           className={`rounded-full px-2 py-1 font-mono text-[7px] uppercase tracking-wide ${
                             displayedLocker.status ===
                             'available'
-                              ? 'bg-lavender/15 text-deep-purple'
-                              : 'bg-jet-black/10 text-jet-black/50'
+                              ? 'bg-surface-raised text-primary'
+                              : 'bg-jet-black/10 text-text-muted'
                           }`}
                         >
                           {displayedLocker.status}
@@ -659,15 +659,15 @@ export default function Home() {
 
                       </div>
 
-                      <h3 className="mt-2 line-clamp-2 font-display text-sm font-semibold leading-snug text-jet-black">
+                      <h3 className="mt-2 line-clamp-2 font-display text-sm font-semibold leading-snug text-text">
                         {displayedLocker.item}
                       </h3>
 
-                      <p className="mt-2 text-[9px] leading-relaxed text-jet-black/45">
+                      <p className="mt-2 text-[9px] leading-relaxed text-text-muted">
                         Smart locker {displayedLocker.id}
                       </p>
 
-                      <p className="mt-0.5 text-[9px] text-jet-black/40">
+                      <p className="mt-0.5 text-[9px] text-text-muted">
                         {displayedLocker.location}
                       </p>
 
@@ -680,7 +680,7 @@ export default function Home() {
                         displayedLocker.status !==
                         'available'
                       }
-                      className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-linear-to-r from-deep-purple to-lavender px-3 py-2 font-mono text-[9px] font-bold uppercase tracking-wider text-white glow-sm transition hover:brightness-105 disabled:cursor-not-allowed disabled:bg-none disabled:bg-jet-black/10 disabled:text-jet-black/30 disabled:shadow-none"
+                      className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-linear-to-r from-deep-purple to-lavender px-3 py-2 font-mono text-[9px] font-bold uppercase tracking-wider text-white glow-sm transition hover:brightness-105 disabled:cursor-not-allowed disabled:bg-none disabled:bg-jet-black/10 disabled:text-text-muted disabled:shadow-none"
                     >
                       {displayedLocker.status ===
                       'available'
@@ -703,17 +703,17 @@ export default function Home() {
 
                   <div>
 
-                    <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full border border-lavender/25 bg-lavender/15">
+                    <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface-raised">
 
-                      <Box className="h-4 w-4 text-lavender" />
+                      <Box className="h-4 w-4 text-primary" />
 
                     </div>
 
-                    <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.15em] text-jet-black/45">
+                    <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.15em] text-text-muted">
                       Select a compartment
                     </p>
 
-                    <p className="mt-1 text-[9px] text-jet-black/35">
+                    <p className="mt-1 text-[9px] text-text-muted">
                       Hover or tap an item to preview
                     </p>
 
@@ -727,11 +727,11 @@ export default function Home() {
 
             {/* TERMINAL FOOTER */}
 
-            <div className="mt-3 flex items-center justify-between font-mono text-[8px] uppercase tracking-wider text-jet-black/40">
+            <div className="mt-3 flex items-center justify-between font-mono text-[8px] uppercase tracking-wider text-text-muted">
 
               <span>Secure access</span>
 
-              <span className="text-deep-purple">
+              <span className="text-primary">
                 AI verified
               </span>
 
@@ -749,22 +749,22 @@ export default function Home() {
 
       <section
         id="categories"
-        className="border-t border-jet-black/5 bg-white px-6 py-20 sm:px-10 lg:py-28"
+        className="border-t border-border bg-surface px-6 py-20 sm:px-10 lg:py-28"
       >
 
         <div className="mx-auto max-w-6xl">
 
           <div className="max-w-xl">
 
-            <span className="text-[11px] font-mono font-semibold uppercase tracking-widest text-lavender">
+            <span className="text-[11px] font-mono font-semibold uppercase tracking-widest text-primary">
               What you can rent
             </span>
 
-            <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-jet-black sm:text-4xl">
+            <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-text sm:text-4xl">
               One locker, hundreds of possibilities.
             </h2>
 
-            <p className="mt-3 text-jet-black/60">
+            <p className="mt-3 text-text-muted">
               From a camera for the weekend to the perfect costume for tonight.
             </p>
 
@@ -780,12 +780,12 @@ export default function Home() {
                 <Link
                   key={category.id}
                   to="/signup"
-                  className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-jet-black/10 bg-white px-3 py-7 text-center transition hover:-translate-y-0.5 hover:border-lavender hover:shadow-md"
+                  className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border bg-surface px-3 py-7 text-center transition hover:-translate-y-0.5 hover:border-primary hover:shadow-md"
                 >
 
-                  <Icon className="h-6 w-6 text-deep-purple" />
+                  <Icon className="h-6 w-6 text-primary" />
 
-                  <span className="text-xs font-semibold text-jet-black">
+                  <span className="text-xs font-semibold text-text">
                     {category.name}
                   </span>
 
@@ -814,11 +814,11 @@ export default function Home() {
           className="mx-auto mt-24 max-w-6xl"
         >
 
-          <span className="text-[11px] font-mono font-semibold uppercase tracking-widest text-lavender">
+          <span className="text-[11px] font-mono font-semibold uppercase tracking-widest text-primary">
             How it works
           </span>
 
-          <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-jet-black sm:text-4xl">
+          <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-text sm:text-4xl">
             Four steps, zero friction.
           </h2>
 
@@ -831,20 +831,20 @@ export default function Home() {
               return (
                 <div
                   key={step.step}
-                  className="flex flex-col gap-3 rounded-2xl border border-jet-black/10 bg-white p-6"
+                  className="flex flex-col gap-3 rounded-2xl border border-border bg-surface p-6"
                 >
 
-                  <span className="font-mono text-[11px] font-semibold uppercase tracking-wide text-lavender">
+                  <span className="font-mono text-[11px] font-semibold uppercase tracking-wide text-primary">
                     {step.step}
                   </span>
 
-                  <Icon className="h-6 w-6 text-deep-purple" />
+                  <Icon className="h-6 w-6 text-primary" />
 
-                  <h3 className="font-display text-base font-semibold text-jet-black">
+                  <h3 className="font-display text-base font-semibold text-text">
                     {step.title}
                   </h3>
 
-                  <p className="text-sm leading-relaxed text-jet-black/60">
+                  <p className="text-sm leading-relaxed text-text-muted">
                     {step.desc}
                   </p>
 
@@ -862,14 +862,14 @@ export default function Home() {
 
       <section
         id="security"
-        className="bg-deep-purple px-6 py-20 text-soft-white sm:px-10 lg:py-28"
+        className="bg-brand-surface px-6 py-20 text-brand-surface-text sm:px-10 lg:py-28"
       >
 
         <div className="mx-auto max-w-6xl">
 
           <div className="max-w-xl">
 
-            <span className="text-[11px] font-mono font-semibold uppercase tracking-widest text-lavender">
+            <span className="text-[11px] font-mono font-semibold uppercase tracking-widest text-brand-surface-muted">
               Security first
             </span>
 
@@ -877,7 +877,7 @@ export default function Home() {
               Trust, verified at every step.
             </h2>
 
-            <p className="mt-3 text-soft-white/70">
+            <p className="mt-3 text-brand-surface-muted">
               Renting between strangers only works if both sides can trust each other.
               So we automated it.
             </p>
@@ -896,9 +896,9 @@ export default function Home() {
                   className="rounded-2xl border border-white/10 bg-jet-black/30 p-6"
                 >
 
-                  <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-lavender/15">
+                  <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-white/10">
 
-                    <Icon className="h-5 w-5 text-lavender" />
+                    <Icon className="h-5 w-5 text-brand-surface-muted" />
 
                   </div>
 
@@ -906,7 +906,7 @@ export default function Home() {
                     {feature.title}
                   </h3>
 
-                  <p className="mt-2 text-sm leading-relaxed text-soft-white/60">
+                  <p className="mt-2 text-sm leading-relaxed text-brand-surface-muted">
                     {feature.desc}
                   </p>
 
@@ -922,17 +922,17 @@ export default function Home() {
 
       {/* ================= FINAL CTA ================= */}
 
-      <section className="border-t border-jet-black/5 bg-soft-white px-6 py-16 sm:px-10">
+      <section className="border-t border-border bg-bg px-6 py-16 sm:px-10">
 
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-8 sm:flex-row">
 
           <div className="text-center sm:text-left">
 
-            <h2 className="font-display text-2xl font-bold tracking-tight text-jet-black sm:text-3xl">
+            <h2 className="font-display text-2xl font-bold tracking-tight text-text sm:text-3xl">
               Your next locker is closer than you think.
             </h2>
 
-            <p className="mt-2 text-jet-black/60">
+            <p className="mt-2 text-text-muted">
               Join the safest rental network in El Salvador.
             </p>
 
@@ -952,7 +952,7 @@ export default function Home() {
 
       {/* ================= FOOTER ================= */}
 
-      <footer className="border-t border-jet-black/5 bg-white px-6 py-10 sm:px-10">
+      <footer className="border-t border-border bg-surface px-6 py-10 sm:px-10">
 
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 sm:flex-row">
 
@@ -962,7 +962,7 @@ export default function Home() {
             className="h-5 w-auto opacity-70"
           />
 
-          <p className="text-xs text-jet-black/40">
+          <p className="text-xs text-text-muted">
             &copy; 2026 Lendrop. All rights reserved.
           </p>
 

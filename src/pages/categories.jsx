@@ -139,13 +139,13 @@ export default function Categories() {
   };
 
   return (
-    <div className="min-h-screen bg-[#faf9fc] text-jet-black font-[Manrope] overflow-hidden">
+    <div className="min-h-screen bg-[#faf9fc] text-text font-[Manrope] overflow-hidden">
       {/* Decorative background */}
       <div className="absolute top-[-180px] right-[-140px] w-[420px] h-[420px] rounded-full bg-deep-purple/[0.06] blur-3xl" />
       <div className="absolute bottom-[-180px] left-[-140px] w-[400px] h-[400px] rounded-full bg-deep-purple/[0.04] blur-3xl" />
 
       {/* Navbar */}
-      <nav className="w-full border-b border-[#0d0d0d]/10 bg-white">
+      <nav className="w-full border-b border-[#0d0d0d]/10 bg-surface">
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-5 lg:px-10">
           <div className="flex items-center">
             <img
@@ -156,18 +156,18 @@ export default function Categories() {
           </div>
 
           <div className="flex items-center gap-8 font-medium text-[#0d0d0d]">
-            <a href="/" className="transition hover:text-deep-purple">
+            <a href="/" className="transition hover:text-primary">
               Home
             </a>
-            <a href="/explore" className="transition hover:text-deep-purple">
+            <a href="/explore" className="transition hover:text-primary">
               Explore
             </a>
-            <a href="/help" className="transition hover:text-deep-purple">
+            <a href="/help" className="transition hover:text-primary">
               Help
             </a>
             <a
               href="/profile"
-              className="flex items-center gap-2 transition hover:text-deep-purple"
+              className="flex items-center gap-2 transition hover:text-primary"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -193,21 +193,21 @@ export default function Categories() {
       <main className="relative z-10 max-w-6xl mx-auto px-8 lg:px-12 pt-10 pb-12">
         {/* Heading */}
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-deep-purple/[0.07] text-deep-purple text-xs font-bold tracking-wider mb-5">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-deep-purple/[0.07] text-primary text-xs font-bold tracking-wider mb-5">
             EXPLORE LENDROP
           </div>
 
           <h1 className="text-4xl lg:text-5xl font-bold tracking-tight mb-5">
             What are you interested
             <br />
-            <span className="text-deep-purple">in renting?</span>
+            <span className="text-primary">in renting?</span>
           </h1>
 
-          <p className="text-jet-black/50 text-base lg:text-lg leading-relaxed">
+          <p className="text-text-muted text-base lg:text-lg leading-relaxed">
             From a camera for the weekend to the perfect costume for tonight.
           </p>
 
-          <p className="text-sm text-jet-black/40 mt-3">
+          <p className="text-sm text-text-muted mt-3">
             Choose one or more categories to personalize your experience.
           </p>
         </div>
@@ -224,14 +224,14 @@ export default function Categories() {
                 onClick={() => toggleCategory(category.id)}
                 className={`group relative text-left rounded-3xl p-6 min-h-[190px] transition-all duration-300 ${
                   isSelected
-                    ? "bg-deep-purple border-4 border-deep-purple shadow-2xl shadow-deep-purple/40 -translate-y-1.5"
-                    : "bg-white border-2 border-jet-black/15 hover:border-deep-purple hover:-translate-y-1.5 shadow-md shadow-jet-black/10 hover:shadow-xl hover:shadow-deep-purple/20"
+                    ? "bg-primary border-4 border-primary shadow-2xl shadow-deep-purple/40 -translate-y-1.5"
+                    : "bg-surface border-2 border-border hover:border-primary hover:-translate-y-1.5 shadow-md shadow-jet-black/10 hover:shadow-xl hover:shadow-deep-purple/20"
                 }`}
               >
                 {/* Number */}
                 <span
                   className={`absolute top-5 right-5 text-xs font-semibold ${
-                    isSelected ? "text-white/50" : "text-jet-black/25"
+                    isSelected ? "text-white/50" : "text-text-muted"
                   }`}
                 >
                   0{index + 1}
@@ -242,7 +242,7 @@ export default function Categories() {
                   className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-7 transition-all ${
                     isSelected
                       ? "bg-white/15 text-white"
-                      : "bg-deep-purple/[0.07] text-deep-purple group-hover:bg-deep-purple group-hover:text-white"
+                      : "bg-deep-purple/[0.07] text-primary group-hover:bg-primary group-hover:text-white"
                   }`}
                 >
                   {category.icon}
@@ -251,7 +251,7 @@ export default function Categories() {
                 {/* Text */}
                 <h2
                   className={`text-lg font-bold mb-2 ${
-                    isSelected ? "text-white" : "text-jet-black"
+                    isSelected ? "text-white" : "text-text"
                   }`}
                 >
                   {category.name}
@@ -259,7 +259,7 @@ export default function Categories() {
 
                 <p
                   className={`text-sm leading-relaxed pr-5 ${
-                    isSelected ? "text-white/65" : "text-jet-black/40"
+                    isSelected ? "text-white/65" : "text-text-muted"
                   }`}
                 >
                   {category.description}
@@ -269,8 +269,8 @@ export default function Categories() {
                 <div
                   className={`absolute bottom-6 right-6 w-6 h-6 rounded-full border flex items-center justify-center transition-all ${
                     isSelected
-                      ? "bg-white border-white"
-                      : "border-jet-black/10 group-hover:border-deep-purple"
+                      ? "bg-surface border-white"
+                      : "border-border group-hover:border-primary"
                   }`}
                 >
                   {isSelected && (
@@ -294,12 +294,12 @@ export default function Categories() {
 
         {/* Bottom section */}
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-between gap-5">
-          <div className="text-sm text-jet-black/40">
+          <div className="text-sm text-text-muted">
             {selected.length === 0 ? (
               "Select at least one category"
             ) : (
               <>
-                <span className="font-semibold text-deep-purple">
+                <span className="font-semibold text-primary">
                   {selected.length}
                 </span>{" "}
                 {selected.length === 1 ? "category" : "categories"} selected
@@ -311,7 +311,7 @@ export default function Categories() {
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="px-6 py-3.5 rounded-xl text-sm font-semibold text-jet-black/50 hover:text-jet-black transition"
+              className="px-6 py-3.5 rounded-xl text-sm font-semibold text-text-muted hover:text-text transition"
             >
               Back
             </button>
@@ -322,8 +322,8 @@ export default function Categories() {
               onClick={handleContinue}
               className={`group px-7 py-3.5 rounded-xl text-sm font-bold flex items-center gap-3 transition-all ${
                 selected.length > 0
-                  ? "bg-deep-purple text-white hover:shadow-xl hover:shadow-deep-purple/20 hover:-translate-y-0.5"
-                  : "bg-jet-black/10 text-jet-black/40 cursor-not-allowed"
+                  ? "bg-primary text-white hover:shadow-xl hover:shadow-deep-purple/20 hover:-translate-y-0.5"
+                  : "bg-jet-black/10 text-text-muted cursor-not-allowed"
               }`}
             >
               Continue

@@ -64,10 +64,10 @@ export default function CategoriesStep({ record, onNext, onBack }) {
 
   return (
     <div className="w-full max-w-md mx-auto px-6">
-      <h1 className="font-display text-2xl sm:text-3xl text-deep-purple leading-snug mb-2">
+      <h1 className="font-display text-2xl sm:text-3xl text-primary leading-snug mb-2">
         What will you list?
       </h1>
-      <p className="text-jet-black/60 text-sm leading-relaxed mb-8">
+      <p className="text-text-muted text-sm leading-relaxed mb-8">
         Pick every category you plan to rent out. You can list items in more categories later.
       </p>
 
@@ -75,7 +75,7 @@ export default function CategoriesStep({ record, onNext, onBack }) {
         {loadError ? (
           <p className="text-sm text-red-500">{loadError}</p>
         ) : loading ? (
-          <p className="text-sm text-jet-black/40">Loading categories…</p>
+          <p className="text-sm text-text-muted">Loading categories…</p>
         ) : (
           <div className="flex flex-wrap gap-2">
             {categories.map((cat) => {
@@ -89,7 +89,7 @@ export default function CategoriesStep({ record, onNext, onBack }) {
                   className={`flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-xs font-medium transition ${
                     active
                       ? "border-transparent bg-linear-to-r from-deep-purple to-lavender text-white glow-sm"
-                      : "border-lavender/40 text-jet-black/70 hover:border-lavender hover:text-deep-purple"
+                      : "border-border text-text-muted hover:border-primary hover:text-primary"
                   }`}
                 >
                   <Icon className="h-3.5 w-3.5" strokeWidth={active ? 2.25 : 1.75} />
@@ -105,7 +105,7 @@ export default function CategoriesStep({ record, onNext, onBack }) {
           <button
             type="button"
             onClick={onBack}
-            className="flex items-center justify-center gap-1.5 px-4 py-3.5 rounded-xl text-deep-purple font-medium text-base hover:bg-lavender/10 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-lavender"
+            className="flex items-center justify-center gap-1.5 px-4 py-3.5 rounded-xl text-primary font-medium text-base hover:bg-surface-raised transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-lavender"
           >
             <ArrowLeft className="w-4 h-4" />
             Back

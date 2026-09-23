@@ -5,11 +5,11 @@ import PageHeader from '../components/PageHeader'
 import AuroraBlobs from '../components/background/AuroraBlobs'
 
 const RESERVATION_STATUS_STYLES = {
-  pending: 'bg-jet-black/10 text-jet-black/60',
-  confirmed: 'bg-lavender/15 text-deep-purple',
-  active: 'bg-lavender/15 text-deep-purple',
+  pending: 'bg-jet-black/10 text-text-muted',
+  confirmed: 'bg-surface-raised text-primary',
+  active: 'bg-surface-raised text-primary',
   completed: 'bg-emerald-100 text-emerald-700',
-  cancelled: 'bg-jet-black/10 text-jet-black/50',
+  cancelled: 'bg-jet-black/10 text-text-muted',
   disputed: 'bg-red-100 text-red-600',
 }
 
@@ -23,16 +23,16 @@ const RESERVATION_STATUS_LABELS = {
 }
 
 const PAYMENT_STATUS_STYLES = {
-  pending: 'bg-jet-black/10 text-jet-black/60',
-  authorized: 'bg-lavender/15 text-deep-purple',
+  pending: 'bg-jet-black/10 text-text-muted',
+  authorized: 'bg-surface-raised text-primary',
   paid: 'bg-emerald-100 text-emerald-700',
-  refunded: 'bg-jet-black/10 text-jet-black/50',
+  refunded: 'bg-jet-black/10 text-text-muted',
   failed: 'bg-red-100 text-red-600',
 }
 
 const COMPARTMENT_STATUS_STYLES = {
   available: 'bg-emerald-100 text-emerald-700',
-  reserved: 'bg-lavender/15 text-deep-purple',
+  reserved: 'bg-surface-raised text-primary',
   occupied: 'bg-amber-100 text-amber-700',
   maintenance: 'bg-red-100 text-red-600',
 }
@@ -74,31 +74,31 @@ export default function Admin() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-soft-white pb-28 md:pb-16">
+    <div className="min-h-screen bg-bg pb-28 md:pb-16">
       <PageHeader backTo="/explore" backLabel="Back to Explore" />
 
       <div className="relative isolate overflow-hidden">
         <AuroraBlobs className="opacity-25" />
         <div className="relative mx-auto max-w-6xl px-6 py-8 sm:px-10">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="h-5 w-5 text-deep-purple" />
-            <h1 className="font-display text-2xl font-bold text-jet-black">Admin</h1>
+            <ShieldCheck className="h-5 w-5 text-primary" />
+            <h1 className="font-display text-2xl font-bold text-text">Admin</h1>
           </div>
-          <p className="mt-1 text-sm text-jet-black/50">
+          <p className="mt-1 text-sm text-text-muted">
             Every reservation, with its locker and payment status, in one place.
           </p>
 
           {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
 
           {loading ? (
-            <p className="mt-8 text-center text-sm text-jet-black/40">Loading reservations…</p>
+            <p className="mt-8 text-center text-sm text-text-muted">Loading reservations…</p>
           ) : rows.length === 0 ? (
-            <p className="mt-8 text-center text-sm text-jet-black/40">No reservations yet.</p>
+            <p className="mt-8 text-center text-sm text-text-muted">No reservations yet.</p>
           ) : (
-            <div className="mt-6 overflow-x-auto rounded-2xl border border-lavender/15 bg-white">
+            <div className="mt-6 overflow-x-auto rounded-2xl border border-border bg-surface">
               <table className="w-full min-w-[900px] text-left text-sm">
                 <thead>
-                  <tr className="border-b border-jet-black/5 text-xs font-semibold uppercase tracking-wide text-jet-black/40">
+                  <tr className="border-b border-border text-xs font-semibold uppercase tracking-wide text-text-muted">
                     <th className="px-4 py-3">Item</th>
                     <th className="px-4 py-3">Renter</th>
                     <th className="px-4 py-3">Lender</th>
@@ -114,19 +114,19 @@ export default function Admin() {
                     const paymentStatus = row.payments?.[0]?.status ?? null
                     const compartment = row.compartment
                     return (
-                      <tr key={row.id} className="border-b border-jet-black/5 last:border-0">
-                        <td className="max-w-[200px] truncate px-4 py-3 font-medium text-jet-black">
+                      <tr key={row.id} className="border-b border-border last:border-0">
+                        <td className="max-w-[200px] truncate px-4 py-3 font-medium text-text">
                           {row.item?.title ?? 'Item'}
                         </td>
-                        <td className="px-4 py-3 text-jet-black/70">{row.renter?.full_name ?? '—'}</td>
-                        <td className="px-4 py-3 text-jet-black/70">{row.item?.owner?.full_name ?? '—'}</td>
-                        <td className="px-4 py-3 whitespace-nowrap text-jet-black/60">
+                        <td className="px-4 py-3 text-text-muted">{row.renter?.full_name ?? '—'}</td>
+                        <td className="px-4 py-3 text-text-muted">{row.item?.owner?.full_name ?? '—'}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-text-muted">
                           {formatDateRange(row.start_date, row.end_date)}
                         </td>
                         <td className="px-4 py-3">
                           <span
                             className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
-                              RESERVATION_STATUS_STYLES[row.status] ?? 'bg-jet-black/10 text-jet-black/60'
+                              RESERVATION_STATUS_STYLES[row.status] ?? 'bg-jet-black/10 text-text-muted'
                             }`}
                           >
                             {RESERVATION_STATUS_LABELS[row.status] ?? row.status}
@@ -136,13 +136,13 @@ export default function Admin() {
                           {paymentStatus ? (
                             <span
                               className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
-                                PAYMENT_STATUS_STYLES[paymentStatus] ?? 'bg-jet-black/10 text-jet-black/60'
+                                PAYMENT_STATUS_STYLES[paymentStatus] ?? 'bg-jet-black/10 text-text-muted'
                               }`}
                             >
                               {paymentStatus}
                             </span>
                           ) : (
-                            <span className="text-xs text-jet-black/35">—</span>
+                            <span className="text-xs text-text-muted">—</span>
                           )}
                         </td>
                         <td className="px-4 py-3">
@@ -150,20 +150,20 @@ export default function Admin() {
                             <div className="flex items-center gap-1.5">
                               <span
                                 className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
-                                  COMPARTMENT_STATUS_STYLES[compartment.status] ?? 'bg-jet-black/10 text-jet-black/60'
+                                  COMPARTMENT_STATUS_STYLES[compartment.status] ?? 'bg-jet-black/10 text-text-muted'
                                 }`}
                               >
                                 {compartment.status}
                               </span>
-                              <span className="text-xs text-jet-black/45">
+                              <span className="text-xs text-text-muted">
                                 {compartment.locker?.name} · {compartment.compartment_code}
                               </span>
                             </div>
                           ) : (
-                            <span className="text-xs text-jet-black/35">Unassigned</span>
+                            <span className="text-xs text-text-muted">Unassigned</span>
                           )}
                         </td>
-                        <td className="px-4 py-3 text-right font-mono text-sm font-semibold text-jet-black">
+                        <td className="px-4 py-3 text-right font-mono text-sm font-semibold text-text">
                           ${Number(row.total_price).toFixed(2)}
                         </td>
                       </tr>

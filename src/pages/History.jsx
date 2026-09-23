@@ -9,11 +9,11 @@ import StatusMessage from '../components/StatusMessage'
 import AuroraBlobs from '../components/background/AuroraBlobs'
 
 const STATUS_STYLES = {
-  pending: 'bg-jet-black/10 text-jet-black/60',
-  confirmed: 'bg-lavender/15 text-deep-purple',
-  active: 'bg-lavender/15 text-deep-purple',
+  pending: 'bg-jet-black/10 text-text-muted',
+  confirmed: 'bg-surface-raised text-primary',
+  active: 'bg-surface-raised text-primary',
   completed: 'bg-emerald-100 text-emerald-700',
-  cancelled: 'bg-jet-black/10 text-jet-black/50',
+  cancelled: 'bg-jet-black/10 text-text-muted',
   disputed: 'bg-red-100 text-red-600',
 }
 
@@ -196,18 +196,18 @@ export default function History() {
   }
 
   return (
-    <div className="min-h-screen bg-soft-white pb-28 md:pb-16">
+    <div className="min-h-screen bg-bg pb-28 md:pb-16">
       <PageHeader backTo="/profile" backLabel="Back to Profile" />
 
       <div className="relative isolate overflow-hidden">
         <AuroraBlobs className="opacity-25" />
         <div className="relative mx-auto max-w-3xl px-6 py-8 sm:px-10">
-          <h1 className="font-display text-2xl font-bold text-jet-black">Activity</h1>
-          <p className="mt-1 text-sm text-jet-black/50">
+          <h1 className="font-display text-2xl font-bold text-text">Activity</h1>
+          <p className="mt-1 text-sm text-text-muted">
             Every rental and lending transaction in one place.
           </p>
 
-          <div className="mt-6 flex gap-2 rounded-full bg-jet-black/5 p-1">
+          <div className="mt-6 flex gap-2 rounded-full bg-surface-raised p-1">
             {[
               { id: 'rentals', label: 'As renter' },
               { id: 'lendings', label: 'As lender' },
@@ -217,7 +217,7 @@ export default function History() {
                 type="button"
                 onClick={() => setTab(t.id)}
                 className={`flex-1 rounded-full py-2 text-sm font-semibold transition ${
-                  tab === t.id ? 'bg-white text-deep-purple shadow-sm' : 'text-jet-black/50 hover:text-jet-black'
+                  tab === t.id ? 'bg-surface text-primary shadow-sm' : 'text-text-muted hover:text-text'
                 }`}
               >
                 {t.label}
@@ -233,15 +233,15 @@ export default function History() {
           )}
 
           {loading ? (
-            <p className="mt-8 text-center text-sm text-jet-black/40">Loading activity…</p>
+            <p className="mt-8 text-center text-sm text-text-muted">Loading activity…</p>
           ) : rows.length > 0 ? (
             <div className="mt-6 space-y-3">
               {rows.map((row) => (
-                <div key={row.id} className="rounded-2xl border border-lavender/15 bg-white p-4">
+                <div key={row.id} className="rounded-2xl border border-border bg-surface p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="truncate font-semibold text-jet-black">{row.itemTitle}</p>
-                      <p className="text-xs text-jet-black/45">
+                      <p className="truncate font-semibold text-text">{row.itemTitle}</p>
+                      <p className="text-xs text-text-muted">
                         {tab === 'rentals' ? 'Lent by' : 'Rented by'} {row.counterparty}
                       </p>
                     </div>
@@ -249,18 +249,18 @@ export default function History() {
                       {STATUS_LABELS[row.status]}
                     </span>
                   </div>
-                  <div className="mt-3 flex items-center justify-between border-t border-jet-black/5 pt-3">
-                    <span className="text-xs text-jet-black/50">{formatDateRange(row.startDate, row.endDate)}</span>
-                    <span className="font-mono text-sm font-semibold text-jet-black">
+                  <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
+                    <span className="text-xs text-text-muted">{formatDateRange(row.startDate, row.endDate)}</span>
+                    <span className="font-mono text-sm font-semibold text-text">
                       ${row.totalPrice.toFixed(2)}
                     </span>
                   </div>
 
                   {row.status === 'confirmed' && (
-                    <div className="mt-3 border-t border-jet-black/5 pt-3">
+                    <div className="mt-3 border-t border-border pt-3">
                       <Link
                         to={tab === 'rentals' ? `/rental-tracking?reservationId=${row.id}` : `/owner-delivery?reservationId=${row.id}`}
-                        className="text-xs font-semibold text-deep-purple hover:text-lavender"
+                        className="text-xs font-semibold text-primary hover:underline"
                       >
                         {tab === 'rentals' ? 'Track pickup →' : 'Deliver item →'}
                       </Link>
@@ -268,17 +268,17 @@ export default function History() {
                   )}
 
                   {row.status === 'completed' && row.revieweeId && (
-                    <div className="mt-3 border-t border-jet-black/5 pt-3">
+                    <div className="mt-3 border-t border-border pt-3">
                       {myReviews[row.id] ? (
                         <div>
                           <div className="flex items-center gap-2">
                             <StarRating value={myReviews[row.id].rating} size="sm" />
-                            <span className="text-xs text-jet-black/45">
+                            <span className="text-xs text-text-muted">
                               You rated {tab === 'rentals' ? 'this lender' : 'this renter'}
                             </span>
                           </div>
                           {myReviews[row.id].comment && (
-                            <p className="mt-1.5 text-xs leading-5 text-jet-black/55">{myReviews[row.id].comment}</p>
+                            <p className="mt-1.5 text-xs leading-5 text-text-muted">{myReviews[row.id].comment}</p>
                           )}
                         </div>
                       ) : openReviewId === row.id ? (
@@ -289,7 +289,7 @@ export default function History() {
                             onChange={(e) => setDraftComment(e.target.value.slice(0, 500))}
                             placeholder={`How was ${row.counterparty}?`}
                             rows={2}
-                            className="w-full resize-none rounded-xl border border-lavender/15 px-3 py-2 text-xs outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+                            className="w-full resize-none rounded-xl border border-border px-3 py-2 text-xs outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
                           />
                           <div className="flex items-center justify-between gap-2">
                             <StatusMessage type={reviewStatus.type} text={reviewStatus.text} />
@@ -297,7 +297,7 @@ export default function History() {
                               <button
                                 type="button"
                                 onClick={() => setOpenReviewId(null)}
-                                className="rounded-full border border-jet-black/10 px-3 py-1 text-xs font-semibold text-jet-black/60 hover:bg-jet-black/5"
+                                className="rounded-full border border-border px-3 py-1 text-xs font-semibold text-text-muted hover:bg-surface-raised"
                               >
                                 Cancel
                               </button>
@@ -315,7 +315,7 @@ export default function History() {
                         <button
                           type="button"
                           onClick={() => openReviewForm(row)}
-                          className="text-xs font-semibold text-deep-purple hover:text-lavender"
+                          className="text-xs font-semibold text-primary hover:underline"
                         >
                           Rate {tab === 'rentals' ? 'this lender' : 'this renter'} →
                         </button>
@@ -324,15 +324,15 @@ export default function History() {
                   )}
 
                   {canCancel(row) && (
-                    <div className="mt-3 border-t border-jet-black/5 pt-3">
+                    <div className="mt-3 border-t border-border pt-3">
                       {confirmCancelId === row.id ? (
                         <div className="flex items-center justify-end gap-2">
-                          <span className="mr-auto text-xs text-jet-black/60">Cancel this reservation?</span>
+                          <span className="mr-auto text-xs text-text-muted">Cancel this reservation?</span>
                           <button
                             type="button"
                             onClick={() => setConfirmCancelId(null)}
                             disabled={cancelling}
-                            className="rounded-full border border-jet-black/10 px-3 py-1 text-xs font-semibold text-jet-black/70 hover:bg-jet-black/5"
+                            className="rounded-full border border-border px-3 py-1 text-xs font-semibold text-text-muted hover:bg-surface-raised"
                           >
                             Keep it
                           </button>
@@ -361,12 +361,12 @@ export default function History() {
             </div>
           ) : (
             <div className="mt-16 flex flex-col items-center gap-2 text-center">
-              <Clock className="h-8 w-8 text-jet-black/20" />
-              <p className="font-display text-lg font-semibold text-jet-black">Nothing here yet</p>
-              <p className="text-sm text-jet-black/50">
+              <Clock className="h-8 w-8 text-text-muted" />
+              <p className="font-display text-lg font-semibold text-text">Nothing here yet</p>
+              <p className="text-sm text-text-muted">
                 Your {tab === 'rentals' ? 'reservations' : 'listings activity'} will show up here.
               </p>
-              <Link to="/explore" className="mt-2 text-sm font-semibold text-deep-purple hover:text-lavender">
+              <Link to="/explore" className="mt-2 text-sm font-semibold text-primary hover:underline">
                 Browse Explore
               </Link>
             </div>

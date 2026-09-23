@@ -116,7 +116,7 @@ export default function MyListings() {
   }
 
   return (
-    <div className="min-h-screen bg-soft-white pb-28 md:pb-16">
+    <div className="min-h-screen bg-bg pb-28 md:pb-16">
       <PageHeader backTo="/profile" backLabel="Back to Profile" maxWidth="max-w-4xl" />
 
       <div className="relative isolate overflow-hidden">
@@ -124,8 +124,8 @@ export default function MyListings() {
         <div className="relative mx-auto max-w-4xl px-6 py-8 sm:px-10">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h1 className="font-display text-2xl font-bold text-jet-black">My listings</h1>
-              <p className="mt-1 text-sm text-jet-black/50">
+              <h1 className="font-display text-2xl font-bold text-text">My listings</h1>
+              <p className="mt-1 text-sm text-text-muted">
                 Everything you've put up for rent on Lendrop.
               </p>
             </div>
@@ -152,16 +152,16 @@ export default function MyListings() {
           {error ? (
             <p className="py-20 text-center text-sm text-red-600">{error}</p>
           ) : loading ? (
-            <p className="py-20 text-center text-sm text-jet-black/40">Loading your listings…</p>
+            <p className="py-20 text-center text-sm text-text-muted">Loading your listings…</p>
           ) : items.length === 0 ? (
-            <section className="mt-6 rounded-2xl border border-dashed border-lavender/30 bg-white/60 px-6 py-14 text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-lavender/10">
-                <PackagePlus className="h-6 w-6 text-deep-purple" />
+            <section className="mt-6 rounded-2xl border border-dashed border-border bg-surface/60 px-6 py-14 text-center">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-surface-raised">
+                <PackagePlus className="h-6 w-6 text-primary" />
               </div>
-              <p className="mt-4 font-display text-lg font-semibold text-jet-black">
+              <p className="mt-4 font-display text-lg font-semibold text-text">
                 You haven't listed anything yet
               </p>
-              <p className="mx-auto mt-1 max-w-sm text-sm text-jet-black/55">
+              <p className="mx-auto mt-1 max-w-sm text-sm text-text-muted">
                 {isVerified
                   ? 'Put that camera, drill or tent to work. Listing takes a couple of minutes.'
                   : 'Verify your identity and you can list your first item in a couple of minutes.'}
@@ -188,12 +188,12 @@ export default function MyListings() {
                 return (
                   <li
                     key={item.id}
-                    className="rounded-2xl border border-lavender/15 bg-white p-3 transition hover:border-lavender/40"
+                    className="rounded-2xl border border-border bg-surface p-3 transition hover:border-border"
                   >
                     <div className="flex items-center gap-3">
                       <Link
                         to={`/item/${item.id}`}
-                        className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-jet-black/5"
+                        className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-surface-raised"
                       >
                         {cover && (
                           <img
@@ -208,7 +208,7 @@ export default function MyListings() {
                         <div className="flex items-center gap-2">
                           <Link
                             to={`/item/${item.id}`}
-                            className="truncate font-display text-sm font-semibold text-jet-black transition hover:text-deep-purple"
+                            className="truncate font-display text-sm font-semibold text-text transition hover:text-primary"
                           >
                             {item.title}
                           </Link>
@@ -227,25 +227,25 @@ export default function MyListings() {
                             </span>
                           )}
                         </div>
-                        <p className="mt-1 flex items-center gap-1.5 text-xs text-jet-black/50">
+                        <p className="mt-1 flex items-center gap-1.5 text-xs text-text-muted">
                           <CategoryIcon className="h-3 w-3" />
                           {item.category?.name ?? 'Uncategorised'}
                         </p>
-                        <p className="mt-1 font-mono text-sm font-semibold text-jet-black">
+                        <p className="mt-1 font-mono text-sm font-semibold text-text">
                           ${Number(item.price_per_day).toFixed(2)}
-                          <span className="font-body font-normal text-jet-black/45"> /day</span>
+                          <span className="font-body font-normal text-text-muted"> /day</span>
                         </p>
                       </div>
                     </div>
 
                     {confirmDeleteId === item.id ? (
-                      <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-jet-black/5 pt-3">
-                        <p className="text-xs text-jet-black/60">Delete this listing for good?</p>
+                      <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-border pt-3">
+                        <p className="text-xs text-text-muted">Delete this listing for good?</p>
                         <button
                           type="button"
                           onClick={() => setConfirmDeleteId(null)}
                           disabled={busy}
-                          className="ml-auto rounded-full border border-jet-black/10 px-3 py-1.5 text-xs font-semibold text-jet-black/70 transition hover:bg-jet-black/5"
+                          className="ml-auto rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:bg-surface-raised"
                         >
                           Cancel
                         </button>
@@ -259,10 +259,10 @@ export default function MyListings() {
                         </button>
                       </div>
                     ) : (
-                      <div className="mt-3 flex items-center gap-2 border-t border-jet-black/5 pt-3">
+                      <div className="mt-3 flex items-center gap-2 border-t border-border pt-3">
                         <Link
                           to={`/my-listings/${item.id}/edit`}
-                          className="flex items-center gap-1.5 rounded-full border border-lavender/20 px-3 py-1.5 text-xs font-semibold text-jet-black/70 transition hover:border-lavender hover:text-deep-purple"
+                          className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-primary hover:text-primary"
                         >
                           <Pencil className="h-3.5 w-3.5" />
                           Edit
@@ -271,7 +271,7 @@ export default function MyListings() {
                           type="button"
                           onClick={() => handleTogglePause(item)}
                           disabled={busy}
-                          className="flex items-center gap-1.5 rounded-full border border-lavender/20 px-3 py-1.5 text-xs font-semibold text-jet-black/70 transition hover:border-lavender hover:text-deep-purple disabled:opacity-50"
+                          className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-primary hover:text-primary disabled:opacity-50"
                         >
                           {item.is_available ? (
                             <>

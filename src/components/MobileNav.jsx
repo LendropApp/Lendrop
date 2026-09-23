@@ -15,7 +15,7 @@ const VERIFICATION_PILL = {
   verified: 'bg-emerald-100 text-emerald-700',
   pending: 'bg-amber-100 text-amber-700',
   rejected: 'bg-red-100 text-red-600',
-  unverified: 'bg-jet-black/10 text-jet-black/50',
+  unverified: 'bg-jet-black/10 text-text-muted',
 }
 
 /**
@@ -113,7 +113,7 @@ export default function MobileNav() {
   function badgeFor(kind) {
     if (kind === 'notifications' && unreadNotifications > 0) {
       return (
-        <span className="ml-auto min-w-5 rounded-full bg-lavender px-1.5 py-0.5 text-center font-mono text-[10px] font-semibold text-soft-white">
+        <span className="ml-auto min-w-5 rounded-full bg-lavender px-1.5 py-0.5 text-center font-mono text-[10px] font-semibold text-jet-black">
           {unreadNotifications > 9 ? '9+' : unreadNotifications}
         </span>
       )
@@ -149,14 +149,14 @@ export default function MobileNav() {
         role="dialog"
         aria-modal="true"
         aria-label="Main menu"
-        className="absolute inset-y-0 right-0 flex w-[86%] max-w-sm flex-col overflow-y-auto bg-soft-white shadow-[0_0_60px_-12px_rgba(13,13,13,0.45)]"
+        className="absolute inset-y-0 right-0 flex w-[86%] max-w-sm flex-col overflow-y-auto bg-bg shadow-[0_0_60px_-12px_rgba(13,13,13,0.45)]"
       >
         <div className="h-px shrink-0 bg-linear-to-r from-transparent via-lavender to-transparent" />
 
         <div className="flex items-start justify-between gap-3 px-5 pb-4 pt-5">
           <Link
             to="/profile"
-            className="flex min-w-0 items-center gap-3 rounded-2xl p-1 transition hover:bg-lavender/10"
+            className="flex min-w-0 items-center gap-3 rounded-2xl p-1 transition hover:bg-surface-raised"
           >
             <LockerAvatar
               label={firstName}
@@ -165,10 +165,10 @@ export default function MobileNav() {
               size="md"
             />
             <span className="min-w-0">
-              <span className="block truncate font-display text-base font-semibold text-jet-black">
+              <span className="block truncate font-display text-base font-semibold text-text">
                 {profile?.full_name ?? firstName}
               </span>
-              <span className="block font-mono text-[10px] uppercase tracking-widest text-lavender">
+              <span className="block font-mono text-[10px] uppercase tracking-widest text-primary">
                 {isHost ? 'Lender & renter' : 'Renter'}
               </span>
             </span>
@@ -178,7 +178,7 @@ export default function MobileNav() {
             type="button"
             onClick={() => setOpen(false)}
             aria-label="Close menu"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-jet-black/10 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border text-text-muted transition hover:border-primary hover:text-primary"
           >
             <X className="h-4 w-4" />
           </button>
@@ -199,7 +199,7 @@ export default function MobileNav() {
         <nav className="flex-1 px-2 pb-4">
           {sections.map((section) => (
             <div key={section.id} className="mt-4 first:mt-2">
-              <p className="px-3 pb-1 font-mono text-[10px] font-semibold uppercase tracking-widest text-jet-black/35">
+              <p className="px-3 pb-1 font-mono text-[10px] font-semibold uppercase tracking-widest text-text-muted">
                 {section.title}
               </p>
               <ul>
@@ -212,15 +212,15 @@ export default function MobileNav() {
                         className={({ isActive }) =>
                           `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
                             isActive
-                              ? 'bg-lavender/15 text-deep-purple'
-                              : 'text-jet-black hover:bg-lavender/5 hover:text-deep-purple'
+                              ? 'bg-surface-raised text-primary'
+                              : 'text-text hover:bg-surface-raised hover:text-primary'
                           }`
                         }
                       >
                         {({ isActive }) => (
                           <>
                             <Icon
-                              className={`h-4 w-4 shrink-0 ${isActive ? 'text-deep-purple' : 'text-jet-black/45'}`}
+                              className={`h-4 w-4 shrink-0 ${isActive ? 'text-primary' : 'text-text-muted'}`}
                             />
                             <span className="truncate">{item.label}</span>
                             {badgeFor(item.badge)}
@@ -235,7 +235,7 @@ export default function MobileNav() {
           ))}
         </nav>
 
-        <div className="border-t border-jet-black/5 px-2 py-3">
+        <div className="border-t border-border px-2 py-3">
           <button
             type="button"
             onClick={() => {
@@ -260,7 +260,7 @@ export default function MobileNav() {
         aria-label="Open menu"
         aria-expanded={open}
         aria-haspopup="dialog"
-        className="flex h-9 w-9 items-center justify-center rounded-full border border-jet-black/10 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple"
+        className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-text-muted transition hover:border-primary hover:text-primary"
       >
         <Menu className="h-4 w-4" />
       </button>

@@ -45,7 +45,7 @@ export default function ProductCard({ item, isOwner, isFavorited, isCurrentlyRen
       to={`/item/${item.id}`}
       className="lift group block cursor-pointer"
     >
-      <div className="glow-sm relative aspect-4/3 w-full overflow-hidden rounded-2xl bg-jet-black/5 transition duration-300 group-hover:shadow-[0_24px_60px_-16px_rgba(67,48,117,0.45),0_8px_24px_-8px_rgba(165,140,244,0.5)]">
+      <div className="glow-sm relative aspect-4/3 w-full overflow-hidden rounded-2xl bg-surface-raised transition duration-300 group-hover:shadow-[0_24px_60px_-16px_rgba(67,48,117,0.45),0_8px_24px_-8px_rgba(165,140,244,0.5)]">
         {coverUrl && (
           <img
             src={coverUrl}
@@ -82,7 +82,7 @@ export default function ProductCard({ item, isOwner, isFavorited, isCurrentlyRen
             disabled={favoriteBusy}
             className="absolute right-2.5 top-2.5 flex h-7 w-7 items-center justify-center rounded-full bg-jet-black/40 text-soft-white backdrop-blur transition hover:bg-jet-black/60 disabled:opacity-60"
           >
-            <Heart className={`h-3.5 w-3.5 ${isFavorited ? 'fill-lavender text-lavender' : ''}`} />
+            <Heart className={`h-3.5 w-3.5 ${isFavorited ? 'fill-primary text-primary' : ''}`} />
           </button>
         )}
 
@@ -119,7 +119,7 @@ export default function ProductCard({ item, isOwner, isFavorited, isCurrentlyRen
 
       <div className="mt-3 flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-jet-black">{item.title}</p>
+          <p className="truncate text-sm font-semibold text-text">{item.title}</p>
           <div className="mt-1 flex items-center gap-1.5">
             <LockerAvatar
               label={item.owner?.full_name}
@@ -127,29 +127,29 @@ export default function ProductCard({ item, isOwner, isFavorited, isCurrentlyRen
               verified={item.owner?.verification_status === 'verified'}
               size="sm"
             />
-            <span className="truncate text-xs text-jet-black/50">{item.owner?.full_name}</span>
+            <span className="truncate text-xs text-text-muted">{item.owner?.full_name}</span>
           </div>
         </div>
 
         <div className="flex shrink-0 items-center gap-1 pt-0.5">
           {hasReviews ? (
             <>
-              <Star className="h-3.5 w-3.5 fill-jet-black text-jet-black" />
-              <span className="font-mono text-xs font-medium text-jet-black">
+              <Star className="h-3.5 w-3.5 fill-jet-black text-text" />
+              <span className="font-mono text-xs font-medium text-text">
                 {Number(item.owner.average_rating).toFixed(1)}
               </span>
             </>
           ) : (
-            <span className="rounded-full bg-lavender/15 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-deep-purple">
+            <span className="rounded-full bg-surface-raised px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-primary">
               New
             </span>
           )}
         </div>
       </div>
 
-      <p className="mt-1.5 font-mono text-sm font-semibold text-jet-black">
+      <p className="mt-1.5 font-mono text-sm font-semibold text-text">
         ${item.price_per_day}
-        <span className="font-body font-normal text-jet-black/45"> / day</span>
+        <span className="font-body font-normal text-text-muted"> / day</span>
       </p>
     </Link>
   )

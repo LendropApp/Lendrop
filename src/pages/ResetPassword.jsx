@@ -42,10 +42,10 @@ export default function ResetPassword() {
 
   return (
     <AuthLayout eyebrow="Recover access">
-      <p className="mb-1 text-center font-display text-lg font-semibold text-deep-purple">
+      <p className="mb-1 text-center font-display text-lg font-semibold text-primary">
         New password
       </p>
-      <p className="mb-6 text-center text-sm text-jet-black/60">
+      <p className="mb-6 text-center text-sm text-text-muted">
         Choose a secure password for your account.
       </p>
 
@@ -82,7 +82,7 @@ export default function ResetPassword() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full rounded-xl bg-deep-purple py-2.5 text-sm font-semibold text-soft-white transition hover:bg-deep-purple/90 disabled:opacity-50"
+          className="w-full rounded-xl bg-primary py-2.5 text-sm font-semibold text-primary-contrast transition hover:opacity-90 disabled:opacity-50"
         >
           {isSubmitting ? 'Saving…' : 'Save password'}
         </button>

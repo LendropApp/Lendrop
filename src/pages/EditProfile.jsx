@@ -98,7 +98,7 @@ export default function EditProfile() {
   }
 
   return (
-    <div className="min-h-screen bg-soft-white pb-28 md:pb-16">
+    <div className="min-h-screen bg-bg pb-28 md:pb-16">
       <header className="glass sticky top-0 z-50">
         <div className="h-px bg-linear-to-r from-transparent via-lavender/50 to-transparent" />
         <div className="mx-auto flex max-w-xl items-center gap-3 px-6 py-4 sm:px-10">
@@ -106,13 +106,13 @@ export default function EditProfile() {
             type="button"
             onClick={goBack}
             aria-label="Back to Profile"
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-lavender/15 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-text-muted transition hover:border-primary hover:text-primary"
           >
             <ArrowLeft className="h-4 w-4" />
           </button>
           <div>
-            <h1 className="font-display text-lg font-semibold text-jet-black">Edit profile</h1>
-            <p className="font-mono text-[10px] uppercase tracking-widest text-lavender">
+            <h1 className="font-display text-lg font-semibold text-text">Edit profile</h1>
+            <p className="font-mono text-[10px] uppercase tracking-widest text-primary">
               Keep it accurate
             </p>
           </div>
@@ -139,11 +139,11 @@ export default function EditProfile() {
                 className="hidden"
               />
             </div>
-            <p className="text-xs text-jet-black/40">Tap the camera to change your photo</p>
+            <p className="text-xs text-text-muted">Tap the camera to change your photo</p>
           </div>
 
           <div>
-            <label htmlFor="fullName" className="mb-1 block text-sm font-medium text-jet-black">
+            <label htmlFor="fullName" className="mb-1 block text-sm font-medium text-text">
               Full name
             </label>
             <input
@@ -151,12 +151,12 @@ export default function EditProfile() {
               type="text"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full rounded-xl border border-lavender/15 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+              className="w-full rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
             />
           </div>
 
           <div>
-            <label htmlFor="phone" className="mb-1 block text-sm font-medium text-jet-black">
+            <label htmlFor="phone" className="mb-1 block text-sm font-medium text-text">
               Phone
             </label>
             <input
@@ -165,12 +165,12 @@ export default function EditProfile() {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="+503 7000 0000"
-              className="w-full rounded-xl border border-lavender/15 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+              className="w-full rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
             />
           </div>
 
           <div>
-            <label htmlFor="city" className="mb-1 block text-sm font-medium text-jet-black">
+            <label htmlFor="city" className="mb-1 block text-sm font-medium text-text">
               City
             </label>
             <input
@@ -179,16 +179,16 @@ export default function EditProfile() {
               value={city}
               onChange={(e) => setCity(e.target.value)}
               placeholder="San Salvador"
-              className="w-full rounded-xl border border-lavender/15 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+              className="w-full rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
             />
           </div>
 
           <div>
             <div className="mb-1 flex items-center justify-between">
-              <label htmlFor="bio" className="block text-sm font-medium text-jet-black">
+              <label htmlFor="bio" className="block text-sm font-medium text-text">
                 Bio
               </label>
-              <span className="text-xs text-jet-black/40">{bio.length}/240</span>
+              <span className="text-xs text-text-muted">{bio.length}/240</span>
             </div>
             <textarea
               id="bio"
@@ -196,7 +196,7 @@ export default function EditProfile() {
               onChange={(e) => setBio(e.target.value.slice(0, 240))}
               placeholder="Tell renters a little about yourself…"
               rows={4}
-              className="w-full resize-none rounded-xl border border-lavender/15 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+              className="w-full resize-none rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
             />
           </div>
 

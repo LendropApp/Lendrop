@@ -216,8 +216,8 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
 
   if (phase === 'creating') {
     return (
-      <div className="rounded-2xl border border-lavender/15 bg-white p-6 text-center">
-        <p className="text-sm text-jet-black/50">Preparing your payment…</p>
+      <div className="rounded-2xl border border-border bg-surface p-6 text-center">
+        <p className="text-sm text-text-muted">Preparing your payment…</p>
       </div>
     )
   }
@@ -239,13 +239,13 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
 
   if (phase === 'expired') {
     return (
-      <div className="space-y-3 rounded-2xl border border-jet-black/10 bg-jet-black/[0.02] p-4 text-center">
-        <p className="text-sm font-semibold text-jet-black">Time to pay ran out</p>
-        <p className="text-xs text-jet-black/50">The dates were released. You can try again.</p>
+      <div className="space-y-3 rounded-2xl border border-border bg-jet-black/[0.02] p-4 text-center">
+        <p className="text-sm font-semibold text-text">Time to pay ran out</p>
+        <p className="text-xs text-text-muted">The dates were released. You can try again.</p>
         <button
           type="button"
           onClick={onBackToDates}
-          className="rounded-xl bg-deep-purple px-4 py-2 text-xs font-semibold text-white transition hover:bg-deep-purple/90"
+          className="rounded-xl bg-primary px-4 py-2 text-xs font-semibold text-white transition hover:opacity-90"
         >
           Back to dates
         </button>
@@ -266,8 +266,8 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
         </div>
 
         {locker ? (
-          <div className="flex items-start gap-2 rounded-xl bg-white p-3 text-left text-xs text-jet-black/70">
-            <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-deep-purple" />
+          <div className="flex items-start gap-2 rounded-xl bg-surface p-3 text-left text-xs text-text-muted">
+            <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
             <span>
               {locker.name} · Compartment {reservation.compartment.compartment_code}
               <br />
@@ -280,7 +280,7 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
 
         <a
           href={`/rental-tracking?reservationId=${reservation?.id ?? ''}`}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-deep-purple px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-deep-purple/90"
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
         >
           View my rental tracking
         </a>
@@ -300,13 +300,13 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
   const expired = remaining <= 0
 
   return (
-    <div className="space-y-3 rounded-2xl border border-lavender/15 bg-white p-4">
+    <div className="space-y-3 rounded-2xl border border-border bg-surface p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-lavender/30 bg-lavender/10 px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-deep-purple">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-raised px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-primary">
           Wompi checkout · Test mode
         </span>
         <span
-          className="font-mono text-xs font-semibold text-jet-black/60"
+          className="font-mono text-xs font-semibold text-text-muted"
           role="timer"
           aria-label={`Time left to pay: ${formatCountdown(remaining)}`}
         >
@@ -314,20 +314,20 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
         </span>
       </div>
 
-      <div className="space-y-1.5 rounded-xl bg-jet-black/5 p-3 text-xs">
-        <div className="flex items-center justify-between text-jet-black/70">
+      <div className="space-y-1.5 rounded-xl bg-surface-raised p-3 text-xs">
+        <div className="flex items-center justify-between text-text-muted">
           <span>Rental subtotal</span>
           <span className="font-mono">${Number(checkout.rental_subtotal).toFixed(2)}</span>
         </div>
-        <div className="flex items-center justify-between text-jet-black/70">
+        <div className="flex items-center justify-between text-text-muted">
           <span>Protection fee</span>
           <span className="font-mono">${Number(checkout.protection_fee_amount).toFixed(2)}</span>
         </div>
-        <div className="flex items-center justify-between border-t border-jet-black/10 pt-1.5 font-semibold text-jet-black">
+        <div className="flex items-center justify-between border-t border-border pt-1.5 font-semibold text-text">
           <span>Total charged today</span>
           <span className="font-mono">${Number(checkout.amount).toFixed(2)} {checkout.currency}</span>
         </div>
-        <div className="flex items-start gap-1.5 border-t border-jet-black/10 pt-1.5 text-jet-black/50">
+        <div className="flex items-start gap-1.5 border-t border-border pt-1.5 text-text-muted">
           <ShieldCheck className="mt-0.5 h-3 w-3 shrink-0" />
           <span>
             ${Number(checkout.damage_liability_amount).toFixed(2)} damage-liability deposit held — not charged now,
@@ -339,12 +339,12 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
       <button
         type="button"
         onClick={() => setShowTestCards((v) => !v)}
-        className="text-xs font-semibold text-deep-purple underline decoration-dotted hover:text-lavender"
+        className="text-xs font-semibold text-primary underline decoration-dotted hover:underline"
       >
         {showTestCards ? 'Hide test cards' : 'View test cards'}
       </button>
       {showTestCards && (
-        <ul className="space-y-1 rounded-xl bg-jet-black/[0.03] p-3 text-[11px] text-jet-black/60">
+        <ul className="space-y-1 rounded-xl bg-jet-black/[0.03] p-3 text-[11px] text-text-muted">
           {TEST_CARDS.map((c) => (
             <li key={c.number} className="flex items-center justify-between gap-3">
               <span className="font-mono">{c.number}</span>
@@ -356,7 +356,7 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
 
       <form onSubmit={handlePay} className="space-y-3">
         <div>
-          <label htmlFor="checkout-holder-name" className="text-xs font-semibold text-jet-black/60">
+          <label htmlFor="checkout-holder-name" className="text-xs font-semibold text-text-muted">
             Name on card
           </label>
           <input
@@ -367,17 +367,17 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
             autoComplete="cc-name"
             value={holderName}
             onChange={(e) => setHolderName(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-jet-black/10 px-3 py-2 text-sm focus:border-lavender focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
             placeholder="As it appears on the card"
           />
         </div>
 
         <div>
           <div className="flex items-center justify-between">
-            <label htmlFor="checkout-card-number" className="text-xs font-semibold text-jet-black/60">
+            <label htmlFor="checkout-card-number" className="text-xs font-semibold text-text-muted">
               Card number
             </label>
-            {brand && <span className="text-xs font-semibold text-deep-purple">{brand}</span>}
+            {brand && <span className="text-xs font-semibold text-primary">{brand}</span>}
           </div>
           <input
             id="checkout-card-number"
@@ -389,14 +389,14 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
             maxLength={23}
             value={formatCardNumber(digits)}
             onChange={(e) => setCardNumber(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-jet-black/10 px-3 py-2 font-mono text-sm focus:border-lavender focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-border px-3 py-2 font-mono text-sm focus:border-primary focus:outline-none"
             placeholder="4242 4242 4242 4242"
           />
         </div>
 
         <div className="flex gap-3">
           <div className="flex-1">
-            <label htmlFor="checkout-expiry" className="text-xs font-semibold text-jet-black/60">
+            <label htmlFor="checkout-expiry" className="text-xs font-semibold text-text-muted">
               Expiry
             </label>
             <input
@@ -409,12 +409,12 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
               maxLength={5}
               value={expiry}
               onChange={(e) => setExpiry(formatExpiryInput(e.target.value))}
-              className="mt-1 w-full rounded-lg border border-jet-black/10 px-3 py-2 font-mono text-sm focus:border-lavender focus:outline-none"
+              className="mt-1 w-full rounded-lg border border-border px-3 py-2 font-mono text-sm focus:border-primary focus:outline-none"
               placeholder="MM/YY"
             />
           </div>
           <div className="flex-1">
-            <label htmlFor="checkout-cvc" className="text-xs font-semibold text-jet-black/60">
+            <label htmlFor="checkout-cvc" className="text-xs font-semibold text-text-muted">
               CVC
             </label>
             <input
@@ -427,7 +427,7 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
               maxLength={cvcLen}
               value={cvc}
               onChange={(e) => setCvc(e.target.value.replace(/\D/g, '').slice(0, cvcLen))}
-              className="mt-1 w-full rounded-lg border border-jet-black/10 px-3 py-2 font-mono text-sm focus:border-lavender focus:outline-none"
+              className="mt-1 w-full rounded-lg border border-border px-3 py-2 font-mono text-sm focus:border-primary focus:outline-none"
               placeholder="123"
             />
           </div>
@@ -441,7 +441,7 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
           <button
             type="button"
             onClick={handleTryAnotherCard}
-            className="text-xs font-semibold text-deep-purple hover:text-lavender"
+            className="text-xs font-semibold text-primary hover:underline"
           >
             Try another card →
           </button>
@@ -450,12 +450,12 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
         <button
           type="submit"
           disabled={paying || expired}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-deep-purple px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-deep-purple/90 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Lock className="h-3.5 w-3.5" />
           {paying ? 'Processing…' : `Pay $${Number(checkout.amount).toFixed(2)}`}
         </button>
-        <p className="text-center text-[11px] text-jet-black/40">
+        <p className="text-center text-[11px] text-text-muted">
           Test-mode gateway — no real card is ever charged.
         </p>
       </form>

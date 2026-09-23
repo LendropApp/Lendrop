@@ -190,19 +190,19 @@ export default function RentalTracking() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-soft-white">
-        <p className="text-sm text-jet-black/50">Loading your rental…</p>
+      <div className="flex min-h-screen items-center justify-center bg-bg">
+        <p className="text-sm text-text-muted">Loading your rental…</p>
       </div>
     )
   }
 
   if (pickList) {
     return (
-      <div className="min-h-screen bg-soft-white pb-16">
+      <div className="min-h-screen bg-bg pb-16">
         <PageHeader backTo="/history" backLabel="Back to Activity" />
         <div className="mx-auto max-w-2xl px-6 py-8 sm:px-10">
-          <h1 className="font-display text-2xl font-bold text-jet-black">Which rental?</h1>
-          <p className="mt-1 text-sm text-jet-black/50">
+          <h1 className="font-display text-2xl font-bold text-text">Which rental?</h1>
+          <p className="mt-1 text-sm text-text-muted">
             You have {pickList.length} active rentals — pick one to track.
           </p>
           <div className="mt-6 space-y-3">
@@ -210,13 +210,13 @@ export default function RentalTracking() {
               <Link
                 key={r.id}
                 to={`/rental-tracking?reservationId=${r.id}`}
-                className="flex items-center justify-between gap-3 rounded-2xl border border-lavender/15 bg-white p-4 transition hover:border-lavender"
+                className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-surface p-4 transition hover:border-primary"
               >
                 <div className="min-w-0">
-                  <p className="truncate font-semibold text-jet-black">{r.item?.title ?? 'Item'}</p>
-                  <p className="text-xs text-jet-black/45">{formatDateRange(r.start_date, r.end_date)}</p>
+                  <p className="truncate font-semibold text-text">{r.item?.title ?? 'Item'}</p>
+                  <p className="text-xs text-text-muted">{formatDateRange(r.start_date, r.end_date)}</p>
                 </div>
-                <span className="shrink-0 text-xs font-semibold text-deep-purple">Track →</span>
+                <span className="shrink-0 text-xs font-semibold text-primary">Track →</span>
               </Link>
             ))}
           </div>
@@ -227,13 +227,13 @@ export default function RentalTracking() {
 
   if (notFound || !reservation) {
     return (
-      <div className="min-h-screen bg-soft-white pb-28 md:pb-16">
+      <div className="min-h-screen bg-bg pb-28 md:pb-16">
         <PageHeader backTo="/history" backLabel="Back to Activity" />
         <div className="flex flex-col items-center gap-2 px-6 py-24 text-center">
-          <Clock3 className="h-8 w-8 text-jet-black/20" />
-          <p className="font-display text-lg font-semibold text-jet-black">No active rental right now</p>
-          <p className="text-sm text-jet-black/50">Once you book an item, track its pickup here.</p>
-          <Link to="/explore" className="mt-2 text-sm font-semibold text-deep-purple hover:text-lavender">
+          <Clock3 className="h-8 w-8 text-text-muted" />
+          <p className="font-display text-lg font-semibold text-text">No active rental right now</p>
+          <p className="text-sm text-text-muted">Once you book an item, track its pickup here.</p>
+          <Link to="/explore" className="mt-2 text-sm font-semibold text-primary hover:underline">
             Browse Explore
           </Link>
         </div>
@@ -249,20 +249,20 @@ export default function RentalTracking() {
   const locker = reservation.compartment?.locker
 
   return (
-    <div className="min-h-screen bg-soft-white pb-28 md:pb-16">
+    <div className="min-h-screen bg-bg pb-28 md:pb-16">
       <PageHeader backTo="/history" backLabel="Back to Activity" />
 
       <div className="relative isolate overflow-hidden">
         <AuroraBlobs className="opacity-25" />
         <div className="relative mx-auto max-w-2xl px-6 py-8 sm:px-10">
-          <h1 className="font-display text-2xl font-bold text-jet-black">{reservation.item?.title}</h1>
-          <p className="mt-1 text-sm text-jet-black/50">Lent by {reservation.item?.owner?.full_name ?? 'the lender'}</p>
+          <h1 className="font-display text-2xl font-bold text-text">{reservation.item?.title}</h1>
+          <p className="mt-1 text-sm text-text-muted">Lent by {reservation.item?.owner?.full_name ?? 'the lender'}</p>
 
-          <section className="mt-8 rounded-2xl border border-lavender/15 bg-white p-6">
+          <section className="mt-8 rounded-2xl border border-border bg-surface p-6">
             <div className="relative flex items-center justify-between">
               <div className="absolute left-0 top-5 h-1 w-full bg-jet-black/10">
                 <div
-                  className="h-full bg-deep-purple transition-all"
+                  className="h-full bg-primary transition-all"
                   style={{ width: `${(currentStep / (STEPS.length - 1)) * 100}%` }}
                 />
               </div>
@@ -271,15 +271,15 @@ export default function RentalTracking() {
                   <div
                     className={`flex h-10 w-10 items-center justify-center rounded-full border-4 font-bold ${
                       index < currentStep
-                        ? 'border-deep-purple bg-deep-purple text-white'
+                        ? 'border-primary bg-primary text-white'
                         : index === currentStep
-                          ? 'border-deep-purple bg-lavender text-white'
-                          : 'border-jet-black/25 bg-white text-jet-black/40'
+                          ? 'border-primary bg-lavender text-white'
+                          : 'border-border bg-surface text-text-muted'
                     }`}
                   >
                     {index + 1}
                   </div>
-                  <span className={`mt-2 text-xs ${index === currentStep ? 'font-semibold text-deep-purple' : 'text-jet-black/50'}`}>
+                  <span className={`mt-2 text-xs ${index === currentStep ? 'font-semibold text-primary' : 'text-text-muted'}`}>
                     {step}
                   </span>
                 </div>
@@ -288,13 +288,13 @@ export default function RentalTracking() {
           </section>
 
           {locker && (
-            <section className="mt-4 flex items-start gap-3 rounded-2xl border border-lavender/15 bg-white p-4">
-              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-deep-purple" />
+            <section className="mt-4 flex items-start gap-3 rounded-2xl border border-border bg-surface p-4">
+              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
               <div className="text-sm">
-                <p className="font-semibold text-jet-black">
+                <p className="font-semibold text-text">
                   {locker.name} · Compartment {reservation.compartment?.compartment_code}
                 </p>
-                <p className="text-jet-black/50">
+                <p className="text-text-muted">
                   {locker.address}, {locker.city}
                 </p>
               </div>
@@ -302,24 +302,24 @@ export default function RentalTracking() {
           )}
 
           {!reservation.compartment_id && (
-            <p className="mt-4 rounded-2xl border border-jet-black/5 bg-jet-black/[0.02] p-4 text-sm text-jet-black/50">
+            <p className="mt-4 rounded-2xl border border-border bg-jet-black/[0.02] p-4 text-sm text-text-muted">
               We're finding you a locker — check back soon.
             </p>
           )}
 
           {reservation.compartment_id && !hasDeposited && (
-            <p className="mt-4 rounded-2xl border border-jet-black/5 bg-jet-black/[0.02] p-4 text-sm text-jet-black/50">
+            <p className="mt-4 rounded-2xl border border-border bg-jet-black/[0.02] p-4 text-sm text-text-muted">
               Waiting for the lender to drop off the item at this locker.
             </p>
           )}
 
           {reservation.compartment_id && hasDeposited && !hasRetrieved && (
-            <form onSubmit={handlePickup} className="mt-4 rounded-2xl border border-lavender/15 bg-white p-5">
+            <form onSubmit={handlePickup} className="mt-4 rounded-2xl border border-border bg-surface p-5">
               <div className="mb-3 flex items-center gap-2">
-                <Lock className="h-4 w-4 text-deep-purple" />
-                <p className="text-sm font-semibold text-jet-black">Pick up your item</p>
+                <Lock className="h-4 w-4 text-primary" />
+                <p className="text-sm font-semibold text-text">Pick up your item</p>
               </div>
-              <p className="mb-4 text-xs text-jet-black/50">
+              <p className="mb-4 text-xs text-text-muted">
                 Enter your DUI and account password at the locker to confirm it's you and unlock the compartment.
               </p>
               <div className="space-y-3">
@@ -329,7 +329,7 @@ export default function RentalTracking() {
                   onChange={(e) => setDui(e.target.value)}
                   placeholder="DUI"
                   required
-                  className="w-full rounded-xl border border-lavender/15 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+                  className="w-full rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
                 />
                 <input
                   type="password"
@@ -337,7 +337,7 @@ export default function RentalTracking() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Password"
                   required
-                  className="w-full rounded-xl border border-lavender/15 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+                  className="w-full rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
                 />
               </div>
               <div className="mt-3 flex items-center justify-between gap-3">
@@ -354,20 +354,20 @@ export default function RentalTracking() {
           )}
 
           {hasRetrieved && !hasReturnDeposited && (
-            <form onSubmit={handleReturn} className="mt-4 rounded-2xl border border-lavender/15 bg-white p-5">
+            <form onSubmit={handleReturn} className="mt-4 rounded-2xl border border-border bg-surface p-5">
               <div className="mb-3 flex items-center gap-2">
-                <Lock className="h-4 w-4 text-deep-purple" />
-                <p className="text-sm font-semibold text-jet-black">Return your item</p>
+                <Lock className="h-4 w-4 text-primary" />
+                <p className="text-sm font-semibold text-text">Return your item</p>
               </div>
-              <p className="mb-4 text-xs text-jet-black/50">
+              <p className="mb-4 text-xs text-text-muted">
                 Drop it back at the same locker with a condition photo, then confirm with your DUI and password.
               </p>
 
               <label
                 htmlFor="return-photo"
-                className="flex cursor-pointer items-center gap-2 rounded-xl border border-dashed border-lavender/30 px-4 py-3 text-xs text-jet-black/60 transition hover:border-lavender"
+                className="flex cursor-pointer items-center gap-2 rounded-xl border border-dashed border-border px-4 py-3 text-xs text-text-muted transition hover:border-primary"
               >
-                <Camera className="h-4 w-4 shrink-0 text-deep-purple" />
+                <Camera className="h-4 w-4 shrink-0 text-primary" />
                 {returnPhoto ? returnPhoto.name : 'Attach a condition photo (required)'}
               </label>
               <input
@@ -389,7 +389,7 @@ export default function RentalTracking() {
                   onChange={(e) => setReturnDui(e.target.value)}
                   placeholder="DUI"
                   required
-                  className="w-full rounded-xl border border-lavender/15 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+                  className="w-full rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
                 />
                 <input
                   type="password"
@@ -397,7 +397,7 @@ export default function RentalTracking() {
                   onChange={(e) => setReturnPassword(e.target.value)}
                   placeholder="Password"
                   required
-                  className="w-full rounded-xl border border-lavender/15 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+                  className="w-full rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
                 />
               </div>
               <div className="mt-3 flex items-center justify-between gap-3">
@@ -414,7 +414,7 @@ export default function RentalTracking() {
           )}
 
           {hasReturnDeposited && !hasReturnRetrieved && (
-            <p className="mt-4 rounded-2xl border border-jet-black/5 bg-jet-black/[0.02] p-4 text-sm text-jet-black/50">
+            <p className="mt-4 rounded-2xl border border-border bg-jet-black/[0.02] p-4 text-sm text-text-muted">
               Return dropped off — waiting for the lender to confirm they picked it up.
             </p>
           )}

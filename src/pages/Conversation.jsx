@@ -62,15 +62,15 @@ export default function Conversation() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-soft-white">
-        <p className="text-sm text-jet-black/50">Loading conversation…</p>
+      <div className="flex min-h-screen items-center justify-center bg-bg">
+        <p className="text-sm text-text-muted">Loading conversation…</p>
       </div>
     )
   }
 
   if (error || !conversation) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-2 bg-soft-white text-center">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-2 bg-bg text-center">
         <p className="text-sm text-red-600">{error || 'Conversation not found.'}</p>
       </div>
     )
@@ -80,7 +80,7 @@ export default function Conversation() {
   const group = QUICK_MESSAGE_GROUPS.find((g) => g.id === activeGroup) ?? QUICK_MESSAGE_GROUPS[0]
 
   return (
-    <div className="flex min-h-screen flex-col bg-soft-white">
+    <div className="flex min-h-screen flex-col bg-bg">
       <PageHeader
         backTo="/messages"
         backLabel="Messages"
@@ -94,18 +94,18 @@ export default function Conversation() {
         }
       />
 
-      <div className="border-b border-jet-black/5 bg-white px-6 py-3 sm:px-10">
+      <div className="border-b border-border bg-surface px-6 py-3 sm:px-10">
         <div className="mx-auto max-w-3xl">
-          <p className="text-sm font-semibold text-jet-black">{other?.full_name ?? 'Lendrop user'}</p>
+          <p className="text-sm font-semibold text-text">{other?.full_name ?? 'Lendrop user'}</p>
           {conversation.item?.title && (
-            <p className="text-xs text-jet-black/45">About: {conversation.item.title}</p>
+            <p className="text-xs text-text-muted">About: {conversation.item.title}</p>
           )}
         </div>
       </div>
 
       <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-3 overflow-y-auto px-6 py-6 sm:px-10">
         {messages.length === 0 ? (
-          <p className="py-10 text-center text-sm text-jet-black/40">
+          <p className="py-10 text-center text-sm text-text-muted">
             No messages yet. Send a quick reply to say hi.
           </p>
         ) : (
@@ -114,12 +114,12 @@ export default function Conversation() {
               <div
                 className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-sm ${
                   m.sender_id === user.id
-                    ? 'bg-deep-purple text-white'
-                    : 'border border-jet-black/10 bg-white text-jet-black'
+                    ? 'bg-primary text-white'
+                    : 'border border-border bg-surface text-text'
                 }`}
               >
                 <p>{m.body}</p>
-                <p className={`mt-1 text-[10px] ${m.sender_id === user.id ? 'text-white/60' : 'text-jet-black/35'}`}>
+                <p className={`mt-1 text-[10px] ${m.sender_id === user.id ? 'text-white/60' : 'text-text-muted'}`}>
                   {formatTime(m.created_at)}
                 </p>
               </div>
@@ -128,9 +128,9 @@ export default function Conversation() {
         )}
       </div>
 
-      <div className="sticky bottom-0 border-t border-jet-black/5 bg-white px-6 py-4 sm:px-10">
+      <div className="sticky bottom-0 border-t border-border bg-surface px-6 py-4 sm:px-10">
         <div className="mx-auto max-w-3xl">
-          <p className="mb-2 text-xs font-medium text-jet-black/45">
+          <p className="mb-2 text-xs font-medium text-text-muted">
             Quick replies. Free text isn't available yet, tap a message to send it.
           </p>
           <div className="mb-3 flex gap-2 overflow-x-auto">
@@ -141,8 +141,8 @@ export default function Conversation() {
                 onClick={() => setActiveGroup(g.id)}
                 className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
                   g.id === activeGroup
-                    ? 'bg-deep-purple text-white'
-                    : 'bg-jet-black/5 text-jet-black/60 hover:bg-lavender/15'
+                    ? 'bg-primary text-white'
+                    : 'bg-surface-raised text-text-muted hover:bg-surface-raised'
                 }`}
               >
                 {g.label}
@@ -156,7 +156,7 @@ export default function Conversation() {
                 type="button"
                 disabled={sending}
                 onClick={() => sendQuickMessage(msg)}
-                className="rounded-full border border-lavender/30 bg-lavender/10 px-3.5 py-2 text-sm text-deep-purple transition hover:border-lavender hover:bg-lavender/20 disabled:opacity-50"
+                className="rounded-full border border-border bg-surface-raised px-3.5 py-2 text-sm text-primary transition hover:border-primary hover:bg-surface-raised disabled:opacity-50"
               >
                 {msg}
               </button>

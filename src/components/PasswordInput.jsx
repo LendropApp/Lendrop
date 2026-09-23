@@ -25,13 +25,13 @@ export default function PasswordInput({
         autoComplete={autoComplete}
         required={required}
         minLength={minLength}
-        className="w-full rounded-xl border border-lavender/20 px-4 py-2.5 pr-16 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+        className="w-full rounded-xl border border-border px-4 py-2.5 pr-16 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
       />
       <button
         type="button"
         onClick={() => setVisible((v) => !v)}
         tabIndex={-1}
-        className="absolute inset-y-0 right-3 text-xs font-medium text-jet-black/40 hover:text-deep-purple"
+        className="absolute inset-y-0 right-3 text-xs font-medium text-text-muted hover:text-primary"
       >
         {visible ? 'Hide' : 'Show'}
       </button>

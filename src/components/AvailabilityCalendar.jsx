@@ -84,30 +84,30 @@ export default function AvailabilityCalendar({ bookedRanges = [], selectedRange,
   }
 
   return (
-    <div className="rounded-2xl border border-lavender/15 bg-white p-4">
+    <div className="rounded-2xl border border-border bg-surface p-4">
       <div className="mb-3 flex items-center justify-between">
         <button
           type="button"
           aria-label="Previous month"
           onClick={() => setViewDate((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1))}
-          className="flex h-7 w-7 items-center justify-center rounded-full text-jet-black/50 transition hover:bg-jet-black/5 hover:text-deep-purple"
+          className="flex h-7 w-7 items-center justify-center rounded-full text-text-muted transition hover:bg-surface-raised hover:text-primary"
         >
           <ChevronLeft className="h-4 w-4" />
         </button>
-        <p className="text-sm font-semibold text-jet-black">
+        <p className="text-sm font-semibold text-text">
           {viewDate.toLocaleDateString([], { month: 'long', year: 'numeric' })}
         </p>
         <button
           type="button"
           aria-label="Next month"
           onClick={() => setViewDate((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1))}
-          className="flex h-7 w-7 items-center justify-center rounded-full text-jet-black/50 transition hover:bg-jet-black/5 hover:text-deep-purple"
+          className="flex h-7 w-7 items-center justify-center rounded-full text-text-muted transition hover:bg-surface-raised hover:text-primary"
         >
           <ChevronRight className="h-4 w-4" />
         </button>
       </div>
 
-      <div className="grid grid-cols-7 gap-1 text-center text-[11px] font-semibold text-jet-black/40">
+      <div className="grid grid-cols-7 gap-1 text-center text-[11px] font-semibold text-text-muted">
         {WEEKDAY_LABELS.map((label, i) => (
           <span key={i}>{label}</span>
         ))}
@@ -134,14 +134,14 @@ export default function AvailabilityCalendar({ bookedRanges = [], selectedRange,
               onClick={() => handleDayClick(date)}
               className={`aspect-square rounded-lg text-xs font-medium transition ${
                 isPast || isBooked
-                  ? 'cursor-not-allowed text-jet-black/20 line-through'
+                  ? 'cursor-not-allowed text-text-muted line-through'
                   : isRangeEdge
-                    ? 'bg-deep-purple text-white'
+                    ? 'bg-primary text-white'
                     : isSelected
-                      ? 'bg-lavender/25 text-deep-purple'
+                      ? 'bg-lavender/25 text-primary'
                       : readOnly
-                        ? 'cursor-default text-jet-black/70'
-                        : 'text-jet-black/70 hover:bg-lavender/10'
+                        ? 'cursor-default text-text-muted'
+                        : 'text-text-muted hover:bg-surface-raised'
               }`}
             >
               {date.getDate()}
@@ -150,10 +150,10 @@ export default function AvailabilityCalendar({ bookedRanges = [], selectedRange,
         })}
       </div>
 
-      <div className="mt-3 flex items-center gap-3 text-[11px] text-jet-black/45">
+      <div className="mt-3 flex items-center gap-3 text-[11px] text-text-muted">
         {!readOnly && (
           <span className="flex items-center gap-1">
-            <span className="h-2.5 w-2.5 rounded-full bg-deep-purple" /> Selected
+            <span className="h-2.5 w-2.5 rounded-full bg-primary" /> Selected
           </span>
         )}
         <span className="flex items-center gap-1">

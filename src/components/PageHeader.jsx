@@ -13,7 +13,7 @@ export default function PageHeader({ backTo = '/profile', backLabel = 'Back', ri
           type="button"
           onClick={goBack}
           aria-label={`Back to ${backLabel}`}
-          className="flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium text-jet-black/60 transition hover:bg-lavender/10 hover:text-deep-purple"
+          className="flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium text-text-muted transition hover:bg-surface-raised hover:text-primary"
         >
           <ArrowLeft className="h-4 w-4" />
           {backLabel}

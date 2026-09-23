@@ -1,7 +1,95 @@
 @import "tailwindcss";
 
+/* Dark mode is driven by a `dark` class on <html>, not by the media query
+   alone, because the user can override the OS ("Light" / "Dark" / "System").
+   ThemeProvider owns that class; the inline script in index.html sets it
+   before React mounts so the first paint is already correct. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ── Brand constants ──────────────────────────────────────────────────
+   The four brand colours never change between themes. What changes is
+   which ROLE each one plays, which is what the semantic tokens below
+   express. */
+:root {
+  --brand-deep-purple: #433075;
+  --brand-lavender: #a58cf4;
+  --brand-soft-white: #fafafa;
+  --brand-jet-black: #0d0d0d;
+}
+
+/* ── Semantic tokens: light ───────────────────────────────────────────
+   Measured against their own background, all AA or better for normal
+   text (4.5:1):
+     text        #0d0d0d on #fafafa  -> 19.6:1
+     text-muted  #5d5a6b on #fafafa  ->  6.4:1
+     primary     #433075 on #fafafa  -> 10.5:1
+   `accent` (lavender) is 2.6:1 on this background, so in light mode it is
+   a FILL only and never a text colour. */
+:root {
+  --bg: var(--brand-soft-white);
+  --surface: #ffffff;
+  --surface-raised: #f4f3f7;
+  --text: var(--brand-jet-black);
+  --text-muted: #5d5a6b;
+  --border: #e6e5ec;
+  --primary: var(--brand-deep-purple);
+  --primary-contrast: var(--brand-soft-white);
+  --accent: var(--brand-lavender);
+  /* Full-bleed branded band (the security section on the landing page). It
+     stays dark in BOTH themes: reusing --primary here would turn it into a
+     glaring Lavender block in dark mode. */
+  --brand-surface: var(--brand-deep-purple);
+  --brand-surface-text: var(--brand-soft-white);
+  --brand-surface-muted: #c9bcf7;
+}
+
+/* ── Semantic tokens: dark ────────────────────────────────────────────
+   Background is Jet Black, surfaces step up from it rather than down, so
+   elevation reads as light rather than as a shadow (shadows are invisible
+   on black).
+     text        #fafafa on #0d0d0d  -> 18.9:1
+     text-muted  #8a8797 on #0d0d0d  ->  5.5:1
+     primary     #a58cf4 on #0d0d0d  ->  7.1:1
+   Deep Purple measures 1.8:1 here, which is why `primary` becomes Lavender
+   in dark mode instead. Text on a primary fill flips to black for the same
+   reason. */
+.dark {
+  --bg: var(--brand-jet-black);
+  --surface: #16161a;
+  --surface-raised: #1f1f25;
+  --text: var(--brand-soft-white);
+  --text-muted: #8a8797;
+  --border: #2e2e35;
+  --primary: var(--brand-lavender);
+  --primary-contrast: var(--brand-jet-black);
+  --accent: var(--brand-lavender);
+  --brand-surface: #1c1533;
+  --brand-surface-text: var(--brand-soft-white);
+  --brand-surface-muted: #b8a9f0;
+}
+
+/* `inline` matters: without it Tailwind snapshots the value at build time
+   and the utilities would be frozen to whatever light mode resolved to.
+   With it, the generated CSS keeps the var() reference, so every
+   bg-surface / text-muted / border-border follows the `dark` class. */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-contrast: var(--primary-contrast);
+  --color-accent: var(--accent);
+  --color-brand-surface: var(--brand-surface);
+  --color-brand-surface-text: var(--brand-surface-text);
+  --color-brand-surface-muted: var(--brand-surface-muted);
+}
+
 @theme {
-  /* Brand colors */
+  /* Brand colors — kept so the screens that still reference them keep
+     working while they migrate to the semantic tokens above. */
   --color-deep-purple: #433075;
   --color-lavender: #a58cf4;
   --color-soft-white: #fafafa;
@@ -19,7 +107,26 @@
   }
 
   body {
-    @apply bg-soft-white text-jet-black antialiased;
+    @apply bg-bg text-text antialiased;
+  }
+
+  /* Only the colour properties transition, and only on the elements that
+     actually change: transitioning `all` on every node makes the whole UI
+     feel laggy while the theme swaps. */
+  body,
+  body * {
+    transition:
+      background-color 180ms ease,
+      border-color 180ms ease,
+      color 180ms ease,
+      fill 180ms ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    body,
+    body * {
+      transition: none;
+    }
   }
 
   h1,
@@ -69,18 +176,20 @@
      regardless of Tailwind's content-based detection, matching
      .locker-code/.animate-aurora above. */
 
+  /* Frosted surfaces are built from the theme's own surface colour, so the
+     sticky headers stop being a white bar floating on a black page. */
   .glass {
-    background-color: rgb(250 250 250 / 0.78);
+    background-color: color-mix(in srgb, var(--surface) 78%, transparent);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgb(13 13 13 / 0.06);
+    border: 1px solid var(--border);
   }
 
   .glass-strong {
-    background-color: rgb(255 255 255 / 0.9);
+    background-color: color-mix(in srgb, var(--surface) 90%, transparent);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgb(13 13 13 / 0.07);
+    border: 1px solid var(--border);
   }
 
   .glass-dark {

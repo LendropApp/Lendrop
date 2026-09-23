@@ -61,7 +61,7 @@ export default function Login() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
-            className="w-full rounded-xl border border-lavender/20 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+            className="w-full rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
           />
         </div>
 
@@ -79,7 +79,7 @@ export default function Login() {
           <div className="mt-2 text-right">
             <Link
               to="/forgot-password"
-              className="text-xs font-medium text-deep-purple hover:text-lavender"
+              className="text-xs font-medium text-primary hover:underline"
             >
               Forgot your password?
             </Link>

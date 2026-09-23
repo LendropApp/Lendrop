@@ -9,7 +9,7 @@ import StatusMessage from '../components/StatusMessage'
 import AuroraBlobs from '../components/background/AuroraBlobs'
 
 const STATUS_COPY = {
-  unverified: { label: 'Not verified', tone: 'text-jet-black/50', bg: 'bg-jet-black/5' },
+  unverified: { label: 'Not verified', tone: 'text-text-muted', bg: 'bg-surface-raised' },
   pending: { label: 'Under review', tone: 'text-amber-700', bg: 'bg-amber-100' },
   verified: { label: 'Verified', tone: 'text-emerald-700', bg: 'bg-emerald-100' },
   rejected: { label: 'Needs attention', tone: 'text-red-600', bg: 'bg-red-100' },
@@ -43,11 +43,11 @@ function FileSlot({ id, label, hint, file, onPick, onClear, required }) {
 
   return (
     <div>
-      <label htmlFor={id} className="mb-1 block text-sm font-medium text-jet-black">
-        {label} {!required && <span className="font-normal text-jet-black/40">(optional)</span>}
+      <label htmlFor={id} className="mb-1 block text-sm font-medium text-text">
+        {label} {!required && <span className="font-normal text-text-muted">(optional)</span>}
       </label>
       {file ? (
-        <div className="relative aspect-4/3 overflow-hidden rounded-xl border border-lavender/20 bg-jet-black/5">
+        <div className="relative aspect-4/3 overflow-hidden rounded-xl border border-border bg-surface-raised">
           <img src={previewUrl} alt={`${label} preview`} className="h-full w-full object-cover" />
           <button
             type="button"
@@ -62,7 +62,7 @@ function FileSlot({ id, label, hint, file, onPick, onClear, required }) {
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className="flex aspect-4/3 w-full flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-lavender/25 text-jet-black/40 transition hover:border-lavender hover:bg-lavender/5 hover:text-deep-purple"
+          className="flex aspect-4/3 w-full flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-border text-text-muted transition hover:border-primary hover:bg-surface-raised hover:text-primary"
         >
           <ImagePlus className="h-5 w-5" />
           <span className="text-[11px] font-medium">{hint}</span>
@@ -179,33 +179,33 @@ export default function Verification() {
   }
 
   return (
-    <div className="min-h-screen bg-soft-white pb-28 md:pb-16">
+    <div className="min-h-screen bg-bg pb-28 md:pb-16">
       <PageHeader backTo="/profile" backLabel="Back to Profile" />
 
       <div className="relative isolate overflow-hidden">
         <AuroraBlobs className="opacity-25" />
         <div className="relative mx-auto max-w-3xl px-6 py-8 sm:px-10">
-          <h1 className="font-display text-2xl font-bold text-jet-black">Trust &amp; verification</h1>
-          <p className="mt-1 text-sm text-jet-black/50">
+          <h1 className="font-display text-2xl font-bold text-text">Trust &amp; verification</h1>
+          <p className="mt-1 text-sm text-text-muted">
             Verified members get more reservations and higher trust from lenders.
           </p>
 
           {reasonLabel && verificationStatus !== 'verified' && (
-            <div className="mt-5 rounded-2xl border border-lavender/25 bg-lavender/5 p-4 text-sm text-jet-black/70">
+            <div className="mt-5 rounded-2xl border border-border bg-surface-raised p-4 text-sm text-text-muted">
               You need a verified identity to {reasonLabel} on Lendrop. Finish the steps below and
               you'll be able to continue.
             </div>
           )}
 
-          <section className="mt-6 rounded-2xl border border-lavender/15 bg-white p-6">
+          <section className="mt-6 rounded-2xl border border-border bg-surface p-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <ShieldCheck
-                  className={`h-8 w-8 ${verificationStatus === 'verified' ? 'text-deep-purple' : 'text-jet-black/20'}`}
+                  className={`h-8 w-8 ${verificationStatus === 'verified' ? 'text-primary' : 'text-text-muted'}`}
                 />
                 <div>
-                  <p className="font-display text-lg font-semibold text-jet-black">Identity status</p>
-                  <p className="text-xs text-jet-black/45">
+                  <p className="font-display text-lg font-semibold text-text">Identity status</p>
+                  <p className="text-xs text-text-muted">
                     {completedCount} of {steps.length} steps complete
                   </p>
                 </div>
@@ -215,22 +215,22 @@ export default function Verification() {
               </span>
             </div>
 
-            <div className="mt-5 h-2 w-full overflow-hidden rounded-full bg-jet-black/5">
+            <div className="mt-5 h-2 w-full overflow-hidden rounded-full bg-surface-raised">
               <div
-                className="h-full rounded-full bg-deep-purple transition-all"
+                className="h-full rounded-full bg-primary transition-all"
                 style={{ width: `${(completedCount / steps.length) * 100}%` }}
               />
             </div>
 
-            <ul className="mt-5 space-y-3 border-t border-jet-black/5 pt-5">
+            <ul className="mt-5 space-y-3 border-t border-border pt-5">
               {steps.map((step) => (
                 <li key={step.id} className="flex items-center gap-3 text-sm">
                   {step.done ? (
-                    <CheckCircle2 className="h-4.5 w-4.5 text-deep-purple" />
+                    <CheckCircle2 className="h-4.5 w-4.5 text-primary" />
                   ) : (
-                    <CircleDashed className="h-4.5 w-4.5 text-jet-black/25" />
+                    <CircleDashed className="h-4.5 w-4.5 text-text-muted" />
                   )}
-                  <span className={step.done ? 'text-jet-black' : 'text-jet-black/50'}>{step.label}</span>
+                  <span className={step.done ? 'text-text' : 'text-text-muted'}>{step.label}</span>
                 </li>
               ))}
             </ul>
@@ -251,16 +251,16 @@ export default function Verification() {
           </section>
 
           {canSubmit && (
-            <form onSubmit={handleSubmit} className="mt-4 rounded-2xl border border-lavender/15 bg-white p-6">
-              <p className="font-display text-sm font-semibold text-jet-black">
+            <form onSubmit={handleSubmit} className="mt-4 rounded-2xl border border-border bg-surface p-6">
+              <p className="font-display text-sm font-semibold text-text">
                 {verificationStatus === 'rejected' ? 'Submit new documents' : 'Start verification'}
               </p>
-              <p className="mt-1 text-xs text-jet-black/50">
+              <p className="mt-1 text-xs text-text-muted">
                 Your documents are stored privately and are only visible to you and the reviewer.
               </p>
 
               <div className="mt-4">
-                <span className="mb-2 block text-sm font-medium text-jet-black">Document type</span>
+                <span className="mb-2 block text-sm font-medium text-text">Document type</span>
                 <div className="flex gap-2">
                   {DOCUMENT_TYPES.map((doc) => {
                     const active = documentType === doc.value
@@ -272,7 +272,7 @@ export default function Verification() {
                         className={`rounded-full border px-4 py-2 text-xs font-semibold transition ${
                           active
                             ? 'border-transparent bg-linear-to-r from-deep-purple to-lavender text-soft-white glow-sm'
-                            : 'border-lavender/15 text-jet-black/70 hover:border-lavender hover:text-deep-purple'
+                            : 'border-border text-text-muted hover:border-primary hover:text-primary'
                         }`}
                       >
                         {doc.label}
@@ -318,7 +318,7 @@ export default function Verification() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-deep-purple px-5 py-3 text-sm font-semibold text-white transition hover:bg-deep-purple/90 disabled:opacity-50"
+                className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-50"
               >
                 <Upload className="h-4 w-4" />
                 {submitting ? 'Submitting…' : 'Submit for review'}
@@ -326,9 +326,9 @@ export default function Verification() {
             </form>
           )}
 
-          <section className="mt-4 rounded-2xl border border-lavender/15 bg-white p-6">
-            <p className="font-display text-sm font-semibold text-jet-black">Why verify?</p>
-            <ul className="mt-3 space-y-2 text-sm text-jet-black/60">
+          <section className="mt-4 rounded-2xl border border-border bg-surface p-6">
+            <p className="font-display text-sm font-semibold text-text">Why verify?</p>
+            <ul className="mt-3 space-y-2 text-sm text-text-muted">
               <li>• Required to publish an item or book a rental</li>
               <li>• Verified badge shown on your profile and listings</li>
               <li>• Priority placement when renters filter by "Verified only"</li>

@@ -35,7 +35,7 @@ export default function LockerCoverage() {
       style={{ fontFamily: "Manrope, sans-serif" }}
     >
       {/* Navbar */}
-      <nav className="w-full border-b border-[#0d0d0d]/10 bg-white">
+      <nav className="w-full border-b border-[#0d0d0d]/10 bg-surface">
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-5 lg:px-10">
           <div className="flex items-center">
             <img
@@ -121,8 +121,8 @@ export default function LockerCoverage() {
                   onClick={() => toggleLocker(locker.id)}
                   className={`relative w-full rounded-2xl border p-6 text-left transition-all duration-200 ${
                     isSelected
-                      ? "border-[#a58cf4] bg-white shadow-lg shadow-[#a58cf4]/10"
-                      : "border-[#0d0d0d]/10 bg-white hover:border-[#a58cf4]/50 hover:shadow-sm"
+                      ? "border-[#a58cf4] bg-surface shadow-lg shadow-[#a58cf4]/10"
+                      : "border-[#0d0d0d]/10 bg-surface hover:border-[#a58cf4]/50 hover:shadow-sm"
                   }`}
                 >
                   <div className="flex items-start justify-between">
@@ -180,7 +180,7 @@ export default function LockerCoverage() {
           <div
             className={`mt-8 rounded-2xl border p-5 transition-all duration-200 ${
               selectedLockers.length > 0
-                ? "border-[#a58cf4]/30 bg-white"
+                ? "border-[#a58cf4]/30 bg-surface"
                 : "border-transparent bg-transparent"
             }`}
           >

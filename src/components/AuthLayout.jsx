@@ -16,18 +16,18 @@ export default function AuthLayout({ eyebrow = 'Smart locker network', children 
           for a brighter, more atmospheric backdrop behind the card. */}
       <div
         aria-hidden="true"
-        className="animate-aurora pointer-events-none absolute left-1/2 top-1/3 h-[36rem] w-[36rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-lavender/20 blur-[100px]"
+        className="animate-aurora pointer-events-none absolute left-1/2 top-1/3 h-[36rem] w-[36rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-surface-raised blur-[100px]"
         style={{ animationDelay: '-4s' }}
       />
 
-      <div className="relative w-full max-w-sm overflow-hidden rounded-3xl border border-white/10 bg-white/80 p-8 shadow-2xl shadow-lavender/25 backdrop-blur-xl sm:max-w-md lg:max-w-xl lg:p-10">
+      <div className="relative w-full max-w-sm overflow-hidden rounded-3xl border border-border bg-surface/80 p-8 shadow-2xl shadow-lavender/25 backdrop-blur-xl sm:max-w-md lg:max-w-xl lg:p-10">
         <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-lavender to-transparent" />
 
         <div className="mb-8 text-center">
-          <Link to="/" className="font-display text-2xl font-bold text-deep-purple">
+          <Link to="/" className="font-display text-2xl font-bold text-primary">
             Lendrop
           </Link>
-          <p className="mt-1 text-[11px] font-semibold uppercase tracking-widest text-lavender">
+          <p className="mt-1 text-[11px] font-semibold uppercase tracking-widest text-primary">
             {eyebrow}
           </p>
         </div>

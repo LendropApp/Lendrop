@@ -139,13 +139,13 @@ export default function AddCardForm({ onSaved, onCancel, makeDefault = false }) 
   }
 
   return (
-    <div className="space-y-3 rounded-2xl border border-lavender/15 bg-white p-5">
-      <div className="flex gap-1 rounded-full bg-jet-black/5 p-1">
+    <div className="space-y-3 rounded-2xl border border-border bg-surface p-5">
+      <div className="flex gap-1 rounded-full bg-surface-raised p-1">
         <button
           type="button"
           onClick={() => setMethod('card')}
           className={`flex-1 rounded-full py-1.5 text-xs font-semibold transition ${
-            method === 'card' ? 'bg-white text-deep-purple shadow-sm' : 'text-jet-black/50 hover:text-jet-black'
+            method === 'card' ? 'bg-surface text-primary shadow-sm' : 'text-text-muted hover:text-text'
           }`}
         >
           Card
@@ -154,7 +154,7 @@ export default function AddCardForm({ onSaved, onCancel, makeDefault = false }) 
           type="button"
           onClick={() => setMethod('paypal')}
           className={`flex-1 rounded-full py-1.5 text-xs font-semibold transition ${
-            method === 'paypal' ? 'bg-white text-deep-purple shadow-sm' : 'text-jet-black/50 hover:text-jet-black'
+            method === 'paypal' ? 'bg-surface text-primary shadow-sm' : 'text-text-muted hover:text-text'
           }`}
         >
           PayPal
@@ -164,20 +164,20 @@ export default function AddCardForm({ onSaved, onCancel, makeDefault = false }) 
       {method === 'card' ? (
         <form onSubmit={handleCardSubmit} className="space-y-3">
           <div>
-            <label className="text-xs font-semibold text-jet-black/60">Cardholder name</label>
+            <label className="text-xs font-semibold text-text-muted">Cardholder name</label>
             <input
               type="text"
               required
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-              className="mt-1 w-full rounded-lg border border-jet-black/10 px-3 py-2 text-sm focus:border-lavender focus:outline-none"
+              className="mt-1 w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
               placeholder="Full name on card"
             />
           </div>
           <div>
             <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-jet-black/60">Card number</label>
-              {brand && <span className="text-xs font-semibold text-deep-purple">{brand}</span>}
+              <label className="text-xs font-semibold text-text-muted">Card number</label>
+              {brand && <span className="text-xs font-semibold text-primary">{brand}</span>}
             </div>
             <input
               type="text"
@@ -187,24 +187,24 @@ export default function AddCardForm({ onSaved, onCancel, makeDefault = false }) 
               maxLength={19}
               value={form.number}
               onChange={(e) => setForm((f) => ({ ...f, number: digitsOnly(e.target.value) }))}
-              className="mt-1 w-full rounded-lg border border-jet-black/10 px-3 py-2 font-mono text-sm focus:border-lavender focus:outline-none"
+              className="mt-1 w-full rounded-lg border border-border px-3 py-2 font-mono text-sm focus:border-primary focus:outline-none"
               placeholder="4242424242424242"
             />
           </div>
           <div className="flex gap-3">
             <div className="flex-1">
-              <label className="text-xs font-semibold text-jet-black/60">Expiry</label>
+              <label className="text-xs font-semibold text-text-muted">Expiry</label>
               <input
                 type="month"
                 required
                 min={`${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`}
                 value={form.expiry}
                 onChange={(e) => setForm((f) => ({ ...f, expiry: e.target.value }))}
-                className="mt-1 w-full rounded-lg border border-jet-black/10 px-3 py-2 font-mono text-sm focus:border-lavender focus:outline-none"
+                className="mt-1 w-full rounded-lg border border-border px-3 py-2 font-mono text-sm focus:border-primary focus:outline-none"
               />
             </div>
             <div className="flex-1">
-              <label className="text-xs font-semibold text-jet-black/60">CVC</label>
+              <label className="text-xs font-semibold text-text-muted">CVC</label>
               <input
                 type="text"
                 required
@@ -213,7 +213,7 @@ export default function AddCardForm({ onSaved, onCancel, makeDefault = false }) 
                 maxLength={expectedCvcLength(brand)}
                 value={form.cvc}
                 onChange={(e) => setForm((f) => ({ ...f, cvc: digitsOnly(e.target.value) }))}
-                className="mt-1 w-full rounded-lg border border-jet-black/10 px-3 py-2 font-mono text-sm focus:border-lavender focus:outline-none"
+                className="mt-1 w-full rounded-lg border border-border px-3 py-2 font-mono text-sm focus:border-primary focus:outline-none"
                 placeholder="123"
               />
             </div>
@@ -223,7 +223,7 @@ export default function AddCardForm({ onSaved, onCancel, makeDefault = false }) 
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 rounded-xl bg-deep-purple px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-deep-purple/90 disabled:opacity-60"
+              className="flex-1 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
             >
               {saving ? 'Saving…' : 'Save card'}
             </button>
@@ -231,7 +231,7 @@ export default function AddCardForm({ onSaved, onCancel, makeDefault = false }) 
               <button
                 type="button"
                 onClick={onCancel}
-                className="rounded-xl border border-jet-black/10 px-4 py-2.5 text-sm font-semibold text-jet-black/60 transition hover:border-jet-black/20"
+                className="rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-text-muted transition hover:border-border"
               >
                 Cancel
               </button>
@@ -240,18 +240,18 @@ export default function AddCardForm({ onSaved, onCancel, makeDefault = false }) 
         </form>
       ) : (
         <form onSubmit={handlePaypalSubmit} className="space-y-3">
-          <div className="flex items-center gap-2 rounded-xl bg-jet-black/[0.03] p-3 text-xs text-jet-black/60">
-            <CreditCard className="h-4 w-4 shrink-0 text-deep-purple" />
+          <div className="flex items-center gap-2 rounded-xl bg-jet-black/[0.03] p-3 text-xs text-text-muted">
+            <CreditCard className="h-4 w-4 shrink-0 text-primary" />
             Sandbox: this simulates connecting a PayPal account — no real PayPal login happens.
           </div>
           <div>
-            <label className="text-xs font-semibold text-jet-black/60">PayPal email</label>
+            <label className="text-xs font-semibold text-text-muted">PayPal email</label>
             <input
               type="email"
               required
               value={paypalEmail}
               onChange={(e) => setPaypalEmail(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-jet-black/10 px-3 py-2 text-sm focus:border-lavender focus:outline-none"
+              className="mt-1 w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
               placeholder="you@example.com"
             />
           </div>
@@ -260,7 +260,7 @@ export default function AddCardForm({ onSaved, onCancel, makeDefault = false }) 
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 rounded-xl bg-deep-purple px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-deep-purple/90 disabled:opacity-60"
+              className="flex-1 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
             >
               {saving ? 'Connecting…' : 'Connect PayPal'}
             </button>
@@ -268,7 +268,7 @@ export default function AddCardForm({ onSaved, onCancel, makeDefault = false }) 
               <button
                 type="button"
                 onClick={onCancel}
-                className="rounded-xl border border-jet-black/10 px-4 py-2.5 text-sm font-semibold text-jet-black/60 transition hover:border-jet-black/20"
+                className="rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-text-muted transition hover:border-border"
               >
                 Cancel
               </button>

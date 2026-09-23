@@ -188,7 +188,7 @@ export default function MobileNav() {
           <div className="px-5 pb-2">
             <Link
               to={BECOME_HOST_CTA.to}
-              className="flex items-center justify-center gap-2 rounded-xl bg-linear-to-r from-deep-purple to-lavender px-4 py-2.5 text-sm font-semibold text-soft-white glow-sm transition hover:brightness-105"
+              className="flex items-center justify-center gap-2 rounded-xl cta-brand px-4 py-2.5 text-sm font-semibold text-soft-white glow-sm transition hover:brightness-105"
             >
               <BecomeHostIcon className="h-4 w-4" />
               {BECOME_HOST_CTA.label}

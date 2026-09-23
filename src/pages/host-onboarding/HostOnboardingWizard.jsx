@@ -150,7 +150,7 @@ function ProgressBar({ current, total }) {
   return (
     <div className="relative h-1 w-full bg-surface-raised">
       <div
-        className="h-1 bg-linear-to-r from-deep-purple to-lavender transition-all duration-300"
+        className="h-1 cta-brand transition-all duration-300"
         style={{ width: `${pct}%` }}
       />
     </div>

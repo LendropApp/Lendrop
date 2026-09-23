@@ -20,7 +20,7 @@ export default function Premium() {
       <div className="relative isolate overflow-hidden">
         <AuroraBlobs className="opacity-30" />
         <div className="relative mx-auto max-w-3xl px-6 py-10 sm:px-10">
-          <div className="rounded-3xl bg-gradient-to-br from-deep-purple to-lavender p-8 text-center text-white">
+          <div className="rounded-3xl cta-brand-br p-8 text-center text-white">
             <Sparkles className="mx-auto h-8 w-8" />
             <h1 className="mt-3 font-display text-2xl font-bold">Lendrop Premium</h1>
             <p className="mt-2 text-sm text-white/80">Coming soon</p>

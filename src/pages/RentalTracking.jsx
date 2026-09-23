@@ -345,7 +345,7 @@ export default function RentalTracking() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="ml-auto shrink-0 rounded-full bg-linear-to-r from-deep-purple to-lavender px-4 py-2 text-xs font-semibold text-soft-white glow-sm transition hover:brightness-105 disabled:opacity-50"
+                  className="ml-auto shrink-0 rounded-full cta-brand px-4 py-2 text-xs font-semibold text-soft-white glow-sm transition hover:brightness-105 disabled:opacity-50"
                 >
                   {submitting ? 'Verifying…' : 'Unlock locker'}
                 </button>
@@ -405,7 +405,7 @@ export default function RentalTracking() {
                 <button
                   type="submit"
                   disabled={returnSubmitting}
-                  className="ml-auto shrink-0 rounded-full bg-linear-to-r from-deep-purple to-lavender px-4 py-2 text-xs font-semibold text-soft-white glow-sm transition hover:brightness-105 disabled:opacity-50"
+                  className="ml-auto shrink-0 rounded-full cta-brand px-4 py-2 text-xs font-semibold text-soft-white glow-sm transition hover:brightness-105 disabled:opacity-50"
                 >
                   {returnSubmitting ? 'Verifying…' : 'Confirm return'}
                 </button>

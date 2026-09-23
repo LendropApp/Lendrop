@@ -271,7 +271,7 @@ export default function Verification() {
                         onClick={() => setDocumentType(doc.value)}
                         className={`rounded-full border px-4 py-2 text-xs font-semibold transition ${
                           active
-                            ? 'border-transparent bg-linear-to-r from-deep-purple to-lavender text-soft-white glow-sm'
+                            ? 'border-transparent cta-brand text-soft-white glow-sm'
                             : 'border-border text-text-muted hover:border-primary hover:text-primary'
                         }`}
                       >

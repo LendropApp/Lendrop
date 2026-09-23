@@ -135,7 +135,7 @@ export default function EarningsDashboard() {
                   <TrendingUp className="h-4.5 w-4.5 text-primary" />
                   <h2 className="font-display text-lg font-semibold text-text">Earnings overview</h2>
                 </div>
-                <div className="flex h-48 items-center justify-center rounded-2xl bg-gradient-to-r from-deep-purple to-lavender">
+                <div className="flex h-48 items-center justify-center rounded-2xl cta-brand">
                   <div className="text-center text-white">
                     <p className="font-display text-2xl font-bold">{formatMoney(stats.monthlyEarnings)}</p>
                     <p className="mt-1 text-sm text-white/80">Total earnings this month</p>

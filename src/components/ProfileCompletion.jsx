@@ -52,7 +52,7 @@ export default function ProfileCompletion({ user, profile }) {
 
       <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-surface-raised">
         <div
-          className="h-1.5 rounded-full bg-linear-to-r from-deep-purple to-lavender transition-all duration-300"
+          className="h-1.5 rounded-full cta-brand transition-all duration-300"
           style={{ width: `${pct}%` }}
         />
       </div>

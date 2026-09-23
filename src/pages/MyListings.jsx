@@ -133,7 +133,7 @@ export default function MyListings() {
               <button
                 type="button"
                 onClick={handlePublishClick}
-                className="flex shrink-0 items-center gap-1.5 rounded-xl bg-linear-to-r from-deep-purple to-lavender px-4 py-2.5 text-sm font-semibold text-soft-white glow-sm transition hover:brightness-105"
+                className="flex shrink-0 items-center gap-1.5 rounded-xl cta-brand px-4 py-2.5 text-sm font-semibold text-soft-white glow-sm transition hover:brightness-105"
               >
                 <PackagePlus className="h-4 w-4" />
                 <span className="hidden sm:inline">New listing</span>
@@ -169,7 +169,7 @@ export default function MyListings() {
               <button
                 type="button"
                 onClick={handlePublishClick}
-                className="mt-6 inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-deep-purple to-lavender px-5 py-2.5 text-sm font-semibold text-soft-white glow-sm transition hover:brightness-105"
+                className="mt-6 inline-flex items-center gap-2 rounded-xl cta-brand px-5 py-2.5 text-sm font-semibold text-soft-white glow-sm transition hover:brightness-105"
               >
                 <PackagePlus className="h-4 w-4" />
                 {isVerified ? 'Publish your first item' : 'Verify to start listing'}

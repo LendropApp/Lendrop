@@ -252,7 +252,7 @@ export default function Settings() {
                   type="button"
                   onClick={handleSavePrefs}
                   disabled={saving}
-                  className="shrink-0 rounded-full bg-linear-to-r from-deep-purple to-lavender px-5 py-2.5 text-sm font-semibold text-soft-white glow-sm transition hover:brightness-105 disabled:opacity-50"
+                  className="shrink-0 rounded-full cta-brand px-5 py-2.5 text-sm font-semibold text-soft-white glow-sm transition hover:brightness-105 disabled:opacity-50"
                 >
                   {saving ? 'Saving…' : 'Save preferences'}
                 </button>

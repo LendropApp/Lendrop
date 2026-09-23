@@ -350,7 +350,7 @@ export default function PublishItem() {
             <button
               type="button"
               onClick={() => window.location.reload()}
-              className="w-full rounded-xl bg-linear-to-r from-deep-purple to-lavender py-2.5 text-sm font-semibold text-soft-white glow-sm transition hover:brightness-105"
+              className="w-full rounded-xl cta-brand py-2.5 text-sm font-semibold text-soft-white glow-sm transition hover:brightness-105"
             >
               Publish another
             </button>
@@ -430,7 +430,7 @@ export default function PublishItem() {
                   className="h-full w-full object-cover"
                 />
                 {index === 0 && (
-                  <span className="absolute left-1.5 top-1.5 rounded-full bg-linear-to-r from-deep-purple to-lavender px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-soft-white shadow-[0_2px_10px_-2px_rgba(165,140,244,0.7)]">
+                  <span className="absolute left-1.5 top-1.5 rounded-full cta-brand px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-soft-white shadow-[0_2px_10px_-2px_rgba(165,140,244,0.7)]">
                     Cover
                   </span>
                 )}
@@ -456,7 +456,7 @@ export default function PublishItem() {
                   className="h-full w-full object-cover"
                 />
                 {keptExistingPhotos.length === 0 && index === 0 && (
-                  <span className="absolute left-1.5 top-1.5 rounded-full bg-linear-to-r from-deep-purple to-lavender px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-soft-white shadow-[0_2px_10px_-2px_rgba(165,140,244,0.7)]">
+                  <span className="absolute left-1.5 top-1.5 rounded-full cta-brand px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-soft-white shadow-[0_2px_10px_-2px_rgba(165,140,244,0.7)]">
                     Cover
                   </span>
                 )}
@@ -508,7 +508,7 @@ export default function PublishItem() {
                     onClick={() => setCategorySlug(cat.slug)}
                     className={`flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-xs font-medium transition ${
                       active
-                        ? 'border-transparent bg-linear-to-r from-deep-purple to-lavender text-soft-white glow-sm'
+                        ? 'border-transparent cta-brand text-soft-white glow-sm'
                         : 'border-border text-text-muted hover:border-primary hover:text-primary'
                     }`}
                   >
@@ -702,7 +702,7 @@ export default function PublishItem() {
         <button
           type="submit"
           disabled={isSubmitting || (!isEditing && !isVerified)}
-          className="w-full rounded-xl bg-linear-to-r from-deep-purple to-lavender py-3 text-sm font-semibold text-soft-white glow-sm transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50"
+          className="w-full rounded-xl cta-brand py-3 text-sm font-semibold text-soft-white glow-sm transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isEditing
             ? isSubmitting

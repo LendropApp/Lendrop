@@ -78,7 +78,7 @@ export default function TermsStep({ onNext, onBack, submitting }) {
           <button
             type="submit"
             disabled={submitting}
-            className="flex-1 flex items-center justify-center gap-2 bg-linear-to-r from-deep-purple to-lavender text-white font-medium text-base py-3.5 rounded-xl glow-sm transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-deep-purple focus-visible:ring-offset-2 disabled:opacity-50 disabled:hover:glow-sm"
+            className="flex-1 flex items-center justify-center gap-2 cta-brand text-white font-medium text-base py-3.5 rounded-xl glow-sm transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-deep-purple focus-visible:ring-offset-2 disabled:opacity-50 disabled:hover:glow-sm"
           >
             {submitting ? "Finishing…" : "Become a host"}
           </button>

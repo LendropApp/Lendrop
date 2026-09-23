@@ -304,7 +304,7 @@ export default function History() {
                               <button
                                 type="submit"
                                 disabled={reviewSubmitting}
-                                className="rounded-full bg-linear-to-r from-deep-purple to-lavender px-3 py-1 text-xs font-semibold text-soft-white disabled:opacity-50"
+                                className="rounded-full cta-brand px-3 py-1 text-xs font-semibold text-soft-white disabled:opacity-50"
                               >
                                 {reviewSubmitting ? 'Saving…' : 'Submit'}
                               </button>

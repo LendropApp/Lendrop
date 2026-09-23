@@ -15,6 +15,11 @@
   --brand-lavender: #a58cf4;
   --brand-soft-white: #fafafa;
   --brand-jet-black: #0d0d0d;
+
+  /* CTA gradient stops — see .cta-brand below for why the end is not
+     Lavender. White on #7050d4 measures 5.31:1. */
+  --cta-from: #433075;
+  --cta-to: #7050d4;
 }
 
 /* ── Semantic tokens: light ───────────────────────────────────────────
@@ -144,6 +149,29 @@
 }
 
 @layer utilities {
+  /* ── Brand CTA gradient ─────────────────────────────────────────────
+     The one place this gradient is defined. It used to be copy-pasted as
+     `bg-linear-to-r from-deep-purple to-lavender` in 40 spots, which is
+     how a contrast bug survived in every primary button in the app:
+     white text measures 10.5:1 against the Deep Purple start but only
+     2.6:1 against the Lavender end, so the right-hand half of every CTA
+     failed WCAG AA.
+
+     No text colour can fix that — black is 1.8:1 at the purple end — so
+     the gradient itself stops short of Lavender. The end is now #7050d4,
+     where white measures 5.3:1. The start is unchanged, and the ramp
+     still reads as the same brand sweep, just without the pale tail.
+
+     Both themes use the same fill: it is a self-contained surface, so its
+     contrast does not depend on the page behind it. */
+  .cta-brand {
+    background-image: linear-gradient(to right, var(--cta-from), var(--cta-to));
+  }
+
+  .cta-brand-br {
+    background-image: linear-gradient(to bottom right, var(--cta-from), var(--cta-to));
+  }
+
   /* Slow ambient drift for the aurora gradient blobs (AuroraBlobs.jsx) —
      kept as a shared keyframe since the same effect is reused behind the
      Home hero, Explore header, and the auth screens. */

@@ -88,7 +88,7 @@ export default function CategoriesStep({ record, onNext, onBack }) {
                   onClick={() => toggleCategory(cat.slug)}
                   className={`flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-xs font-medium transition ${
                     active
-                      ? "border-transparent bg-linear-to-r from-deep-purple to-lavender text-white glow-sm"
+                      ? "border-transparent cta-brand text-white glow-sm"
                       : "border-border text-text-muted hover:border-primary hover:text-primary"
                   }`}
                 >
@@ -112,7 +112,7 @@ export default function CategoriesStep({ record, onNext, onBack }) {
           </button>
           <button
             type="submit"
-            className="flex-1 flex items-center justify-center gap-2 bg-linear-to-r from-deep-purple to-lavender text-white font-medium text-base py-3.5 rounded-xl glow-sm transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-deep-purple focus-visible:ring-offset-2"
+            className="flex-1 flex items-center justify-center gap-2 cta-brand text-white font-medium text-base py-3.5 rounded-xl glow-sm transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-deep-purple focus-visible:ring-offset-2"
           >
             Continue
             <ArrowRight className="w-4 h-4" />

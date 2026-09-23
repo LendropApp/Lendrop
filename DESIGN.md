@@ -39,6 +39,7 @@ Escalas derivadas (úsalas, no inventes otras):
 - `violet-700` `#33245C` (hover/pressed de violet) · `violet-50` `#EEEAF8` (fondos suaves)
 - `lilac-200` `#DDD2FB` (selección, fondos de chip)
 - `steel-300` `#D6D4E0` (divisores, placeholders de imagen) · `steel-600` `#6B6880` (texto secundario)
+- `alert-700` `#D13B40` (relleno de acciones destructivas que llevan texto `panel`; `alert` mide 3.75:1 contra `panel` y no alcanza AA, este mide 4.56:1)
 
 ### Reglas de contraste (obligatorias, WCAG AA)
 - `lilac` y `signal` **NUNCA** como color de texto sobre `panel` o `steel`. Se usan como
@@ -130,7 +131,7 @@ MÓVIL — Explorar
 │ └──────────┘└──────────┘ │
 │ ┌──────────┐┌──────────┐ │
 │ ...                      │
-│[Explorar][Mapa][+][Locker][Yo]│  ← panel inferior
+│   [ + Publicar ][ Perfil ]   │  ← panel inferior (2 celdas)
 └──────────────────────────┘
 ```
 
@@ -172,7 +173,7 @@ Cuando una reserva se confirma y cuando el usuario abre "Tu locker":
 | `primary` | Relleno `violet`, texto `panel`, borde `3px ink`, `shadow-md`, Manrope 700 |
 | `secondary` | Relleno `panel`, texto `ink`, borde `2px ink`, `shadow-sm` |
 | `signal` | Relleno `signal`, texto `ink`, borde `3px ink`: solo UNA vez por pantalla, para la acción física ("Abrir locker", "Confirmar depósito") |
-| `danger` | Relleno `alert`, texto `panel`, borde `3px ink` |
+| `danger` | Relleno `alert-700`, texto `panel`, borde `3px ink` |
 | `ghost` | Sin borde ni sombra, texto `violet`, subrayado al hover |
 
 Alto mínimo 48px (táctil). Radio 6px. Estado carga: spinner cuadrado (4 celdas que se
@@ -222,10 +223,16 @@ franja izquierda de 8px con el color de estado. Mismo verbo que la acción:
 botón "Publicar" → toast "Publicado".
 
 ### 7.10 Panel de control (navegación inferior móvil)
-Fondo `night`, 5 celdas iguales tipo botonera de locker: Explorar · Mapa · **Publicar**
-(central, relleno `signal`, borde `ink`, sobresale 8px) · Mi locker · Perfil.
+Fondo `night`, **2 celdas iguales**: **Publicar** (relleno `signal`, borde `ink`,
+sobresale 8px) · Perfil. Todo lo demás vive en el menú lateral, sin duplicarse.
 Activa: icono + texto `lilac`, LED encendido encima. Iconos: lucide-react, trazo 2px.
-Desktop: header horizontal con las mismas secciones.
+Desktop: header horizontal.
+
+> **Corregido en la Fase 2.** Este apartado decía 5 celdas (Explorar · Mapa · Publicar ·
+> Mi locker · Perfil), pero la app ya tenía una barra de 2 por decisión deliberada, con
+> el resto en el drawer lateral. Cambiar eso es navegación, no piel, así que se
+> actualizó el documento para que coincida con la app — decisión de Diego. Tampoco
+> existe pantalla de Mapa a la que apuntaría esa celda.
 
 ### 7.11 Estados vacíos
 Una rejilla de 6 compartimentos vacíos dibujados (bordes punteados `steel-600`) con
@@ -389,20 +396,15 @@ migración y se eliminan en la Fase 5 junto con los alias.
 - El halo del LED se hace con `ring-3 ring-<color>/35`, no con una sombra escrita a
   mano: así el color sale del token y no se duplica el literal.
 
-### PENDIENTE de la Fase 2 — el botón `danger` no cumple AA
+### Resuelto — el botón `danger` y el contraste AA
 
-La sección 7.1 define `danger` como relleno `alert` (#E5484D) con texto `panel`
-(#FAFAFA). Esa combinación mide **3.75:1**. La sección 10 exige AA, que para texto de
-16px en negrita pide 4.5:1 — la excepción de "texto grande" empieza en 18.66px en
-negrita, y la etiqueta de un botón no llega. Las dos reglas del documento se
-contradicen entre sí.
+La sección 7.1 definía `danger` como relleno `alert` (#E5484D) con texto `panel`, que
+mide **3.75:1**; la sección 10 exige AA, o sea 4.5:1 para una etiqueta de 16px en
+negrita. Las dos reglas se contradecían.
 
-Propuesta: añadir `--color-alert-700: #D13B40` y usarlo como RELLENO cuando lleva texto
-`panel` encima; mide **4.56:1** y conserva el tono. `alert` sigue igual para bordes,
-iconos y texto de error sobre `panel` (donde mide 4.52:1 y sí cumple).
-
-El botón está implementado tal como lo dice la sección 7.1, o sea que hoy **no cumple**.
-Decidir antes de la Fase 3.
+**Decisión (Diego):** gana la accesibilidad. Se añade `--color-alert-700: #D13B40`
+(**4.56:1**) y es el relleno de `danger`. `alert` no cambia: sigue siendo el color de
+bordes, iconos y texto de error sobre `panel`, donde mide 4.52:1 y sí cumple.
 
 > Si ya existen tokens con los nombres anteriores (`deep-purple`, `lavender`,
 > `soft-white`, `jet-black`), mantenlos como ALIAS de los nuevos durante la migración

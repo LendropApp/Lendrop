@@ -22,7 +22,7 @@ const VARIANTS = {
   primary: 'bg-violet text-panel border-[3px] border-ink press-md',
   secondary: 'bg-panel text-ink border-2 border-ink press-sm',
   signal: 'bg-signal text-ink border-[3px] border-ink press-md',
-  danger: 'bg-alert text-panel border-[3px] border-ink press-md',
+  danger: 'bg-alert-700 text-panel border-[3px] border-ink press-md',
   ghost: 'bg-transparent text-violet border-0 hover:underline underline-offset-4',
   // `violet` on `night` measures 1.67:1. sec. 2 allows lilac as a text colour
   // anywhere except panel/steel, and lilac on night measures 6.68:1.

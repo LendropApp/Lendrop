@@ -387,15 +387,15 @@ export default function Styleguide() {
         </Section>
 
         {/* ── ControlPanelNav ────────────────────────────────────────── */}
-        <Section title="ControlPanelNav" meta="sec. 7.10 · not mounted yet">
+        <Section title="ControlPanelNav" meta="sec. 7.10 · 2 cells">
           {(dark) => (
             <>
               <div className="w-full max-w-sm overflow-hidden rounded-door border-2 border-ink">
-                <ControlPanelNav activeKey="explore" />
+                <ControlPanelNav activeKey="profile" />
               </div>
               <p className={`text-small ${dark ? 'text-panel/60' : 'text-steel-600'}`}>
-                Spec says five cells; the shipped bottom bar is two. Unresolved — see the component
-                comment.
+                Two cells. Everything else lives in the side drawer, so no destination appears
+                twice.
               </p>
             </>
           )}

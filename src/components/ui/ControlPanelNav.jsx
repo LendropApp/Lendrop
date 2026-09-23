@@ -1,4 +1,4 @@
-import { Compass, MapPin, Package, Plus, UserCircle2 } from 'lucide-react'
+import { Plus, UserCircle2 } from 'lucide-react'
 
 /**
  * ControlPanelNav — DESIGN.md sec. 7.10. The mobile bottom bar as a locker
@@ -8,23 +8,20 @@ import { Compass, MapPin, Package, Plus, UserCircle2 } from 'lucide-react'
  * clicks through `onSelect` / each item's `onClick`; it owns no routing and no
  * verification rules. Wiring it up is Phase 3's job.
  *
- * NOTE — unresolved conflict: sec. 5 and sec. 7.10 specify five cells, but the
- * shipped MobileBottomNav is deliberately two (Publish + Profile), with
- * everything else in the side drawer. Changing that is navigation, not skin, so
- * this component exists per the spec and nothing mounts it yet.
+ * Two cells, not five: Publish and Profile, with every other destination in the
+ * side drawer. sec. 7.10 originally described five, but the shipped nav is
+ * deliberately two and that is navigation rather than skin, so the doc was
+ * updated to match the app instead of the other way round.
  *
  * Props:
  *   items     [{ key, label, icon, raised?, onClick?, href? }] — defaults to the
- *             five from sec. 7.10
+ *             two from sec. 7.10
  *   activeKey which item is current
  *   as        component for items carrying `href` (e.g. react-router NavLink)
  *   onSelect  (key, item) => void
  */
 export const DEFAULT_CELLS = [
-  { key: 'explore', label: 'Explore', icon: Compass },
-  { key: 'map', label: 'Map', icon: MapPin },
   { key: 'publish', label: 'Publish', icon: Plus, raised: true },
-  { key: 'locker', label: 'My locker', icon: Package },
   { key: 'profile', label: 'Profile', icon: UserCircle2 },
 ]
 
@@ -40,7 +37,10 @@ export default function ControlPanelNav({
       aria-label="Primary"
       className={`border-t-[3px] border-ink bg-night pb-[env(safe-area-inset-bottom)] ${className}`}
     >
-      <ul className="grid grid-cols-5">
+      <ul
+        className="grid"
+        style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
+      >
         {items.map((item) => {
           const Icon = item.icon
           const active = item.key === activeKey

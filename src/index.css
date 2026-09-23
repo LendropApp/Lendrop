@@ -26,6 +26,9 @@
   --color-signal: #ffd23f;
   --color-night: #17112b;
   --color-alert: #e5484d;
+  /* Fill for anything carrying `panel` text: `alert` itself measures 3.75:1
+     against panel, under the AA floor sec. 10 sets. This is 4.56:1. */
+  --color-alert-700: #d13b40;
   --color-go: #2fbf71;
 
   /* Typography — sec. 3 */

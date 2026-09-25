@@ -1,6 +1,7 @@
 import LockerWallBg from '../components/background/LockerWallBg'
 import AuroraBlobs from '../components/background/AuroraBlobs'
 import { Link } from 'react-router-dom'
+import Logo from './Logo'
 
 
 export default function AuthLayout({ eyebrow = 'Smart locker network', children }) {
@@ -24,8 +25,8 @@ export default function AuthLayout({ eyebrow = 'Smart locker network', children 
         <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-lavender to-transparent" />
 
         <div className="mb-8 text-center">
-          <Link to="/" className="font-display text-2xl font-bold text-primary">
-            Lendrop
+          <Link to="/" aria-label="Lendrop home" className="inline-block">
+            <Logo className="h-9" />
           </Link>
           <p className="mt-1 text-[11px] font-semibold uppercase tracking-widest text-primary">
             {eyebrow}

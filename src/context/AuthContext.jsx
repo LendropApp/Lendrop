@@ -78,7 +78,13 @@ export function AuthProvider({ children }) {
       email,
       password,
       options: {
-
+        // Where the confirmation email's link lands. Without it Supabase
+        // falls back to the project's Site URL, so the link opened a site
+        // that wasn't this one. The origin follows wherever the person
+        // signed up (localhost in dev, the Vercel domain in production);
+        // it must also be listed under Authentication -> URL
+        // Configuration -> Redirect URLs in Supabase, or Supabase ignores it.
+        emailRedirectTo: `${window.location.origin}/explore`,
         data: {
           full_name: fullName,
           dui,

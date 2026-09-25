@@ -223,7 +223,7 @@ export default function AddCardForm({ onSaved, onCancel, makeDefault = false }) 
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
+              className="cta-brand flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold text-soft-white disabled:opacity-60"
             >
               {saving ? 'Saving…' : 'Save card'}
             </button>
@@ -231,7 +231,7 @@ export default function AddCardForm({ onSaved, onCancel, makeDefault = false }) 
               <button
                 type="button"
                 onClick={onCancel}
-                className="rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-text-muted transition hover:border-border"
+                className="cta-brand rounded-xl px-4 py-2.5 text-sm font-semibold text-soft-white"
               >
                 Cancel
               </button>
@@ -260,7 +260,7 @@ export default function AddCardForm({ onSaved, onCancel, makeDefault = false }) 
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
+              className="cta-brand flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold text-soft-white disabled:opacity-60"
             >
               {saving ? 'Connecting…' : 'Connect PayPal'}
             </button>
@@ -268,7 +268,7 @@ export default function AddCardForm({ onSaved, onCancel, makeDefault = false }) 
               <button
                 type="button"
                 onClick={onCancel}
-                className="rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-text-muted transition hover:border-border"
+                className="cta-brand rounded-xl px-4 py-2.5 text-sm font-semibold text-soft-white"
               >
                 Cancel
               </button>

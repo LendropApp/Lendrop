@@ -131,7 +131,7 @@ export default function Home() {
           </nav>
 
           <div className="hidden items-center gap-4 md:flex">
-            <Link to="/login" className="text-sm font-semibold text-text-muted hover:text-primary">
+            <Link to="/login" className="cta-brand rounded-xl px-5 py-2.5 text-sm font-semibold text-soft-white">
               Log in
             </Link>
             <Link to="/signup" className="cta-brand rounded-xl px-5 py-2.5 text-sm font-semibold text-soft-white">
@@ -163,7 +163,7 @@ export default function Home() {
               </a>
             ))}
             <div className="mt-2 flex flex-col gap-2 border-t border-border pt-3">
-              <Link to="/login" className="rounded-lg px-2 py-2.5 text-sm font-semibold text-text-muted hover:bg-surface-raised">
+              <Link to="/login" className="cta-brand rounded-xl px-5 py-2.5 text-center text-sm font-semibold text-soft-white">
                 Log in
               </Link>
               <Link to="/signup" className="cta-brand rounded-xl px-5 py-2.5 text-center text-sm font-semibold text-soft-white">
@@ -239,7 +239,7 @@ export default function Home() {
                   className="w-full bg-transparent py-3.5 text-base text-jet-black outline-none placeholder:text-[#5d5a6b]"
                 />
               </div>
-              <button type="submit" className="stamp rounded-xl px-6 py-3.5 text-sm font-bold hover:brightness-105">
+              <button type="submit" className="cta-brand rounded-xl px-6 py-3.5 text-sm font-bold text-soft-white ring-1 ring-white/30">
                 Search
               </button>
               <Link
@@ -287,7 +287,7 @@ export default function Home() {
               />
               <Link
                 to="/become-host"
-                className="mt-8 inline-block rounded-xl border border-border bg-surface px-6 py-3 text-sm font-semibold text-text hover:border-primary hover:text-primary"
+                className="cta-brand mt-8 inline-block rounded-xl px-6 py-3 text-sm font-semibold text-soft-white"
               >
                 Start hosting
               </Link>
@@ -399,13 +399,13 @@ export default function Home() {
             <div className="flex shrink-0 flex-wrap gap-3">
               <Link
                 to="/explore"
-                className="rounded-xl bg-soft-white px-6 py-3 text-sm font-bold text-deep-purple hover:bg-white"
+                className="cta-brand rounded-xl px-6 py-3 text-sm font-bold text-soft-white ring-1 ring-white/30"
               >
                 Browse items
               </Link>
               <Link
                 to="/become-host"
-                className="rounded-xl border border-white/40 px-6 py-3 text-sm font-bold text-soft-white hover:border-white"
+                className="cta-brand rounded-xl px-6 py-3 text-sm font-bold text-soft-white ring-1 ring-white/30"
               >
                 Start hosting
               </Link>

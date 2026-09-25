@@ -71,11 +71,6 @@ components:
     textColor: "{colors.soft-white}"
     rounded: "{rounded.xl}"
     padding: "12px 24px"
-  button-secondary:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.jet-black}"
-    rounded: "{rounded.xl}"
-    padding: "12px 24px"
   stamp:
     backgroundColor: "{colors.lavender}"
     textColor: "{colors.jet-black}"
@@ -181,8 +176,11 @@ Cut-metal corners: 8px for small controls, 10px for buttons and inputs, 12px for
 ### Buttons
 - **Shape:** gently cut corners (10px).
 - **Primary:** the brand gradient, left to right from Shutter Purple (#433075) to Dark-mode CTA Purple (#7050d4), with Soft White text (5.3:1 at the light end), the same in both themes. Hover brightens it slightly. It never runs to Lavender: white text fails there.
-- **Secondary:** panel-coloured fill with a hairline border; hover turns the border and text primary.
-- **On the shutter:** Soft White fill with Shutter Purple text, or a white outline.
+- **Every action button uses it:** primary and secondary actions alike (Log in, Sign up, Search, Message host, Cancel). Hierarchy comes from size and weight: the one main action on a screen is larger and bolder.
+- **On the shutter:** the same gradient with a thin white ring (white at 30%) so it separates from the purple field.
+- **Not buttons in this sense:** selection chips and toggles take the Lavender stamp, icon-only buttons stay neutral, and destructive confirmations stay red.
+
+**The One Gradient Rule.** If it performs an action and has a text label, it wears the brand gradient.
 
 ### Chips
 - **Style:** hairline border on a panel fill, 8px corners, category icon in primary.
@@ -214,6 +212,7 @@ A 12px shape plus a label: hollow circle pending, filled square confirmed, trian
 
 ### Do:
 - **Do** put the shutter texture only on shutter bands and reveal moments.
+- **Do** give every labelled action button the brand gradient; use size and weight, not a different style, for hierarchy.
 - **Do** use the Lavender stamp for every selected state, the same way everywhere.
 - **Do** show rental states with the Rental Status shape and label.
 - **Do** label sample or illustrative data on the page.

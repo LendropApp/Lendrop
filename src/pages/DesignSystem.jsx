@@ -76,7 +76,7 @@ export default function DesignSystem() {
           <button
             type="button"
             onClick={() => setShutterKey((k) => k + 1)}
-            className="mt-4 inline-flex items-center gap-2 rounded-xl border border-border px-4 py-2 text-sm font-semibold text-text hover:border-primary hover:text-primary"
+            className="cta-brand mt-4 inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-soft-white"
           >
             <RotateCcw className="h-4 w-4" aria-hidden="true" />
             Replay the roll-up
@@ -117,14 +117,8 @@ export default function DesignSystem() {
             <button type="button" className="cta-brand rounded-xl px-5 py-2.5 text-sm font-semibold text-soft-white">
               Reserve for $36
             </button>
-            <button
-              type="button"
-              className="rounded-xl border border-border bg-surface px-5 py-2.5 text-sm font-semibold text-text hover:border-primary hover:text-primary"
-            >
+            <button type="button" className="cta-brand rounded-xl px-5 py-2.5 text-sm font-semibold text-soft-white">
               Message host
-            </button>
-            <button type="button" className="rounded-xl px-5 py-2.5 text-sm font-semibold text-primary hover:underline">
-              View locker map
             </button>
             <button type="button" disabled className="cta-brand rounded-xl px-5 py-2.5 text-sm font-semibold text-soft-white disabled:opacity-50">
               Unavailable

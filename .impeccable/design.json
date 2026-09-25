@@ -4,40 +4,146 @@
   "title": "Design System: Lendrop",
   "extensions": {
     "colorMeta": {
-      "deep-purple": { "role": "primary", "displayName": "Shutter Purple", "canonical": "#433075", "tonalRamp": ["#1a1230", "#261b46", "#33245b", "#433075", "#5c47a0", "#7a67c0", "#a79ade", "#dcd6f3"] },
-      "cta-dark": { "role": "primary", "displayName": "Dark-mode CTA Purple", "canonical": "#7050d4" },
-      "lavender": { "role": "secondary", "displayName": "Stamp Lavender", "canonical": "#a58cf4", "tonalRamp": ["#2e2150", "#44337a", "#5f4aa6", "#7c65cf", "#a58cf4", "#bba8f7", "#d4c7fa", "#eee8fd"] },
-      "soft-white": { "role": "neutral", "displayName": "Soft White" },
-      "jet-black": { "role": "neutral", "displayName": "Jet Black" },
-      "surface": { "role": "neutral", "displayName": "Panel White" },
-      "surface-raised": { "role": "neutral", "displayName": "Raised Grey" },
-      "text-muted": { "role": "neutral", "displayName": "Muted Ink" },
-      "border": { "role": "neutral", "displayName": "Hairline" },
-      "steel": { "role": "neutral", "displayName": "Shutter Steel" },
-      "success": { "role": "neutral", "displayName": "Success Green" },
-      "danger": { "role": "neutral", "displayName": "Alert Red" }
+      "deep-purple": {
+        "role": "primary",
+        "displayName": "Shutter Purple",
+        "canonical": "#433075",
+        "tonalRamp": [
+          "#1a1230",
+          "#261b46",
+          "#33245b",
+          "#433075",
+          "#5c47a0",
+          "#7a67c0",
+          "#a79ade",
+          "#dcd6f3"
+        ]
+      },
+      "cta-dark": {
+        "role": "primary",
+        "displayName": "Dark-mode CTA Purple",
+        "canonical": "#7050d4"
+      },
+      "lavender": {
+        "role": "secondary",
+        "displayName": "Stamp Lavender",
+        "canonical": "#a58cf4",
+        "tonalRamp": [
+          "#2e2150",
+          "#44337a",
+          "#5f4aa6",
+          "#7c65cf",
+          "#a58cf4",
+          "#bba8f7",
+          "#d4c7fa",
+          "#eee8fd"
+        ]
+      },
+      "soft-white": {
+        "role": "neutral",
+        "displayName": "Soft White"
+      },
+      "jet-black": {
+        "role": "neutral",
+        "displayName": "Jet Black"
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Panel White"
+      },
+      "surface-raised": {
+        "role": "neutral",
+        "displayName": "Raised Grey"
+      },
+      "text-muted": {
+        "role": "neutral",
+        "displayName": "Muted Ink"
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Hairline"
+      },
+      "steel": {
+        "role": "neutral",
+        "displayName": "Shutter Steel"
+      },
+      "success": {
+        "role": "neutral",
+        "displayName": "Success Green"
+      },
+      "danger": {
+        "role": "neutral",
+        "displayName": "Alert Red"
+      }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "Hero line on shutter and closing bands." },
-      "headline": { "displayName": "Headline", "purpose": "Section headings." },
-      "title": { "displayName": "Title", "purpose": "Card and step titles." },
-      "body": { "displayName": "Body", "purpose": "Paragraphs." },
-      "number": { "displayName": "Number", "purpose": "Prices, counts, step numbers at sign scale." },
-      "code": { "displayName": "Code", "purpose": "Locker codes, PINs, timestamps." }
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero line on shutter and closing bands."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section headings."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Card and step titles."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Paragraphs."
+      },
+      "number": {
+        "displayName": "Number",
+        "purpose": "Prices, counts, step numbers at sign scale."
+      },
+      "code": {
+        "displayName": "Code",
+        "purpose": "Locker codes, PINs, timestamps."
+      }
     },
     "shadows": [
-      { "name": "hairline", "value": "0 1px 2px rgb(13 13 13 / 0.12)", "purpose": "Small raised controls." },
-      { "name": "panel", "value": "0 2px 4px rgb(13 13 13 / 0.06), 0 8px 20px -6px rgb(67 48 117 / 0.18)", "purpose": "Menus and raised cards." },
-      { "name": "floating", "value": "0 4px 8px rgb(13 13 13 / 0.06), 0 20px 40px -12px rgb(67 48 117 / 0.24)", "purpose": "The auth panel on the shutter." }
+      {
+        "name": "hairline",
+        "value": "0 1px 2px rgb(13 13 13 / 0.12)",
+        "purpose": "Small raised controls."
+      },
+      {
+        "name": "panel",
+        "value": "0 2px 4px rgb(13 13 13 / 0.06), 0 8px 20px -6px rgb(67 48 117 / 0.18)",
+        "purpose": "Menus and raised cards."
+      },
+      {
+        "name": "floating",
+        "value": "0 4px 8px rgb(13 13 13 / 0.06), 0 20px 40px -12px rgb(67 48 117 / 0.24)",
+        "purpose": "The auth panel on the shutter."
+      }
     ],
     "motion": [
-      { "name": "shutter-roll", "value": "1100ms cubic-bezier(0.7, 0, 0.2, 1) 350ms", "purpose": "The one signature reveal." },
-      { "name": "theme-swap", "value": "180ms ease", "purpose": "Colour-only transitions when the theme changes." }
+      {
+        "name": "shutter-roll",
+        "value": "1100ms cubic-bezier(0.7, 0, 0.2, 1) 350ms",
+        "purpose": "The one signature reveal."
+      },
+      {
+        "name": "theme-swap",
+        "value": "180ms ease",
+        "purpose": "Colour-only transitions when the theme changes."
+      }
     ],
     "breakpoints": [
-      { "name": "sm", "value": "640px" },
-      { "name": "md", "value": "768px" },
-      { "name": "lg", "value": "1024px" }
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      }
     ]
   },
   "components": [
@@ -48,14 +154,6 @@
       "description": "The one main action on a screen.",
       "html": "<button class=\"ds-btn-primary\">Reserve for $36</button>",
       "css": ".ds-btn-primary { background: linear-gradient(to right, #433075, #7050d4); color: #fafafa; padding: 12px 24px; border: 0; border-radius: 10px; font: 600 14px Manrope, sans-serif; cursor: pointer; transition: background-color 180ms ease; } .ds-btn-primary:hover { filter: brightness(1.08); } .ds-btn-primary:focus-visible { outline: 2px solid #433075; outline-offset: 2px; }"
-    },
-    {
-      "name": "Secondary Button",
-      "kind": "button",
-      "refersTo": "button-secondary",
-      "description": "Alternative actions next to a primary.",
-      "html": "<button class=\"ds-btn-secondary\">Message host</button>",
-      "css": ".ds-btn-secondary { background: #ffffff; color: #0d0d0d; padding: 12px 24px; border: 1px solid #e6e5ec; border-radius: 10px; font: 600 14px Manrope, sans-serif; cursor: pointer; } .ds-btn-secondary:hover { border-color: #433075; color: #433075; } .ds-btn-secondary:focus-visible { outline: 2px solid #433075; outline-offset: 2px; }"
     },
     {
       "name": "Stamp Chip",
@@ -99,13 +197,39 @@
       "Solid panels, hairline borders, small machined radii"
     ],
     "rules": [
-      { "name": "The Stamp Rule", "body": "Lavender with black text means \"selected\". Use it for chosen segments, categories, dates and lockers, and for nothing else.", "section": "colors" },
-      { "name": "The Shutter Is Always Dark Rule", "body": "The shutter field stays purple in both themes; only panels and grounds follow the theme.", "section": "colors" },
-      { "name": "The Sign Scale Rule", "body": "Prices, dates and PINs are lettering, not body text: set them in the number or code style, large, never buried in a sentence.", "section": "typography" },
-      { "name": "The No Eyebrow Rule", "body": "Headings stand alone. No uppercase labels above them.", "section": "typography" },
-      { "name": "The One Edge Rule", "body": "A panel gets a border or a shadow, not a border under a wide soft shadow, except a floating panel over the shutter.", "section": "elevation" }
+      {
+        "name": "The Stamp Rule",
+        "body": "Lavender with black text means \"selected\". Use it for chosen segments, categories, dates and lockers, and for nothing else.",
+        "section": "colors"
+      },
+      {
+        "name": "The Shutter Is Always Dark Rule",
+        "body": "The shutter field stays purple in both themes; only panels and grounds follow the theme.",
+        "section": "colors"
+      },
+      {
+        "name": "The Sign Scale Rule",
+        "body": "Prices, dates and PINs are lettering, not body text: set them in the number or code style, large, never buried in a sentence.",
+        "section": "typography"
+      },
+      {
+        "name": "The No Eyebrow Rule",
+        "body": "Headings stand alone. No uppercase labels above them.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Edge Rule",
+        "body": "A panel gets a border or a shadow, not a border under a wide soft shadow, except a floating panel over the shutter.",
+        "section": "elevation"
+      },
+      {
+        "name": "The One Gradient Rule",
+        "body": "If it performs an action and has a text label, it wears the brand gradient.",
+        "section": "components"
+      }
     ],
     "dos": [
+      "Do give every labelled action button the brand gradient; use size and weight, not a different style, for hierarchy.",
       "Do put the shutter texture only on shutter bands and reveal moments.",
       "Do use the Lavender stamp for every selected state, the same way everywhere.",
       "Do show rental states with the Rental Status shape and label.",

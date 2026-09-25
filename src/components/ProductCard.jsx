@@ -99,7 +99,7 @@ export default function ProductCard({ item, isOwner, isFavorited, isCurrentlyRen
                   setDeleteError('')
                 }}
                 disabled={deleting}
-                className="rounded-lg bg-white/15 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/25 disabled:opacity-50"
+                className="cta-brand rounded-lg px-3 py-1.5 text-xs font-semibold text-soft-white disabled:opacity-50"
               >
                 Cancel
               </button>

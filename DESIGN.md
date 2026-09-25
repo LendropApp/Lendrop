@@ -102,7 +102,7 @@ Lendrop's handoff is a locker door opening, so the brand is drawn from the roll-
 
 Everything else is quiet. App screens are plain Soft White or Jet Black grounds with solid panels, hairline borders and purple used precisely. Real item photos and real states (statuses, prices, PINs, locker events) carry the interface; there is no decorative imagery.
 
-The system rejects the aurora/glass look it replaced: no frosted panels, no glowing blobs, no gradient washes, no lavender halos.
+The system rejects the aurora/glass look on app screens: no frosted panels, no glowing blobs, no gradient washes, no lavender halos. Two deliberate exceptions: primary buttons keep the brand gradient, and the login, signup and password screens keep their original animated backdrop (the locker wall, drifting aurora and sliding tabs).
 
 **Key Characteristics:**
 - Flat Deep Purple shutter fields with a ribbed steel texture, only on brand moments
@@ -180,7 +180,7 @@ Cut-metal corners: 8px for small controls, 10px for buttons and inputs, 12px for
 
 ### Buttons
 - **Shape:** gently cut corners (10px).
-- **Primary:** solid Shutter Purple with Soft White text in light mode; Dark-mode CTA Purple in dark mode. Hover darkens the fill (#35255e / #5f42bf).
+- **Primary:** the brand gradient, left to right from Shutter Purple (#433075) to Dark-mode CTA Purple (#7050d4), with Soft White text (5.3:1 at the light end), the same in both themes. Hover brightens it slightly. It never runs to Lavender: white text fails there.
 - **Secondary:** panel-coloured fill with a hairline border; hover turns the border and text primary.
 - **On the shutter:** Soft White fill with Shutter Purple text, or a white outline.
 
@@ -219,7 +219,7 @@ A 12px shape plus a label: hollow circle pending, filled square confirmed, trian
 - **Do** label sample or illustrative data on the page.
 
 ### Don't:
-- **Don't** use frosted glass, backdrop blur, glowing blobs or gradient washes.
+- **Don't** use frosted glass, backdrop blur, glowing blobs or gradient washes outside the auth screens. The primary-button gradient is the only gradient elsewhere.
 - **Don't** use Lavender as text in light mode.
 - **Don't** put uppercase eyebrow labels above headings.
 - **Don't** use monospace for anything but codes, PINs and timestamps.

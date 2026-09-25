@@ -47,7 +47,7 @@
       "refersTo": "button-primary",
       "description": "The one main action on a screen.",
       "html": "<button class=\"ds-btn-primary\">Reserve for $36</button>",
-      "css": ".ds-btn-primary { background: #433075; color: #fafafa; padding: 12px 24px; border: 0; border-radius: 10px; font: 600 14px Manrope, sans-serif; cursor: pointer; transition: background-color 180ms ease; } .ds-btn-primary:hover { background: #35255e; } .ds-btn-primary:focus-visible { outline: 2px solid #433075; outline-offset: 2px; }"
+      "css": ".ds-btn-primary { background: linear-gradient(to right, #433075, #7050d4); color: #fafafa; padding: 12px 24px; border: 0; border-radius: 10px; font: 600 14px Manrope, sans-serif; cursor: pointer; transition: background-color 180ms ease; } .ds-btn-primary:hover { filter: brightness(1.08); } .ds-btn-primary:focus-visible { outline: 2px solid #433075; outline-offset: 2px; }"
     },
     {
       "name": "Secondary Button",
@@ -112,7 +112,7 @@
       "Do label sample or illustrative data on the page."
     ],
     "donts": [
-      "Don't use frosted glass, backdrop blur, glowing blobs or gradient washes.",
+      "Don't use frosted glass, backdrop blur, glowing blobs or gradient washes outside the auth screens. The primary-button gradient is the only gradient elsewhere.",
       "Don't use Lavender as text in light mode.",
       "Don't put uppercase eyebrow labels above headings.",
       "Don't use monospace for anything but codes, PINs and timestamps.",

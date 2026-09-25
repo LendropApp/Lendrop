@@ -19,7 +19,7 @@ export default function ForgotPassword() {
   }
 
   return (
-    <AuthLayout subtitle="Recover access">
+    <AuthLayout eyebrow="Recover access">
       <p className="mb-1 text-center font-display text-lg font-semibold text-primary">
         Reset your password
       </p>

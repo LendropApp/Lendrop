@@ -15,6 +15,11 @@
   --brand-lavender: #a58cf4;
   --brand-soft-white: #fafafa;
   --brand-jet-black: #0d0d0d;
+
+  /* CTA gradient stops — see .cta-brand below for why the end is not
+     Lavender. White on #7050d4 measures 5.31:1. */
+  --cta-from: #433075;
+  --cta-to: #7050d4;
 }
 
 /* ── Semantic tokens: light ───────────────────────────────────────────
@@ -223,24 +228,50 @@
 }
 
 @layer utilities {
-  /* ── Primary CTA ────────────────────────────────────────────────────
-     The one place the primary fill is defined. It used to be a Deep
-     Purple -> Lavender gradient copy-pasted in 40 spots, which is how a
-     contrast bug survived in every primary button: white text failed AA
-     on the pale end. The shutter world uses flat fields, so the fill is
-     now solid — see --cta above for the measured contrast per theme.
+  /* ── Primary CTA gradient ───────────────────────────────────────────
+     The one place the brand gradient is defined; it is the deliberate
+     exception to the shutter world's flat fields. It used to run Deep
+     Purple -> Lavender, copy-pasted in 40 spots, and white text failed
+     AA on the pale Lavender end (2.6:1). The end stop is #7050d4 instead,
+     where white measures 5.3:1, so the sweep reads the same and every
+     point along it passes.
 
-     The -br variant is kept so existing call sites keep compiling; it is
-     the same flat fill. */
-  .cta-brand,
+     Both themes use the same fill: it is a self-contained surface, so its
+     contrast does not depend on the page behind it. `--cta` stays the
+     solid equivalent for places a gradient cannot go. */
+  .cta-brand {
+    background-image: linear-gradient(to right, var(--cta-from), var(--cta-to));
+  }
+
   .cta-brand-br {
-    background-color: var(--cta);
-    background-image: none;
+    background-image: linear-gradient(to bottom right, var(--cta-from), var(--cta-to));
   }
 
   .cta-brand:hover:not(:disabled),
   .cta-brand-br:hover:not(:disabled) {
-    background-color: var(--cta-hover);
+    filter: brightness(1.08);
+  }
+
+  /* Slow ambient drift for the aurora blobs behind the auth screens
+     (AuroraBlobs.jsx, AuthLayout.jsx). */
+  @keyframes aurora-drift {
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
+    50% {
+      transform: translate(4%, -5%) scale(1.08);
+    }
+  }
+
+  .animate-aurora {
+    animation: aurora-drift 16s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-aurora {
+      animation: none;
+    }
   }
 
   /* ── Numbers at sign scale ──────────────────────────────────────────

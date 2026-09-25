@@ -1,20 +1,35 @@
+import LockerWallBg from '../components/background/LockerWallBg'
+import AuroraBlobs from '../components/background/AuroraBlobs'
 import { Link } from 'react-router-dom'
-import Logo from './Logo'
 
-/**
- * Auth screens sit on the brand shutter: a full-bleed ribbed Deep Purple
- * field with one solid panel on it. The field stays purple in both themes
- * (it is --brand-surface); the panel follows the theme.
- */
-export default function AuthLayout({ subtitle = null, children }) {
+
+export default function AuthLayout({ eyebrow = 'Smart locker network', children }) {
   return (
-    <div className="shutter flex min-h-dvh items-center justify-center px-4 py-12">
-      <div className="glow-lg w-full max-w-sm rounded-2xl border border-border bg-surface p-8 text-text sm:max-w-md lg:max-w-xl lg:p-10">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-linear-to-br from-jet-black via-[#241a42] to-jet-black px-4 py-12">
+      {/* Grid pattern, on-brand lavender lines at low opacity */}
+      <LockerWallBg
+        className="pointer-events-none absolute inset-0"
+        accentColor="165, 140, 244"
+      />
+      <AuroraBlobs className="opacity-100" />
+      {/* Extra ambient wash, lighter/wider than AuroraBlobs' two corner blobs,
+          for a brighter, more atmospheric backdrop behind the card. */}
+      <div
+        aria-hidden="true"
+        className="animate-aurora pointer-events-none absolute left-1/2 top-1/3 h-[36rem] w-[36rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-surface-raised blur-[100px]"
+        style={{ animationDelay: '-4s' }}
+      />
+
+      <div className="relative w-full max-w-sm overflow-hidden rounded-3xl border border-border bg-surface/80 p-8 shadow-2xl shadow-lavender/25 backdrop-blur-xl sm:max-w-md lg:max-w-xl lg:p-10">
+        <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-lavender to-transparent" />
+
         <div className="mb-8 text-center">
-          <Link to="/" className="inline-block">
-            <Logo className="h-10" />
+          <Link to="/" className="font-display text-2xl font-bold text-primary">
+            Lendrop
           </Link>
-          {subtitle && <p className="mt-1 text-sm text-text-muted">{subtitle}</p>}
+          <p className="mt-1 text-[11px] font-semibold uppercase tracking-widest text-primary">
+            {eyebrow}
+          </p>
         </div>
 
         {children}

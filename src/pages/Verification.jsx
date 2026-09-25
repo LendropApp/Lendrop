@@ -9,9 +9,9 @@ import StatusMessage from '../components/StatusMessage'
 
 const STATUS_COPY = {
   unverified: { label: 'Not verified', tone: 'text-text-muted', bg: 'bg-surface-raised' },
-  pending: { label: 'Under review', tone: 'text-amber-700', bg: 'bg-amber-100' },
-  verified: { label: 'Verified', tone: 'text-emerald-700', bg: 'bg-emerald-100' },
-  rejected: { label: 'Needs attention', tone: 'text-red-600', bg: 'bg-red-100' },
+  pending: { label: 'Under review', tone: 'text-primary', bg: 'bg-surface-raised' },
+  verified: { label: 'Verified', tone: 'text-success', bg: 'bg-success-soft' },
+  rejected: { label: 'Needs attention', tone: 'text-danger', bg: 'bg-danger-soft' },
 }
 
 const DOCUMENT_TYPES = [
@@ -52,7 +52,7 @@ function FileSlot({ id, label, hint, file, onPick, onClear, required }) {
             type="button"
             onClick={onClear}
             aria-label={`Remove ${label}`}
-            className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-jet-black/60 text-soft-white backdrop-blur transition hover:bg-jet-black/80"
+            className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-lg bg-jet-black/75 text-soft-white hover:bg-jet-black"
           >
             <X className="h-3.5 w-3.5" />
           </button>
@@ -64,7 +64,7 @@ function FileSlot({ id, label, hint, file, onPick, onClear, required }) {
           className="flex aspect-4/3 w-full flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-border text-text-muted transition hover:border-primary hover:bg-surface-raised hover:text-primary"
         >
           <ImagePlus className="h-5 w-5" />
-          <span className="text-[11px] font-medium">{hint}</span>
+          <span className="text-xs font-medium">{hint}</span>
         </button>
       )}
       <input
@@ -208,7 +208,7 @@ export default function Verification() {
                   </p>
                 </div>
               </div>
-              <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusCopy.bg} ${statusCopy.tone}`}>
+              <span className={`rounded-md px-2.5 py-1 text-xs font-semibold ${statusCopy.bg} ${statusCopy.tone}`}>
                 {statusCopy.label}
               </span>
             </div>
@@ -234,14 +234,14 @@ export default function Verification() {
             </ul>
 
             {verificationStatus === 'pending' && (
-              <div className="mt-6 flex items-center gap-2 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-700">
+              <div className="mt-6 flex items-center gap-2 rounded-xl bg-surface-raised px-4 py-3 text-sm text-primary">
                 <Clock className="h-4 w-4" />
                 We're reviewing your documents. This usually takes less than 24 hours.
               </div>
             )}
 
             {verificationStatus === 'rejected' && (
-              <div className="mt-6 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
+              <div className="mt-6 rounded-xl bg-danger-soft px-4 py-3 text-sm text-danger">
                 Your last submission was rejected. Make sure the photo is sharp, the whole document
                 is in frame, and your selfie clearly shows your face.
               </div>
@@ -267,10 +267,9 @@ export default function Verification() {
                         key={doc.value}
                         type="button"
                         onClick={() => setDocumentType(doc.value)}
-                        className={`rounded-full border px-4 py-2 text-xs font-semibold transition ${
-                          active
-                            ? 'border-transparent cta-brand text-soft-white glow-sm'
-                            : 'border-border text-text-muted hover:border-primary hover:text-primary'
+                        aria-pressed={active}
+                        className={`rounded-lg border px-4 py-2 text-sm font-semibold ${
+                          active ? 'stamp border-transparent' : 'border-border bg-surface text-text-muted hover:border-primary hover:text-text'
                         }`}
                       >
                         {doc.label}
@@ -316,7 +315,7 @@ export default function Verification() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-50"
+                className="cta-brand mt-4 flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold text-soft-white disabled:opacity-50"
               >
                 <Upload className="h-4 w-4" />
                 {submitting ? 'Submitting…' : 'Submit for review'}

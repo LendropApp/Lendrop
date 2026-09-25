@@ -123,7 +123,7 @@ export default function Notifications() {
           </div>
 
           {error ? (
-            <p className="py-20 text-center text-sm text-red-600">{error}</p>
+            <p className="py-20 text-center text-sm text-danger">{error}</p>
           ) : loading ? (
             <p className="py-20 text-center text-sm text-text-muted">Loading notifications…</p>
           ) : notifications.length > 0 ? (

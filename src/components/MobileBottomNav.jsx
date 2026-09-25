@@ -55,7 +55,7 @@ export default function MobileBottomNav() {
             blocked ? 'Publish an item — identity verification required' : 'Publish an item'
           }
           aria-current={isPublishActive ? 'page' : undefined}
-          className={`relative flex flex-col items-center gap-1 py-2.5 text-[11px] font-semibold transition ${
+          className={`relative flex flex-col items-center gap-1 py-2.5 text-xs font-semibold transition ${
             isPublishActive ? 'text-primary' : 'text-text-muted hover:text-primary'
           }`}
         >
@@ -73,7 +73,7 @@ export default function MobileBottomNav() {
           onClick={() => navigate('/profile')}
           aria-label="Your profile"
           aria-current={isProfileActive ? 'page' : undefined}
-          className={`flex flex-col items-center gap-1 py-2.5 text-[11px] font-semibold transition ${
+          className={`flex flex-col items-center gap-1 py-2.5 text-xs font-semibold transition ${
             isProfileActive ? 'text-primary' : 'text-text-muted hover:text-primary'
           }`}
         >

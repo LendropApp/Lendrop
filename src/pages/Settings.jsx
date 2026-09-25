@@ -52,7 +52,7 @@ function Toggle({ checked, onChange, label }) {
       aria-label={label}
       onClick={() => onChange(!checked)}
       className={`relative h-6 w-11 shrink-0 rounded-full transition ${
-        checked ? 'bg-primary' : 'bg-jet-black/15'
+        checked ? 'bg-primary' : 'bg-steel'
       }`}
     >
       <span
@@ -233,7 +233,7 @@ export default function Settings() {
                 <select
                   value={prefs.default_city ?? ''}
                   onChange={(e) => updatePref('default_city', e.target.value || null)}
-                  className="w-full rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
+                  className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none transition focus:border-primary"
                 >
                   <option value="">All cities</option>
                   {cities.map((city) => (
@@ -250,7 +250,7 @@ export default function Settings() {
                   type="button"
                   onClick={handleSavePrefs}
                   disabled={saving}
-                  className="shrink-0 rounded-full cta-brand px-5 py-2.5 text-sm font-semibold text-soft-white glow-sm transition hover:brightness-105 disabled:opacity-50"
+                  className="cta-brand shrink-0 rounded-xl px-5 py-2.5 text-sm font-bold text-soft-white disabled:opacity-50"
                 >
                   {saving ? 'Saving…' : 'Save preferences'}
                 </button>
@@ -293,7 +293,7 @@ export default function Settings() {
                     <button
                       type="submit"
                       disabled={passwordSubmitting}
-                      className="shrink-0 rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-text transition hover:border-primary hover:text-primary disabled:opacity-50"
+                      className="cta-outline shrink-0 rounded-xl px-5 py-2 text-sm font-semibold disabled:opacity-50"
                     >
                       {passwordSubmitting ? 'Updating…' : 'Update password'}
                     </button>

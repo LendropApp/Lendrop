@@ -22,7 +22,7 @@ export default function Dashboard() {
 
         <div className="rounded-2xl border border-border bg-surface p-6 glow-sm">
           <p className="text-sm text-text-muted">Signed in as</p>
-          <p className="font-mono text-sm">{user?.email}</p>
+          <p className="text-sm font-semibold">{user?.email}</p>
         </div>
       </div>
     </div>

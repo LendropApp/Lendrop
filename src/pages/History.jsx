@@ -188,7 +188,7 @@ export default function History() {
             Every rental and lending transaction in one place.
           </p>
 
-          <div className="mt-6 flex gap-2 rounded-full bg-surface-raised p-1">
+          <div className="mt-6 flex gap-1 rounded-xl border border-border bg-surface-raised p-1">
             {[
               { id: 'rentals', label: 'As renter' },
               { id: 'lendings', label: 'As lender' },
@@ -197,8 +197,9 @@ export default function History() {
                 key={t.id}
                 type="button"
                 onClick={() => setTab(t.id)}
-                className={`flex-1 rounded-full py-2 text-sm font-semibold transition ${
-                  tab === t.id ? 'bg-surface text-primary shadow-sm' : 'text-text-muted hover:text-text'
+                aria-pressed={tab === t.id}
+                className={`flex-1 rounded-lg py-2 text-sm font-semibold ${
+                  tab === t.id ? 'stamp' : 'text-text-muted hover:text-text'
                 }`}
               >
                 {t.label}
@@ -206,7 +207,7 @@ export default function History() {
             ))}
           </div>
 
-          {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+          {error && <p className="mt-4 text-sm text-danger">{error}</p>}
           {cancelStatus.text && (
             <div className="mt-4" aria-live="polite" role="status">
               <StatusMessage type={cancelStatus.type} text={cancelStatus.text} />
@@ -241,7 +242,7 @@ export default function History() {
                         to={tab === 'rentals' ? `/rental-tracking?reservationId=${row.id}` : `/owner-delivery?reservationId=${row.id}`}
                         className="text-xs font-semibold text-primary hover:underline"
                       >
-                        {tab === 'rentals' ? 'Track pickup →' : 'Deliver item →'}
+                        {tab === 'rentals' ? 'Track pickup' : 'Deliver item'}
                       </Link>
                     </div>
                   )}
@@ -268,7 +269,7 @@ export default function History() {
                             onChange={(e) => setDraftComment(e.target.value.slice(0, 500))}
                             placeholder={`How was ${row.counterparty}?`}
                             rows={2}
-                            className="w-full resize-none rounded-xl border border-border px-3 py-2 text-xs outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
+                            className="w-full resize-none rounded-xl border border-border bg-surface px-3 py-2 text-xs outline-none transition focus:border-primary"
                           />
                           <div className="flex items-center justify-between gap-2">
                             <StatusMessage type={reviewStatus.type} text={reviewStatus.text} />
@@ -276,14 +277,14 @@ export default function History() {
                               <button
                                 type="button"
                                 onClick={() => setOpenReviewId(null)}
-                                className="rounded-full border border-border px-3 py-1 text-xs font-semibold text-text-muted hover:bg-surface-raised"
+                                className="cta-outline rounded-lg px-3 py-0.5 text-xs font-semibold"
                               >
                                 Cancel
                               </button>
                               <button
                                 type="submit"
                                 disabled={reviewSubmitting}
-                                className="rounded-full cta-brand px-3 py-1 text-xs font-semibold text-soft-white disabled:opacity-50"
+                                className="cta-brand rounded-lg px-3 py-1 text-xs font-semibold text-soft-white disabled:opacity-50"
                               >
                                 {reviewSubmitting ? 'Saving…' : 'Submit'}
                               </button>
@@ -296,7 +297,7 @@ export default function History() {
                           onClick={() => openReviewForm(row)}
                           className="text-xs font-semibold text-primary hover:underline"
                         >
-                          Rate {tab === 'rentals' ? 'this lender' : 'this renter'} →
+                          Rate {tab === 'rentals' ? 'this lender' : 'this renter'}
                         </button>
                       )}
                     </div>
@@ -311,7 +312,7 @@ export default function History() {
                             type="button"
                             onClick={() => setConfirmCancelId(null)}
                             disabled={cancelling}
-                            className="rounded-full border border-border px-3 py-1 text-xs font-semibold text-text-muted hover:bg-surface-raised"
+                            className="cta-outline rounded-lg px-3 py-0.5 text-xs font-semibold"
                           >
                             Keep it
                           </button>
@@ -319,7 +320,7 @@ export default function History() {
                             type="button"
                             onClick={() => handleConfirmCancel(row.id)}
                             disabled={cancelling}
-                            className="rounded-full bg-red-500 px-3 py-1 text-xs font-semibold text-white hover:bg-red-600 disabled:opacity-50"
+                            className="rounded-lg bg-red-700 px-3 py-1 text-xs font-semibold text-white hover:bg-red-800 disabled:opacity-50"
                           >
                             {cancelling ? 'Cancelling…' : 'Confirm cancel'}
                           </button>
@@ -328,7 +329,7 @@ export default function History() {
                         <button
                           type="button"
                           onClick={() => setConfirmCancelId(row.id)}
-                          className="text-xs font-semibold text-red-500 hover:text-red-600"
+                          className="text-xs font-semibold text-danger hover:text-danger"
                         >
                           Cancel reservation
                         </button>

@@ -71,7 +71,7 @@ export default function Conversation() {
   if (error || !conversation) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-2 bg-bg text-center">
-        <p className="text-sm text-red-600">{error || 'Conversation not found.'}</p>
+        <p className="text-sm text-danger">{error || 'Conversation not found.'}</p>
       </div>
     )
   }
@@ -114,12 +114,12 @@ export default function Conversation() {
               <div
                 className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-sm ${
                   m.sender_id === user.id
-                    ? 'bg-primary text-white'
+                    ? 'bg-cta text-soft-white'
                     : 'border border-border bg-surface text-text'
                 }`}
               >
                 <p>{m.body}</p>
-                <p className={`mt-1 text-[10px] ${m.sender_id === user.id ? 'text-white/60' : 'text-text-muted'}`}>
+                <p className={`mt-1 text-xs ${m.sender_id === user.id ? 'text-soft-white/75' : 'text-text-muted'}`}>
                   {formatTime(m.created_at)}
                 </p>
               </div>
@@ -139,10 +139,9 @@ export default function Conversation() {
                 key={g.id}
                 type="button"
                 onClick={() => setActiveGroup(g.id)}
-                className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
-                  g.id === activeGroup
-                    ? 'bg-primary text-white'
-                    : 'bg-surface-raised text-text-muted hover:bg-surface-raised'
+                aria-pressed={g.id === activeGroup}
+                className={`shrink-0 rounded-lg px-3 py-1.5 text-sm font-semibold ${
+                  g.id === activeGroup ? 'stamp' : 'border border-border bg-surface text-text-muted hover:text-text'
                 }`}
               >
                 {g.label}
@@ -156,7 +155,7 @@ export default function Conversation() {
                 type="button"
                 disabled={sending}
                 onClick={() => sendQuickMessage(msg)}
-                className="rounded-full border border-border bg-surface-raised px-3.5 py-2 text-sm text-primary transition hover:border-primary hover:bg-surface-raised disabled:opacity-50"
+                className="cta-outline rounded-xl px-3.5 py-1.5 text-sm font-medium disabled:opacity-50"
               >
                 {msg}
               </button>

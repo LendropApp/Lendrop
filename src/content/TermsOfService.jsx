@@ -10,7 +10,7 @@ function Section({ title, children }) {
 export default function TermsOfService() {
   return (
     <div>
-      <p className="mb-6 text-xs font-medium uppercase tracking-wide text-primary">
+      <p className="mb-6 text-xs font-semibold text-primary">
         Last updated: September 15, 2026
       </p>
 

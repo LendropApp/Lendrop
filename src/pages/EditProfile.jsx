@@ -98,22 +98,18 @@ export default function EditProfile() {
 
   return (
     <div className="min-h-screen bg-bg pb-28 md:pb-16">
-      <header className="glass sticky top-0 z-50">
-        <div className="h-px bg-linear-to-r from-transparent via-lavender/50 to-transparent" />
+      <header className="sticky top-0 z-50 border-b border-border bg-surface">
         <div className="mx-auto flex max-w-xl items-center gap-3 px-6 py-4 sm:px-10">
           <button
             type="button"
             onClick={goBack}
             aria-label="Back to Profile"
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-text-muted transition hover:border-primary hover:text-primary"
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-text-muted hover:border-primary hover:text-primary"
           >
             <ArrowLeft className="h-4 w-4" />
           </button>
           <div>
-            <h1 className="font-display text-lg font-semibold text-text">Edit profile</h1>
-            <p className="font-mono text-[10px] uppercase tracking-widest text-primary">
-              Keep it accurate
-            </p>
+            <h1 className="text-2xl font-extrabold">Edit profile</h1>
           </div>
         </div>
       </header>
@@ -125,7 +121,7 @@ export default function EditProfile() {
               <LockerAvatar label={fullName} photoUrl={avatarPreview} size="lg" />
               <label
                 htmlFor="avatar"
-                className="absolute -bottom-1 -right-1 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full cta-brand text-soft-white shadow-[0_4px_12px_-2px_rgba(165,140,244,0.7)]"
+                className="absolute -bottom-1 -right-1 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full cta-brand text-soft-white"
               >
                 <Camera className="h-3.5 w-3.5" />
               </label>
@@ -149,7 +145,7 @@ export default function EditProfile() {
               type="text"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
+              className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none transition focus:border-primary"
             />
           </div>
 
@@ -163,7 +159,7 @@ export default function EditProfile() {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="+503 7000 0000"
-              className="w-full rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
+              className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none transition focus:border-primary"
             />
           </div>
 
@@ -177,7 +173,7 @@ export default function EditProfile() {
               value={city}
               onChange={(e) => setCity(e.target.value)}
               placeholder="San Salvador"
-              className="w-full rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
+              className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none transition focus:border-primary"
             />
           </div>
 
@@ -194,7 +190,7 @@ export default function EditProfile() {
               onChange={(e) => setBio(e.target.value.slice(0, 240))}
               placeholder="Tell renters a little about yourself…"
               rows={4}
-              className="w-full resize-none rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
+              className="w-full resize-none rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none transition focus:border-primary"
             />
           </div>
 
@@ -203,7 +199,7 @@ export default function EditProfile() {
           <button
             type="submit"
             disabled={saving}
-            className="w-full rounded-xl cta-brand py-3 text-sm font-semibold text-soft-white glow-sm transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 disabled:opacity-50"
+            className="w-full rounded-xl cta-brand py-3 text-sm font-semibold text-soft-white glow-sm transition disabled:opacity-50"
           >
             {saving ? 'Saving…' : 'Save changes'}
           </button>

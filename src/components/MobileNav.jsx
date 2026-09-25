@@ -12,10 +12,10 @@ const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
 
 const VERIFICATION_PILL = {
-  verified: 'bg-emerald-100 text-emerald-700',
-  pending: 'bg-amber-100 text-amber-700',
-  rejected: 'bg-red-100 text-red-600',
-  unverified: 'bg-jet-black/10 text-text-muted',
+  verified: 'bg-success-soft text-success',
+  pending: 'bg-surface-raised text-primary',
+  rejected: 'bg-danger-soft text-danger',
+  unverified: 'bg-surface-raised text-text-muted',
 }
 
 /**
@@ -113,7 +113,7 @@ export default function MobileNav() {
   function badgeFor(kind) {
     if (kind === 'notifications' && unreadNotifications > 0) {
       return (
-        <span className="ml-auto min-w-5 rounded-full bg-lavender px-1.5 py-0.5 text-center font-mono text-[10px] font-semibold text-jet-black">
+        <span className="stamp ml-auto min-w-5 rounded-md px-1.5 py-0.5 text-center text-xs font-bold tabular-nums">
           {unreadNotifications > 9 ? '9+' : unreadNotifications}
         </span>
       )
@@ -121,7 +121,7 @@ export default function MobileNav() {
     if (kind === 'verification' && verificationStatus !== 'verified') {
       return (
         <span
-          className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-semibold ${VERIFICATION_PILL[verificationStatus] ?? VERIFICATION_PILL.unverified}`}
+          className={`ml-auto rounded-md px-2 py-0.5 text-xs font-semibold ${VERIFICATION_PILL[verificationStatus] ?? VERIFICATION_PILL.unverified}`}
         >
           {verification.label}
         </span>
@@ -140,7 +140,7 @@ export default function MobileNav() {
         aria-label="Close menu"
         tabIndex={-1}
         onClick={() => setOpen(false)}
-        className="absolute inset-0 h-full w-full cursor-default bg-jet-black/40 backdrop-blur-sm"
+        className="absolute inset-0 h-full w-full cursor-default bg-jet-black/40"
       />
 
       <div
@@ -166,7 +166,7 @@ export default function MobileNav() {
               <span className="block truncate font-display text-base font-semibold text-text">
                 {profile?.full_name ?? firstName}
               </span>
-              <span className="block font-mono text-[10px] uppercase tracking-widest text-primary">
+              <span className="block text-xs font-semibold text-primary">
                 {isHost ? 'Lender & renter' : 'Renter'}
               </span>
             </span>
@@ -186,7 +186,7 @@ export default function MobileNav() {
           <div className="px-5 pb-2">
             <Link
               to={BECOME_HOST_CTA.to}
-              className="flex items-center justify-center gap-2 rounded-xl cta-brand px-4 py-2.5 text-sm font-semibold text-soft-white glow-sm transition hover:brightness-105"
+              className="cta-brand flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-soft-white"
             >
               <BecomeHostIcon className="h-4 w-4" />
               {BECOME_HOST_CTA.label}
@@ -197,7 +197,7 @@ export default function MobileNav() {
         <nav className="flex-1 px-2 pb-4">
           {sections.map((section) => (
             <div key={section.id} className="mt-4 first:mt-2">
-              <p className="px-3 pb-1 font-mono text-[10px] font-semibold uppercase tracking-widest text-text-muted">
+              <p className="px-3 pb-1 text-xs font-bold text-text-muted">
                 {section.title}
               </p>
               <ul>
@@ -240,7 +240,7 @@ export default function MobileNav() {
               setOpen(false)
               signOut()
             }}
-            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-500 transition hover:bg-red-50"
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-danger transition hover:bg-danger-soft"
           >
             <LogOut className="h-4 w-4" />
             Sign out
@@ -258,7 +258,7 @@ export default function MobileNav() {
         aria-label="Open menu"
         aria-expanded={open}
         aria-haspopup="dialog"
-        className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-text-muted transition hover:border-primary hover:text-primary"
+        className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-text-muted hover:border-primary hover:text-primary"
       >
         <Menu className="h-4 w-4" />
       </button>

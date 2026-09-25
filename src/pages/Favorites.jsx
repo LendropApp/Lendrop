@@ -50,8 +50,7 @@ export default function Favorites() {
 
   return (
     <div className="min-h-screen bg-bg pb-28 md:pb-16">
-      <header className="glass sticky top-0 z-50">
-        <div className="h-px bg-linear-to-r from-transparent via-lavender/50 to-transparent" />
+      <header className="sticky top-0 z-50 border-b border-border bg-surface">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-6 py-4 sm:px-10">
           <button
             type="button"
@@ -77,7 +76,7 @@ export default function Favorites() {
           </p>
 
           {error ? (
-            <p className="py-20 text-center text-sm text-red-600">{error}</p>
+            <p className="py-20 text-center text-sm text-danger">{error}</p>
           ) : loading ? (
             <p className="py-20 text-center text-sm text-text-muted">Loading saved items…</p>
           ) : items.length > 0 ? (

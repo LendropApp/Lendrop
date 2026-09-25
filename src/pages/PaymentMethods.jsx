@@ -68,7 +68,7 @@ export default function PaymentMethods() {
             Saved cards are stored as brand, last 4 digits, and expiry only, never the full card number.
           </p>
 
-          {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+          {error && <p className="mt-4 text-sm text-danger">{error}</p>}
 
           {loading ? (
             <p className="mt-8 text-center text-sm text-text-muted">Loading payment methods…</p>
@@ -90,7 +90,7 @@ export default function PaymentMethods() {
                     </p>
                   </div>
                   {m.is_default ? (
-                    <span className="shrink-0 rounded-full bg-surface-raised px-3 py-1 text-xs font-semibold text-primary">
+                    <span className="shrink-0 rounded-md bg-surface-raised px-2.5 py-1 text-xs font-semibold text-primary">
                       Default
                     </span>
                   ) : (
@@ -106,7 +106,7 @@ export default function PaymentMethods() {
                     type="button"
                     aria-label="Remove card"
                     onClick={() => handleRemove(m.id)}
-                    className="shrink-0 text-text-muted transition hover:text-red-500"
+                    className="shrink-0 text-text-muted transition hover:text-danger"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>

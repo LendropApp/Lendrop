@@ -4,12 +4,12 @@ import { supabase } from '../lib/supabaseClient'
 import PageHeader from '../components/PageHeader'
 
 const RESERVATION_STATUS_STYLES = {
-  pending: 'bg-jet-black/10 text-text-muted',
+  pending: 'bg-surface-raised text-text-muted',
   confirmed: 'bg-surface-raised text-primary',
   active: 'bg-surface-raised text-primary',
-  completed: 'bg-emerald-100 text-emerald-700',
-  cancelled: 'bg-jet-black/10 text-text-muted',
-  disputed: 'bg-red-100 text-red-600',
+  completed: 'bg-success-soft text-success',
+  cancelled: 'bg-surface-raised text-text-muted',
+  disputed: 'bg-danger-soft text-danger',
 }
 
 const RESERVATION_STATUS_LABELS = {
@@ -22,18 +22,18 @@ const RESERVATION_STATUS_LABELS = {
 }
 
 const PAYMENT_STATUS_STYLES = {
-  pending: 'bg-jet-black/10 text-text-muted',
+  pending: 'bg-surface-raised text-text-muted',
   authorized: 'bg-surface-raised text-primary',
-  paid: 'bg-emerald-100 text-emerald-700',
-  refunded: 'bg-jet-black/10 text-text-muted',
-  failed: 'bg-red-100 text-red-600',
+  paid: 'bg-success-soft text-success',
+  refunded: 'bg-surface-raised text-text-muted',
+  failed: 'bg-danger-soft text-danger',
 }
 
 const COMPARTMENT_STATUS_STYLES = {
-  available: 'bg-emerald-100 text-emerald-700',
+  available: 'bg-success-soft text-success',
   reserved: 'bg-surface-raised text-primary',
-  occupied: 'bg-amber-100 text-amber-700',
-  maintenance: 'bg-red-100 text-red-600',
+  occupied: 'bg-surface-raised text-primary',
+  maintenance: 'bg-danger-soft text-danger',
 }
 
 function formatDateRange(start, end) {
@@ -86,7 +86,7 @@ export default function Admin() {
             Every reservation, with its locker and payment status, in one place.
           </p>
 
-          {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+          {error && <p className="mt-4 text-sm text-danger">{error}</p>}
 
           {loading ? (
             <p className="mt-8 text-center text-sm text-text-muted">Loading reservations…</p>
@@ -96,7 +96,7 @@ export default function Admin() {
             <div className="mt-6 overflow-x-auto rounded-2xl border border-border bg-surface">
               <table className="w-full min-w-[900px] text-left text-sm">
                 <thead>
-                  <tr className="border-b border-border text-xs font-semibold uppercase tracking-wide text-text-muted">
+                  <tr className="border-b border-border text-xs font-semibold text-text-muted">
                     <th className="px-4 py-3">Item</th>
                     <th className="px-4 py-3">Renter</th>
                     <th className="px-4 py-3">Lender</th>
@@ -124,7 +124,7 @@ export default function Admin() {
                         <td className="px-4 py-3">
                           <span
                             className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
-                              RESERVATION_STATUS_STYLES[row.status] ?? 'bg-jet-black/10 text-text-muted'
+                              RESERVATION_STATUS_STYLES[row.status] ?? 'bg-surface-raised text-text-muted'
                             }`}
                           >
                             {RESERVATION_STATUS_LABELS[row.status] ?? row.status}
@@ -134,7 +134,7 @@ export default function Admin() {
                           {paymentStatus ? (
                             <span
                               className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
-                                PAYMENT_STATUS_STYLES[paymentStatus] ?? 'bg-jet-black/10 text-text-muted'
+                                PAYMENT_STATUS_STYLES[paymentStatus] ?? 'bg-surface-raised text-text-muted'
                               }`}
                             >
                               {paymentStatus}
@@ -148,7 +148,7 @@ export default function Admin() {
                             <div className="flex items-center gap-1.5">
                               <span
                                 className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
-                                  COMPARTMENT_STATUS_STYLES[compartment.status] ?? 'bg-jet-black/10 text-text-muted'
+                                  COMPARTMENT_STATUS_STYLES[compartment.status] ?? 'bg-surface-raised text-text-muted'
                                 }`}
                               >
                                 {compartment.status}
@@ -161,7 +161,7 @@ export default function Admin() {
                             <span className="text-xs text-text-muted">Unassigned</span>
                           )}
                         </td>
-                        <td className="px-4 py-3 text-right font-mono text-sm font-semibold text-text">
+                        <td className="num px-4 py-3 text-right text-base text-text">
                           ${Number(row.total_price).toFixed(2)}
                         </td>
                       </tr>

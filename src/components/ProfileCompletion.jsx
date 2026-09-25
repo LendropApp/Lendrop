@@ -47,7 +47,7 @@ export default function ProfileCompletion({ user, profile }) {
         <h2 className="font-display text-base font-semibold text-text">
           {complete ? 'Your profile is ready' : 'Get your profile ready'}
         </h2>
-        <span className="font-mono text-xs font-semibold text-primary">{pct}%</span>
+        <span className="num text-lg text-primary">{pct}%</span>
       </div>
 
       <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-surface-raised">

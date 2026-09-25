@@ -32,7 +32,7 @@ export default function LegalModal({ open, onClose, title, children }) {
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-jet-black/70 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-jet-black/70 p-4"
       onClick={onClose}
     >
       <div
@@ -52,7 +52,7 @@ export default function LegalModal({ open, onClose, title, children }) {
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="flex h-8 w-8 items-center justify-center rounded-full text-text-muted transition hover:bg-surface-raised hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-lavender"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-text-muted hover:bg-surface-raised hover:text-primary"
           >
             <X className="h-4 w-4" />
           </button>

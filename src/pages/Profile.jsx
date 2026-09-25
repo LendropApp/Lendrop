@@ -76,8 +76,7 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen bg-bg pb-28 md:pb-16">
-      <header className="glass sticky top-0 z-50">
-        <div className="h-px bg-linear-to-r from-transparent via-lavender/50 to-transparent" />
+      <header className="sticky top-0 z-50 border-b border-border bg-surface">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-6 py-4 sm:px-10">
           <button
             type="button"
@@ -95,7 +94,7 @@ export default function Profile() {
               type="button"
               onClick={handleSignOut}
               aria-label="Log out"
-              className="hidden items-center gap-1.5 text-sm font-medium text-text-muted transition hover:text-red-500 md:flex"
+              className="hidden items-center gap-1.5 text-sm font-medium text-text-muted transition hover:text-danger md:flex"
             >
               <LogOut className="h-4 w-4" />
               <span className="hidden sm:inline">Log out</span>
@@ -118,7 +117,7 @@ export default function Profile() {
               <div className="min-w-0 flex-1">
                 <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <h1 className="font-display text-xl font-bold text-text">
+                    <h1 className="text-2xl font-extrabold">
                       {profile?.full_name || 'User'}
                     </h1>
                     {profile?.city && (
@@ -130,7 +129,7 @@ export default function Profile() {
                   </div>
                   <Link
                     to="/profile/edit"
-                    className="flex shrink-0 items-center gap-1.5 rounded-full border border-border px-4 py-2 text-xs font-semibold text-text-muted transition hover:border-primary hover:text-primary"
+                    className="cta-outline flex shrink-0 items-center gap-1.5 rounded-xl px-4 py-1.5 text-sm font-semibold"
                   >
                     <Edit3 className="h-3.5 w-3.5" />
                     Edit profile
@@ -141,7 +140,7 @@ export default function Profile() {
                   {hasReviews ? (
                     <>
                       <StarRating value={profile.average_rating} size="sm" />
-                      <span className="font-mono text-sm font-medium text-text">
+                      <span className="text-sm font-semibold tabular-nums text-text">
                         {Number(profile.average_rating).toFixed(1)}
                       </span>
                       <span className="text-sm text-text-muted">
@@ -170,21 +169,21 @@ export default function Profile() {
             <div className="mt-5 grid grid-cols-2 gap-3 border-t border-border pt-5">
               <Link
                 to="/explore"
-                className="flex items-center gap-3 rounded-xl bg-surface-raised p-3.5 transition hover:bg-surface-raised"
+                className="flex items-center gap-3 rounded-xl border border-transparent bg-surface-raised p-3.5 hover:border-primary"
               >
                 <Package className="h-4 w-4 text-primary" />
                 <div>
-                  <p className="text-sm font-semibold text-text">{itemsCount}</p>
+                  <p className="num text-xl text-text">{itemsCount}</p>
                   <p className="text-xs text-text-muted">Items listed</p>
                 </div>
               </Link>
               <Link
                 to="/favorites"
-                className="flex items-center gap-3 rounded-xl bg-surface-raised p-3.5 transition hover:bg-surface-raised"
+                className="flex items-center gap-3 rounded-xl border border-transparent bg-surface-raised p-3.5 hover:border-primary"
               >
                 <Heart className="h-4 w-4 text-primary" />
                 <div>
-                  <p className="text-sm font-semibold text-text">{favoritesCount}</p>
+                  <p className="num text-xl text-text">{favoritesCount}</p>
                   <p className="text-xs text-text-muted">Saved items</p>
                 </div>
               </Link>
@@ -214,7 +213,7 @@ export default function Profile() {
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-semibold text-text">{label}</p>
                     {badge && (
-                      <span className="rounded-full bg-surface-raised px-2 py-0.5 text-[10px] font-semibold text-primary">
+                      <span className="rounded-md bg-surface-raised px-2 py-0.5 text-xs font-semibold text-primary">
                         {badge}
                       </span>
                     )}

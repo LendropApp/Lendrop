@@ -185,14 +185,14 @@ export default function Home() {
             </div>
 
             {/* The compartment: a door in the shutter that rolls up once. */}
-            <div className="lg:col-span-5">
+            <div className="mx-auto w-full max-w-[17rem] sm:max-w-none lg:col-span-5">
               <div className="rounded-2xl border border-white/15 bg-jet-black/35 p-2">
                 <Shutter label={`Compartment ${SAMPLE_LISTING.code}`} className="rounded-xl">
                   <figure className="overflow-hidden rounded-xl bg-surface text-text">
                     <img
                       src={SAMPLE_LISTING.image}
                       alt={SAMPLE_LISTING.item}
-                      className="aspect-[4/3] w-full object-cover"
+                      className="aspect-[3/2] w-full object-cover sm:aspect-[4/3]"
                     />
                     <figcaption className="flex items-end justify-between gap-4 p-4">
                       <div className="min-w-0">

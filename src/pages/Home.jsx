@@ -131,7 +131,7 @@ export default function Home() {
           </nav>
 
           <div className="hidden items-center gap-4 md:flex">
-            <Link to="/login" className="cta-brand rounded-xl px-5 py-2.5 text-sm font-semibold text-soft-white">
+            <Link to="/login" className="cta-outline rounded-xl px-5 py-2 text-sm font-semibold">
               Log in
             </Link>
             <Link to="/signup" className="cta-brand rounded-xl px-5 py-2.5 text-sm font-semibold text-soft-white">
@@ -163,7 +163,7 @@ export default function Home() {
               </a>
             ))}
             <div className="mt-2 flex flex-col gap-2 border-t border-border pt-3">
-              <Link to="/login" className="cta-brand rounded-xl px-5 py-2.5 text-center text-sm font-semibold text-soft-white">
+              <Link to="/login" className="cta-outline rounded-xl px-5 py-2 text-center text-sm font-semibold">
                 Log in
               </Link>
               <Link to="/signup" className="cta-brand rounded-xl px-5 py-2.5 text-center text-sm font-semibold text-soft-white">
@@ -287,7 +287,7 @@ export default function Home() {
               />
               <Link
                 to="/become-host"
-                className="cta-brand mt-8 inline-block rounded-xl px-6 py-3 text-sm font-semibold text-soft-white"
+                className="cta-outline mt-8 inline-block rounded-xl px-6 py-2.5 text-sm font-semibold"
               >
                 Start hosting
               </Link>
@@ -399,13 +399,13 @@ export default function Home() {
             <div className="flex shrink-0 flex-wrap gap-3">
               <Link
                 to="/explore"
-                className="cta-brand rounded-xl px-6 py-3 text-sm font-bold text-soft-white ring-1 ring-white/30"
+                className="cta-outline rounded-xl px-6 py-2.5 text-sm font-bold"
               >
                 Browse items
               </Link>
               <Link
                 to="/become-host"
-                className="cta-brand rounded-xl px-6 py-3 text-sm font-bold text-soft-white ring-1 ring-white/30"
+                className="rounded-xl border border-white/40 px-6 py-3 text-sm font-bold text-soft-white hover:border-white"
               >
                 Start hosting
               </Link>

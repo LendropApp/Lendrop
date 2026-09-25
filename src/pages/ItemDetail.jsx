@@ -506,7 +506,7 @@ export default function ItemDetail() {
                   type="button"
                   onClick={handleMessageOwner}
                   disabled={messaging}
-                  className="cta-brand mt-3 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-soft-white disabled:opacity-50"
+                  className="cta-outline mt-3 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold disabled:opacity-50"
                 >
                   <MessageCircle className="h-4 w-4" />
                   {messaging ? 'Starting conversation…' : `Message ${item.owner?.full_name?.split(' ')[0] ?? 'lender'}`}
@@ -640,7 +640,7 @@ export default function ItemDetail() {
                         type="button"
                         onClick={() => setConfirmingDelete(false)}
                         disabled={deleting}
-                        className="cta-brand rounded-lg px-3 py-1.5 text-xs font-semibold text-soft-white"
+                        className="cta-outline rounded-lg px-3 py-1 text-xs font-semibold"
                       >
                         Cancel
                       </button>

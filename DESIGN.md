@@ -176,11 +176,11 @@ Cut-metal corners: 8px for small controls, 10px for buttons and inputs, 12px for
 ### Buttons
 - **Shape:** gently cut corners (10px).
 - **Primary:** the brand gradient, left to right from Shutter Purple (#433075) to Dark-mode CTA Purple (#7050d4), with Soft White text (5.3:1 at the light end), the same in both themes. Hover brightens it slightly. It never runs to Lavender: white text fails there.
-- **Every action button uses it:** primary and secondary actions alike (Log in, Sign up, Search, Message host, Cancel). Hierarchy comes from size and weight: the one main action on a screen is larger and bolder.
-- **On the shutter:** the same gradient with a thin white ring (white at 30%) so it separates from the purple field.
+- **Secondary:** the panel fill with the same gradient as a 2px border, and text in the page's text colour; hover raises the fill and turns the text primary. Used for Log in, Start hosting, Message host, Clear filters, Cancel, and the active auth tab.
+- **On the shutter:** primary keeps the gradient fill with a thin white ring (white at 30%); secondary uses the panel fill with the gradient border.
 - **Not buttons in this sense:** selection chips and toggles take the Lavender stamp, icon-only buttons stay neutral, and destructive confirmations stay red.
 
-**The One Gradient Rule.** If it performs an action and has a text label, it wears the brand gradient.
+**The One Gradient Rule.** Every labelled action button carries the brand gradient: as the fill for a primary action, as the border for a secondary one.
 
 ### Chips
 - **Style:** hairline border on a panel fill, 8px corners, category icon in primary.
@@ -212,7 +212,7 @@ A 12px shape plus a label: hollow circle pending, filled square confirmed, trian
 
 ### Do:
 - **Do** put the shutter texture only on shutter bands and reveal moments.
-- **Do** give every labelled action button the brand gradient; use size and weight, not a different style, for hierarchy.
+- **Do** give every labelled action button the brand gradient: filled for primary, as a 2px border on the panel fill for secondary.
 - **Do** use the Lavender stamp for every selected state, the same way everywhere.
 - **Do** show rental states with the Rental Status shape and label.
 - **Do** label sample or illustrative data on the page.

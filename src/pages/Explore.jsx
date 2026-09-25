@@ -597,7 +597,7 @@ export default function Explore() {
               <button
                 type="button"
                 onClick={clearFilters}
-                className="cta-brand mt-4 rounded-xl px-4 py-2 text-sm font-semibold text-soft-white"
+                className="cta-outline mt-4 rounded-xl px-4 py-1.5 text-sm font-semibold"
               >
                 Clear filters
               </button>

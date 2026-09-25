@@ -156,6 +156,14 @@
       "css": ".ds-btn-primary { background: linear-gradient(to right, #433075, #7050d4); color: #fafafa; padding: 12px 24px; border: 0; border-radius: 10px; font: 600 14px Manrope, sans-serif; cursor: pointer; transition: background-color 180ms ease; } .ds-btn-primary:hover { filter: brightness(1.08); } .ds-btn-primary:focus-visible { outline: 2px solid #433075; outline-offset: 2px; }"
     },
     {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Secondary actions: panel fill with the brand gradient as its border.",
+      "html": "<button class=\"ds-btn-secondary\">Message host</button>",
+      "css": ".ds-btn-secondary { border: 2px solid transparent; background: linear-gradient(#ffffff, #ffffff) padding-box, linear-gradient(to right, #433075, #7050d4) border-box; color: #0d0d0d; padding: 10px 22px; border-radius: 10px; font: 600 14px Manrope, sans-serif; cursor: pointer; } .ds-btn-secondary:hover { background: linear-gradient(#f4f3f7, #f4f3f7) padding-box, linear-gradient(to right, #433075, #7050d4) border-box; color: #433075; } .ds-btn-secondary:focus-visible { outline: 2px solid #433075; outline-offset: 2px; }"
+    },
+    {
       "name": "Stamp Chip",
       "kind": "chip",
       "refersTo": "stamp",
@@ -224,12 +232,12 @@
       },
       {
         "name": "The One Gradient Rule",
-        "body": "If it performs an action and has a text label, it wears the brand gradient.",
+        "body": "Every labelled action button carries the brand gradient: as the fill for a primary action, as the border for a secondary one.",
         "section": "components"
       }
     ],
     "dos": [
-      "Do give every labelled action button the brand gradient; use size and weight, not a different style, for hierarchy.",
+      "Do give every labelled action button the brand gradient: filled for primary, as a 2px border on the panel fill for secondary.",
       "Do put the shutter texture only on shutter bands and reveal moments.",
       "Do use the Lavender stamp for every selected state, the same way everywhere.",
       "Do show rental states with the Rental Status shape and label.",

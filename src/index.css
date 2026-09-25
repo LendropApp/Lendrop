@@ -252,6 +252,25 @@
     filter: brightness(1.08);
   }
 
+  /* Secondary buttons: the panel fill with the same gradient as a 2px
+     border. Two stacked backgrounds do it: the fill is clipped to the
+     padding box, the gradient to the border box, and the transparent
+     border lets the gradient show through. */
+  .cta-outline {
+    border: 2px solid transparent;
+    background:
+      linear-gradient(var(--surface), var(--surface)) padding-box,
+      linear-gradient(to right, var(--cta-from), var(--cta-to)) border-box;
+    color: var(--text);
+  }
+
+  .cta-outline:hover:not(:disabled) {
+    background:
+      linear-gradient(var(--surface-raised), var(--surface-raised)) padding-box,
+      linear-gradient(to right, var(--cta-from), var(--cta-to)) border-box;
+    color: var(--primary);
+  }
+
   /* Slow ambient drift for the aurora blobs behind the auth screens
      (AuroraBlobs.jsx, AuthLayout.jsx). */
   @keyframes aurora-drift {

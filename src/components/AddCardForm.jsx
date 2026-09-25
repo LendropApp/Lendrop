@@ -231,7 +231,7 @@ export default function AddCardForm({ onSaved, onCancel, makeDefault = false }) 
               <button
                 type="button"
                 onClick={onCancel}
-                className="cta-brand rounded-xl px-4 py-2.5 text-sm font-semibold text-soft-white"
+                className="cta-outline rounded-xl px-4 py-2 text-sm font-semibold"
               >
                 Cancel
               </button>
@@ -268,7 +268,7 @@ export default function AddCardForm({ onSaved, onCancel, makeDefault = false }) 
               <button
                 type="button"
                 onClick={onCancel}
-                className="cta-brand rounded-xl px-4 py-2.5 text-sm font-semibold text-soft-white"
+                className="cta-outline rounded-xl px-4 py-2 text-sm font-semibold"
               >
                 Cancel
               </button>

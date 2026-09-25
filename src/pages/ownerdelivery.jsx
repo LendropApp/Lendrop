@@ -4,13 +4,15 @@ import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import PageHeader from '../components/PageHeader'
 import StatusMessage from '../components/StatusMessage'
+import LendropIdInput from '../components/LendropIdInput'
+import { functionErrorMessage } from '../lib/functionError'
 
 function DeliveryForm({ reservation, onDelivered }) {
   const { user } = useAuth()
   const [photo, setPhoto] = useState(null)
   const [photoPreview, setPhotoPreview] = useState(null)
   const [dui, setDui] = useState('')
-  const [password, setPassword] = useState('')
+  const [lendropId, setLendropId] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [status, setStatus] = useState({ type: '', text: '' })
 
@@ -54,13 +56,13 @@ function DeliveryForm({ reservation, onDelivered }) {
     }
 
     const { data, error } = await supabase.functions.invoke('locker-access', {
-      body: { reservationId: reservation.id, dui, password, action: 'deposit' },
+      body: { reservationId: reservation.id, dui, lendropId, action: 'deposit' },
     })
 
     setSubmitting(false)
 
     if (error || data?.error) {
-      setStatus({ type: 'error', text: data?.error ?? 'Could not verify your identity. Please try again.' })
+      setStatus({ type: 'error', text: await functionErrorMessage(error, data, 'Could not verify your identity. Please try again.') })
       return
     }
 
@@ -112,7 +114,7 @@ function DeliveryForm({ reservation, onDelivered }) {
 
         <p className="flex items-center gap-1.5 text-xs text-text-muted">
           <Lock className="h-3.5 w-3.5" />
-          Enter your DUI and account password at the locker to confirm the drop-off.
+          Enter your DUI and Lendrop ID at the locker to confirm the drop-off.
         </p>
         <input
           type="text"
@@ -122,14 +124,7 @@ function DeliveryForm({ reservation, onDelivered }) {
           required
           className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-primary"
         />
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Password"
-          required
-          className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-primary"
-        />
+        <LendropIdInput value={lendropId} onChange={setLendropId} />
         <div className="flex items-center justify-between gap-3">
           <StatusMessage type={status.type} text={status.text} />
           <button
@@ -148,7 +143,7 @@ function DeliveryForm({ reservation, onDelivered }) {
 function ReturnPickupForm({ reservation, onCompleted }) {
   const { user } = useAuth()
   const [dui, setDui] = useState('')
-  const [password, setPassword] = useState('')
+  const [lendropId, setLendropId] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [status, setStatus] = useState({ type: '', text: '' })
 
@@ -210,7 +205,7 @@ function ReturnPickupForm({ reservation, onCompleted }) {
       body: {
         reservationId: reservation.id,
         dui,
-        password,
+        lendropId,
         action: 'return_pickup',
         ...(reportingDamage ? { hasDamage: true, damageReason: damageReason.trim() } : {}),
       },
@@ -219,7 +214,7 @@ function ReturnPickupForm({ reservation, onCompleted }) {
     setSubmitting(false)
 
     if (error || data?.error) {
-      setStatus({ type: 'error', text: data?.error ?? 'Could not verify your identity. Please try again.' })
+      setStatus({ type: 'error', text: await functionErrorMessage(error, data, 'Could not verify your identity. Please try again.') })
       return
     }
 
@@ -288,7 +283,7 @@ function ReturnPickupForm({ reservation, onCompleted }) {
 
         <p className="flex items-center gap-1.5 text-xs text-text-muted">
           <Lock className="h-3.5 w-3.5" />
-          Enter your DUI and account password to confirm you picked up the returned item.
+          Enter your DUI and Lendrop ID to confirm you picked up the returned item.
         </p>
         <input
           type="text"
@@ -298,14 +293,7 @@ function ReturnPickupForm({ reservation, onCompleted }) {
           required
           className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-primary"
         />
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Password"
-          required
-          className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-primary"
-        />
+        <LendropIdInput value={lendropId} onChange={setLendropId} />
         <div className="flex items-center justify-between gap-3">
           <button
             type="button"

@@ -31,7 +31,7 @@ const HANDOFF_STEPS = [
   },
   {
     title: 'You pick it up',
-    desc: 'Confirm it is you with your DUI and password, and the compartment opens. The drop-off photo shows the condition it was left in.',
+    desc: 'Enter your DUI and your private Lendrop ID, and the compartment opens. The drop-off photo shows the condition it was left in.',
     status: 'active',
   },
   {

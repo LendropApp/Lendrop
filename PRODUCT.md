@@ -21,7 +21,7 @@ Lendrop is a peer-to-peer rental marketplace. The full loop is: publish → sear
 
 ## Positioning
 
-Handoffs happen through lockers, not meetups. The owner drops the item into an assigned locker compartment and the renter collects it by confirming their identity (DUI and account password) at the locker. Every locker event is logged. Identity is tied to the Salvadoran national ID (DUI), and photo evidence is required before and after each rental.
+Handoffs happen through lockers, not meetups. The owner drops the item into an assigned locker compartment and the renter collects it by confirming their identity (DUI plus their private 6-character Lendrop ID, shown as ABC-123) at the locker. Every locker event is logged. Identity is tied to the Salvadoran national ID (DUI), and photo evidence is required before and after each rental.
 
 ## Operating Context
 

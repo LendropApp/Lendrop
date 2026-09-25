@@ -1,5 +1,8 @@
-// Verifies a renter/lender's identity (DUI + account password) before
-// logging a locker drop-off, pickup, or return event. This is the
+// Verifies a renter/lender's identity (DUI + Lendrop ID) before
+// logging a locker drop-off, pickup, or return event. The Lendrop ID is
+// the private 6-character code from 0030_lendrop_id.sql; wrong attempts
+// are limited to MAX_FAILED_ATTEMPTS per FAILED_WINDOW_MINUTES so it
+// cannot be guessed by trying. This is the
 // "secure backend" locker_events' table comment requires — the client
 // never inserts locker_events rows directly.
 //
@@ -35,6 +38,12 @@ const EVIDENCE_STAGE: Partial<Record<Action, string>> = {
   return_dropoff: 'return_drop_off',
 }
 
+const MAX_FAILED_ATTEMPTS = 5
+const FAILED_WINDOW_MINUTES = 15
+
+// Accepts "abc-123", "ABC 123" or "abc123"; compares the bare 6 characters.
+const normalizeCode = (value: string) => value.replace(/[^a-z0-9]/gi, '').toUpperCase()
+
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -58,8 +67,8 @@ Deno.serve(async (request) => {
   if (userError || !userData.user) return json({ error: 'Unauthorized' }, 401)
   const caller = userData.user
 
-  const { reservationId, dui, password, action, hasDamage, damageReason } = await request.json()
-  if (!reservationId || !dui || !password || !ACTIONS.includes(action)) {
+  const { reservationId, dui, lendropId, action, hasDamage, damageReason } = await request.json()
+  if (!reservationId || !dui || !lendropId || !ACTIONS.includes(action)) {
     return json({ error: 'Missing or invalid fields' }, 400)
   }
   if (action === 'return_pickup' && hasDamage && !String(damageReason ?? '').trim()) {
@@ -129,27 +138,52 @@ Deno.serve(async (request) => {
   if (action === 'return_pickup' && !hasReturnDeposited) return json({ error: 'The renter has not returned the item yet.' }, 409)
   if (action === 'return_pickup' && hasReturnRetrieved) return json({ error: 'The return was already picked up.' }, 409)
 
+  // Rate limit before checking anything secret.
+  const windowStart = new Date(Date.now() - FAILED_WINDOW_MINUTES * 60_000).toISOString()
+  const { count: recentFailures } = await admin
+    .from('lendrop_id_attempts')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', caller.id)
+    .eq('kind', 'locker')
+    .eq('succeeded', false)
+    .gte('created_at', windowStart)
+  if ((recentFailures ?? 0) >= MAX_FAILED_ATTEMPTS) {
+    return json(
+      { error: `Too many wrong attempts. Try again in ${FAILED_WINDOW_MINUTES} minutes.` },
+      429
+    )
+  }
+
   const { data: privateProfile, error: privateError } = await admin
     .from('profile_private')
-    .select('dui')
+    .select('dui, lendrop_id')
     .eq('user_id', caller.id)
     .maybeSingle()
 
-  if (privateError || !privateProfile?.dui) return json({ error: 'Could not verify your identity.' }, 500)
-  const normalizeDui = (value: string) => value.replace(/[^a-z0-9]/gi, '').toUpperCase()
-  if (normalizeDui(privateProfile.dui) !== normalizeDui(String(dui))) {
-    return json({ error: 'That DUI does not match your account.' }, 401)
+  if (privateError || !privateProfile?.dui || !privateProfile?.lendrop_id) {
+    return json({ error: 'Could not verify your identity.' }, 500)
   }
 
-  // Real password check: attempt a fresh sign-in with the caller's own
-  // email. A wrong password fails here without ever needing the admin
-  // API or storing/comparing the hash ourselves.
-  const passwordClient = createClient(supabaseUrl, anonKey)
-  const { error: passwordError } = await passwordClient.auth.signInWithPassword({
-    email: caller.email!,
-    password,
-  })
-  if (passwordError) return json({ error: 'Incorrect password.' }, 401)
+  // One generic message for either field, so a wrong answer doesn't
+  // reveal which of the two was right.
+  const matches =
+    normalizeCode(privateProfile.dui) === normalizeCode(String(dui)) &&
+    normalizeCode(privateProfile.lendrop_id) === normalizeCode(String(lendropId))
+
+  await admin.from('lendrop_id_attempts').insert({ user_id: caller.id, kind: 'locker', succeeded: matches })
+
+  if (!matches) {
+    const left = MAX_FAILED_ATTEMPTS - (recentFailures ?? 0) - 1
+    return json(
+      {
+        error:
+          left > 0
+            ? `That DUI and Lendrop ID don't match your account. ${left} ${left === 1 ? 'try' : 'tries'} left.`
+            : `That DUI and Lendrop ID don't match your account. Try again in ${FAILED_WINDOW_MINUTES} minutes.`,
+      },
+      401
+    )
+  }
 
   const eventType = EVENT_TYPE[action as Action]
   const { error: insertError } = await admin.from('locker_events').insert({

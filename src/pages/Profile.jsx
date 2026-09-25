@@ -21,6 +21,7 @@ import { supabase } from '../lib/supabaseClient'
 import LockerAvatar from '../components/LockerAvatar'
 import StarRating from '../components/StarRating'
 import ProfileCompletion from '../components/ProfileCompletion'
+import LendropIdCard from '../components/LendropIdCard'
 import useSmartBack from '../hooks/useSmartBack'
 import Logo from '../components/Logo'
 
@@ -189,6 +190,9 @@ export default function Profile() {
               </Link>
             </div>
           </section>
+
+          {/* ================= LENDROP ID (private) ================= */}
+          <LendropIdCard userId={user?.id} />
 
           {/* ================= COMPLETE YOUR PROFILE ================= */}
           <ProfileCompletion user={user} profile={profile} />

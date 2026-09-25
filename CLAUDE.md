@@ -25,7 +25,7 @@ Copy `.env.example` to `.env` and fill in `VITE_SUPABASE_URL` and `VITE_SUPABASE
 
 `supabase/supabase_setup.sql` is the full schema (paste into the Supabase SQL Editor to provision ~19 tables + RLS). `supabase/migrations/0002_identity_and_consent.sql` is a standalone incremental migration for existing projects that predate the `profile_private` split — new projects should just run `supabase_setup.sql`, which already includes it. There is no migration tool wired up (no Supabase CLI config); schema changes are hand-written SQL files applied manually.
 
-Key tables: `profiles` (public), `profile_private` (DUI/date of birth/consent — owner-only), `categories`, `items`, `item_photos`, `lockers`/`locker_compartments`/`locker_events`, `reservations`, `payments`, `photo_evidence`, `reviews`, `notifications`, `identity_verifications`, `favorites`, `disputes`, `conversations`/`conversation_participants`/`messages`.
+Key tables: `profiles` (public), `profile_private` (DUI/date of birth/consent/Lendrop ID — owner-only), `categories`, `items`, `item_photos`, `lockers`/`locker_compartments`/`locker_events`, `reservations`, `payments`, `photo_evidence`, `reviews`, `notifications`, `identity_verifications`, `favorites`, `disputes`, `conversations`/`conversation_participants`/`messages`.
 
 **RLS split pattern**: `profiles` is intentionally public-readable (needed for "Listed by X" on item pages). Any sensitive per-user field (national ID, date of birth, etc.) must go in a separate owner-only table like `profile_private`, never as a column on `profiles` — Postgres RLS is row-level, not column-level, so there's no way to make a single column private on an otherwise-public table. Follow this split for any new sensitive fields.
 

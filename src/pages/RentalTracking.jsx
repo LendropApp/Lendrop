@@ -7,6 +7,8 @@ import PageHeader from '../components/PageHeader'
 import RentalStatus from '../components/RentalStatus'
 import Shutter from '../components/Shutter'
 import StatusMessage from '../components/StatusMessage'
+import LendropIdInput from '../components/LendropIdInput'
+import { functionErrorMessage } from '../lib/functionError'
 
 const STEPS = ['Reserved', 'Delivered', 'In Use', 'Returned']
 
@@ -57,14 +59,14 @@ export default function RentalTracking() {
   const [pickList, setPickList] = useState(null)
 
   const [dui, setDui] = useState('')
-  const [password, setPassword] = useState('')
+  const [lendropId, setLendropId] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [formStatus, setFormStatus] = useState({ type: '', text: '' })
 
   const [returnPhoto, setReturnPhoto] = useState(null)
   const [returnPhotoPreview, setReturnPhotoPreview] = useState(null)
   const [returnDui, setReturnDui] = useState('')
-  const [returnPassword, setReturnPassword] = useState('')
+  const [returnLendropId, setReturnLendropId] = useState('')
   const [returnSubmitting, setReturnSubmitting] = useState(false)
   const [returnStatus, setReturnStatus] = useState({ type: '', text: '' })
 
@@ -150,18 +152,18 @@ export default function RentalTracking() {
     setFormStatus({ type: '', text: '' })
 
     const { data, error } = await supabase.functions.invoke('locker-access', {
-      body: { reservationId: reservation.id, dui, password, action: 'pickup' },
+      body: { reservationId: reservation.id, dui, lendropId, action: 'pickup' },
     })
 
     setSubmitting(false)
 
     if (error || data?.error) {
-      setFormStatus({ type: 'error', text: data?.error ?? 'Could not verify your identity. Please try again.' })
+      setFormStatus({ type: 'error', text: await functionErrorMessage(error, data, 'Could not verify your identity. Please try again.') })
       return
     }
 
     setDui('')
-    setPassword('')
+    setLendropId('')
     setFormStatus({ type: 'success', text: 'Locker opened — enjoy your rental!' })
     await loadReservation()
   }
@@ -203,18 +205,18 @@ export default function RentalTracking() {
     }
 
     const { data, error } = await supabase.functions.invoke('locker-access', {
-      body: { reservationId: reservation.id, dui: returnDui, password: returnPassword, action: 'return_dropoff' },
+      body: { reservationId: reservation.id, dui: returnDui, lendropId: returnLendropId, action: 'return_dropoff' },
     })
 
     setReturnSubmitting(false)
 
     if (error || data?.error) {
-      setReturnStatus({ type: 'error', text: data?.error ?? 'Could not verify your identity. Please try again.' })
+      setReturnStatus({ type: 'error', text: await functionErrorMessage(error, data, 'Could not verify your identity. Please try again.') })
       return
     }
 
     setReturnDui('')
-    setReturnPassword('')
+    setReturnLendropId('')
     setReturnStatus({ type: 'success', text: 'Return confirmed — thanks!' })
     await loadReservation()
   }
@@ -343,7 +345,7 @@ export default function RentalTracking() {
                 <p className="font-bold text-text">Pick up your item</p>
               </div>
               <p className="mb-4 text-sm text-text-muted">
-                Enter your DUI and account password at the locker to confirm it's you and unlock the compartment.
+                Enter your DUI and Lendrop ID at the locker to confirm it's you and unlock the compartment.
               </p>
               <div className="space-y-3">
                 <input
@@ -356,16 +358,7 @@ export default function RentalTracking() {
                   required
                   className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-primary"
                 />
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Password"
-                  aria-label="Account password"
-                  autoComplete="current-password"
-                  required
-                  className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-primary"
-                />
+                <LendropIdInput id="pickup-lendrop-id" value={lendropId} onChange={setLendropId} />
               </div>
               <div className="mt-3 flex items-center justify-between gap-3">
                 <StatusMessage type={formStatus.type} text={formStatus.text} />
@@ -387,7 +380,7 @@ export default function RentalTracking() {
                 <p className="font-bold text-text">Return your item</p>
               </div>
               <p className="mb-4 text-sm text-text-muted">
-                Drop it back at the same locker with a condition photo, then confirm with your DUI and password.
+                Drop it back at the same locker with a condition photo, then confirm with your DUI and Lendrop ID.
               </p>
 
               <label
@@ -420,16 +413,7 @@ export default function RentalTracking() {
                   required
                   className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-primary"
                 />
-                <input
-                  type="password"
-                  value={returnPassword}
-                  onChange={(e) => setReturnPassword(e.target.value)}
-                  placeholder="Password"
-                  aria-label="Account password"
-                  autoComplete="current-password"
-                  required
-                  className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-primary"
-                />
+                <LendropIdInput id="return-lendrop-id" value={returnLendropId} onChange={setReturnLendropId} />
               </div>
               <div className="mt-3 flex items-center justify-between gap-3">
                 <StatusMessage type={returnStatus.type} text={returnStatus.text} />

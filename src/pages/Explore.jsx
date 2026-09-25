@@ -267,7 +267,8 @@ export default function Explore() {
   return (
     <div className="min-h-screen bg-bg pb-28 md:pb-0">
       {/* ================= HEADER ================= */}
-      <header className="sticky top-0 z-50 border-b border-border bg-surface">
+      <header className="glass sticky top-0 z-50 shadow-[0_8px_24px_-18px_rgba(67,48,117,0.35)]">
+        <div className="h-px bg-linear-to-r from-transparent via-lavender/50 to-transparent" />
 
         {!scrolled && (
           <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-6 pt-4 sm:px-10">
@@ -278,11 +279,11 @@ export default function Explore() {
             {/* Main nav — centered, like Airbnb's top tabs. Desktop only:
                 on mobile every one of these lives in MobileNav instead,
                 so the two never show the same link twice. */}
-            <nav aria-label="Main" className="hidden items-center gap-1 md:flex">
+            <nav className="hidden items-center gap-1 rounded-full border border-border bg-surface p-1 shadow-sm md:flex">
               {isHost && (
                 <Link
                   to={ROUTES.publish}
-                  className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-text-muted hover:bg-surface-raised hover:text-primary"
+                  className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:bg-surface-raised hover:text-primary"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   <span className="hidden sm:inline">Publish</span>
@@ -290,31 +291,31 @@ export default function Explore() {
               )}
               <Link
                 to={ROUTES.favorites}
-                className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-text-muted hover:bg-surface-raised hover:text-primary"
+                className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:bg-surface-raised hover:text-primary"
               >
                 <Heart className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">Saved</span>
               </Link>
               <Link
                 to={ROUTES.messages}
-                className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-text-muted hover:bg-surface-raised hover:text-primary"
+                className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:bg-surface-raised hover:text-primary"
               >
                 <MessageCircle className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">Messages</span>
               </Link>
               <Link
                 to={ROUTES.notifications}
-                className="relative flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-text-muted hover:bg-surface-raised hover:text-primary"
+                className="relative flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:bg-surface-raised hover:text-primary"
               >
                 <Bell className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">Alerts</span>
                 {hasUnreadNotifications && (
-                  <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-lavender ring-2 ring-surface" aria-label="Unread" />
+                  <span className="absolute right-1.5 top-1 h-1.5 w-1.5 animate-pulse rounded-full bg-lavender ring-2 ring-white" />
                 )}
               </Link>
               <Link
                 to={ROUTES.tracking}
-                className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-text-muted hover:bg-surface-raised hover:text-primary"
+                className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:bg-surface-raised hover:text-primary"
               >
                 <PackageSearch className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">Track</span>
@@ -324,7 +325,7 @@ export default function Explore() {
             {!isHost && (
               <Link
                 to={ROUTES.becomeLender}
-                className="hidden shrink-0 items-center gap-1.5 rounded-xl cta-brand px-4 py-2 text-sm font-semibold text-soft-white md:flex"
+                className="hidden shrink-0 items-center gap-1.5 rounded-full cta-brand px-4 py-2 text-xs font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(67,48,117,0.5)] transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.6)] hover:brightness-105 md:flex"
               >
                 <Store className="h-3.5 w-3.5" />
                 Become a host
@@ -336,7 +337,7 @@ export default function Explore() {
               <Link
                 to={ROUTES.profile}
                 aria-label="Your account"
-                className="rounded-full hover:ring-2 hover:ring-primary"
+                className="rounded-full transition hover:ring-2 hover:ring-lavender/40"
               >
                 <LockerAvatar label={firstName} photoUrl={profile?.avatar_url} verified={isVerified} size="md" />
               </Link>
@@ -346,7 +347,7 @@ export default function Explore() {
                 aria-label="More options"
                 aria-expanded={menuOpen}
                 onClick={() => setMenuOpen((v) => !v)}
-                className="hidden h-9 w-9 items-center justify-center rounded-lg border border-border text-text-muted hover:border-primary hover:text-primary md:flex"
+                className="hidden h-9 w-9 items-center justify-center rounded-full border border-border text-text-muted transition hover:border-primary hover:text-primary md:flex"
               >
                 <Menu className="h-4 w-4" />
               </button>
@@ -354,7 +355,7 @@ export default function Explore() {
               {menuOpen && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
-                  <div className="glow absolute right-0 top-full z-50 mt-2 w-60 overflow-hidden rounded-xl border border-border bg-surface py-1.5">
+                  <div className="absolute right-0 top-full z-50 mt-2 w-60 overflow-hidden rounded-2xl border border-border bg-surface py-1.5 shadow-xl">
                     <Link
                       to="/history"
                       onClick={() => setMenuOpen(false)}
@@ -419,7 +420,7 @@ export default function Explore() {
                     <button
                       type="button"
                       onClick={handleSignOut}
-                      className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-danger hover:bg-danger-soft"
+                      className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-500 transition hover:bg-red-50"
                     >
                       <LogOut className="h-4 w-4" />
                       Sign out
@@ -433,28 +434,26 @@ export default function Explore() {
 
         {/* Search — the one thing that stays visible once you scroll */}
         <div className={`mx-auto max-w-2xl px-6 sm:px-10 ${scrolled ? 'py-3' : 'pb-4 pt-3'}`}>
-          <div className="flex items-center gap-2 rounded-xl border border-border bg-bg px-4 py-2.5 focus-within:border-primary">
-            <Search className="h-4 w-4 shrink-0 text-text-muted" aria-hidden="true" />
-            <label htmlFor="explore-search" className="sr-only">Search items</label>
+          <div className="flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-2.5 shadow-sm transition hover:shadow-md focus-within:border-primary focus-within:shadow-[0_0_0_1px_rgba(165,140,244,0.4),0_8px_24px_-8px_rgba(165,140,244,0.5)] focus-within:ring-2 focus-within:ring-lavender/30">
+            <Search className="h-4 w-4 shrink-0 text-text-muted" />
             <input
-              id="explore-search"
-              type="search"
+              type="text"
               value={searchTerm}
               onChange={handleSearchChange}
               placeholder="Search cameras, tools, gear…"
-              className="w-full bg-transparent text-sm outline-none"
+              className="w-full bg-transparent text-sm outline-none placeholder:text-text-muted"
             />
           </div>
         </div>
       </header>
 
-      {/* ================= GREETING: the shutter band ================= */}
-      <section className="shutter">
+      {/* ================= GREETING: the animated brand field ================= */}
+      <section className="brand-field">
         <div className="mx-auto max-w-6xl px-6 py-10 sm:px-10 sm:py-14">
           <h1 className="text-4xl font-extrabold leading-[1.02] text-soft-white sm:text-6xl">
             {firstName ? `Welcome back, ${firstName}.` : 'Find what you need, nearby.'}
           </h1>
-          <p className="mt-4 max-w-[52ch] text-brand-surface-muted">
+          <p className="mt-4 max-w-[52ch] text-soft-white/85">
             Everything here is picked up from a locker. No meetups.
           </p>
         </div>

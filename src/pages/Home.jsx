@@ -3,12 +3,13 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Check, Menu, Search, X } from 'lucide-react'
 import { supabase } from '../lib/supabaseClient'
 import { getCategoryIcon } from '../lib/categoryIcons'
+import LockerLogDemo from '../components/LockerLogDemo'
 import Logo from '../components/Logo'
 import RentalStatus from '../components/RentalStatus'
 import Shutter from '../components/Shutter'
 
-// Illustrative only: the compartment in the hero and the locker log below
-// are sample data, and both are labelled as such on the page.
+// Illustrative only: the compartment in the hero is sample data, labelled
+// as such on the page (as is the locker demo in LockerLogDemo).
 const SAMPLE_LISTING = {
   code: 'B4',
   item: 'Canon EOS R6',
@@ -17,13 +18,6 @@ const SAMPLE_LISTING = {
   image:
     'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=900&q=80',
 }
-
-const SAMPLE_LOG = [
-  { time: 'Oct 4 · 09:12', who: 'Owner', event: 'Item deposited, photo attached' },
-  { time: 'Oct 4 · 18:40', who: 'Renter', event: 'Item retrieved, identity checked' },
-  { time: 'Oct 7 · 17:05', who: 'Renter', event: 'Return deposited, photo attached' },
-  { time: 'Oct 7 · 19:30', who: 'Owner', event: 'Return retrieved' },
-]
 
 const HANDOFF_STEPS = [
   {
@@ -329,32 +323,7 @@ export default function Home() {
               </dl>
             </div>
 
-            <figure className="self-start rounded-2xl border border-border bg-bg lg:col-span-7">
-              <figcaption className="flex items-center justify-between border-b border-border px-5 py-4">
-                <span className="font-bold">
-                  Locker log <span className="locker-code font-normal text-text-muted">· B4</span>
-                </span>
-                <span className="text-xs text-text-muted">Sample data</span>
-              </figcaption>
-              <table className="w-full text-left text-sm">
-                <thead className="sr-only">
-                  <tr>
-                    <th>Time</th>
-                    <th>Opened by</th>
-                    <th>Event</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {SAMPLE_LOG.map((row) => (
-                    <tr key={row.time} className="border-b border-border last:border-0">
-                      <td className="locker-code whitespace-nowrap px-5 py-4 align-top text-xs text-text-muted">{row.time}</td>
-                      <td className="px-2 py-4 align-top font-semibold">{row.who}</td>
-                      <td className="px-5 py-4 align-top text-text-muted">{row.event}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </figure>
+            <LockerLogDemo />
           </div>
         </section>
 

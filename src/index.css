@@ -20,6 +20,15 @@
      Lavender. White on #7050d4 measures 5.31:1. */
   --cta-from: #433075;
   --cta-to: #7050d4;
+
+  /* Motion tokens (from the motion-design skill). Ease-out for things
+     entering, ease-in-out for things already on screen that move. */
+  --ease-out-quart: cubic-bezier(0.165, 0.84, 0.44, 1);
+  --ease-in-out-cubic: cubic-bezier(0.645, 0.045, 0.355, 1);
+  --dur-1: 120ms;
+  --dur-2: 180ms;
+  --dur-3: 240ms;
+  --dur-illustrative: 700ms;
 }
 
 /* ── Semantic tokens: light ───────────────────────────────────────────
@@ -334,6 +343,55 @@
   @media (prefers-reduced-motion: reduce) {
     .brand-field::before,
     .brand-field::after {
+      animation: none;
+    }
+  }
+
+  /* ── Locker log demo (LockerLogDemo.jsx) ────────────────────────────
+     Door: already on screen and moving, so ease-in-out at the
+     illustrative duration; it slides up to show the item, then back.
+     Log row: entering, so ease-out-quart at dur-3, from 8px above.
+     Hover on a compartment is colour only, and only where hover exists. */
+  .locker-door {
+    transition: transform var(--dur-illustrative) var(--ease-in-out-cubic);
+  }
+
+  .locker-cell.is-open .locker-door {
+    transform: translateY(-100%);
+  }
+
+  .locker-door-static {
+    transition: none;
+  }
+
+  @media (hover: hover) {
+    .locker-cell {
+      transition: border-color 150ms ease;
+    }
+
+    .locker-cell:hover {
+      border-color: var(--primary);
+    }
+  }
+
+  @keyframes log-row-enter {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+  }
+
+  .log-row:first-child {
+    animation: log-row-enter var(--dur-3) var(--ease-out-quart) both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .locker-door,
+    .locker-cell {
+      transition: none;
+    }
+
+    .log-row:first-child {
       animation: none;
     }
   }

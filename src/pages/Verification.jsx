@@ -6,7 +6,6 @@ import { supabase } from '../lib/supabaseClient'
 import { VERIFICATION_ACTIONS } from '../lib/verification'
 import PageHeader from '../components/PageHeader'
 import StatusMessage from '../components/StatusMessage'
-import AuroraBlobs from '../components/background/AuroraBlobs'
 
 const STATUS_COPY = {
   unverified: { label: 'Not verified', tone: 'text-text-muted', bg: 'bg-surface-raised' },
@@ -183,7 +182,6 @@ export default function Verification() {
       <PageHeader backTo="/profile" backLabel="Back to Profile" />
 
       <div className="relative isolate overflow-hidden">
-        <AuroraBlobs className="opacity-25" />
         <div className="relative mx-auto max-w-3xl px-6 py-8 sm:px-10">
           <h1 className="font-display text-2xl font-bold text-text">Trust &amp; verification</h1>
           <p className="mt-1 text-sm text-text-muted">

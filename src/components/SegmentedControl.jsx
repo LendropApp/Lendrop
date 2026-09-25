@@ -58,7 +58,7 @@ export default function SegmentedControl({ value, onChange, options = [], label,
             onKeyDown={(event) => handleKeyDown(event, index)}
             className={`flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg px-3 text-sm font-semibold transition sm:flex-none ${
               selected
-                ? 'bg-primary text-primary-contrast'
+                ? 'stamp'
                 : 'text-text-muted hover:bg-surface hover:text-text'
             }`}
           >

@@ -5,7 +5,6 @@ import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import PageHeader from '../components/PageHeader'
 import StatusMessage from '../components/StatusMessage'
-import AuroraBlobs from '../components/background/AuroraBlobs'
 
 const STEPS = ['Reserved', 'Delivered', 'In Use', 'Returned']
 
@@ -253,7 +252,6 @@ export default function RentalTracking() {
       <PageHeader backTo="/history" backLabel="Back to Activity" />
 
       <div className="relative isolate overflow-hidden">
-        <AuroraBlobs className="opacity-25" />
         <div className="relative mx-auto max-w-2xl px-6 py-8 sm:px-10">
           <h1 className="font-display text-2xl font-bold text-text">{reservation.item?.title}</h1>
           <p className="mt-1 text-sm text-text-muted">Lent by {reservation.item?.owner?.full_name ?? 'the lender'}</p>

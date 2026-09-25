@@ -15,11 +15,6 @@
   --brand-lavender: #a58cf4;
   --brand-soft-white: #fafafa;
   --brand-jet-black: #0d0d0d;
-
-  /* CTA gradient stops — see .cta-brand below for why the end is not
-     Lavender. White on #7050d4 measures 5.31:1. */
-  --cta-from: #433075;
-  --cta-to: #7050d4;
 }
 
 /* ── Semantic tokens: light ───────────────────────────────────────────
@@ -28,6 +23,8 @@
      text        #0d0d0d on #fafafa  -> 19.6:1
      text-muted  #5d5a6b on #fafafa  ->  6.4:1
      primary     #433075 on #fafafa  -> 10.5:1
+     success     #1d6b45 on #fafafa  ->  6.4:1
+     danger      #b42318 on #fafafa  ->  6.3:1
    `accent` (lavender) is 2.6:1 on this background, so in light mode it is
    a FILL only and never a text colour. */
 :root {
@@ -40,12 +37,24 @@
   --primary: var(--brand-deep-purple);
   --primary-contrast: var(--brand-soft-white);
   --accent: var(--brand-lavender);
-  /* Full-bleed branded band (the security section on the landing page). It
-     stays dark in BOTH themes: reusing --primary here would turn it into a
-     glaring Lavender block in dark mode. */
+  /* Full-bleed branded band (the shutter). It stays dark in BOTH themes:
+     reusing --primary here would turn it into a glaring Lavender block in
+     dark mode. */
   --brand-surface: var(--brand-deep-purple);
   --brand-surface-text: var(--brand-soft-white);
   --brand-surface-muted: #c9bcf7;
+
+  /* The one solid CTA fill. White on #433075 measures 10.5:1. */
+  --cta: var(--brand-deep-purple);
+  --cta-hover: #35255e;
+
+  /* Shutter steel: a texture and hairline colour, never text. */
+  --steel: #b9b7c2;
+
+  --success: #1d6b45;
+  --danger: #b42318;
+  --success-soft: #e3f1e9;
+  --danger-soft: #fbe9e7;
 }
 
 /* ── Semantic tokens: dark ────────────────────────────────────────────
@@ -55,6 +64,8 @@
      text        #fafafa on #0d0d0d  -> 18.9:1
      text-muted  #8a8797 on #0d0d0d  ->  5.5:1
      primary     #a58cf4 on #0d0d0d  ->  7.1:1
+     success     #6fd3a0 on #0d0d0d  -> 10.6:1
+     danger      #ff8a7a on #0d0d0d  ->  8.4:1
    Deep Purple measures 1.8:1 here, which is why `primary` becomes Lavender
    in dark mode instead. Text on a primary fill flips to black for the same
    reason. */
@@ -68,9 +79,22 @@
   --primary: var(--brand-lavender);
   --primary-contrast: var(--brand-jet-black);
   --accent: var(--brand-lavender);
-  --brand-surface: #1c1533;
+  --brand-surface: #2a1f4d;
   --brand-surface-text: var(--brand-soft-white);
-  --brand-surface-muted: #b8a9f0;
+  --brand-surface-muted: #c9bcf7;
+
+  /* Deep Purple would sink into the black page (1.8:1), so the CTA lifts
+     to #7050d4: white on it measures 5.3:1, and the fill itself stands
+     3.4:1 off the background, enough to read as a control. */
+  --cta: #7050d4;
+  --cta-hover: #5f42bf;
+
+  --steel: #4a4856;
+
+  --success: #6fd3a0;
+  --danger: #ff8a7a;
+  --success-soft: #12261c;
+  --danger-soft: #2c1512;
 }
 
 /* `inline` matters: without it Tailwind snapshots the value at build time
@@ -90,6 +114,12 @@
   --color-brand-surface: var(--brand-surface);
   --color-brand-surface-text: var(--brand-surface-text);
   --color-brand-surface-muted: var(--brand-surface-muted);
+  --color-cta: var(--cta);
+  --color-steel: var(--steel);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --color-success-soft: var(--success-soft);
+  --color-danger-soft: var(--danger-soft);
 }
 
 @theme {
@@ -100,19 +130,52 @@
   --color-soft-white: #fafafa;
   --color-jet-black: #0d0d0d;
 
-  /* Typography */
-  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  /* Typography. Archivo is loaded with its width axis so headings can be
+     set expanded, like sign-painted shutter lettering. */
+  --font-display: "Archivo", ui-sans-serif, system-ui, sans-serif;
   --font-body: "Manrope", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* Machined radii. Tailwind's defaults (16px / 24px for 2xl / 3xl) read
+     as soft app cards; the shutter world is cut metal. Overriding the
+     scale here re-cuts every existing rounded-* at once. */
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.625rem;
+  --radius-2xl: 0.75rem;
+  --radius-3xl: 0.875rem;
 }
 
 @layer base {
   html {
     font-family: var(--font-body);
+    accent-color: var(--primary);
+    caret-color: var(--primary);
+    scrollbar-color: var(--steel) transparent;
   }
 
   body {
     @apply bg-bg text-text antialiased;
+  }
+
+  ::selection {
+    background-color: var(--brand-lavender);
+    color: var(--brand-jet-black);
+  }
+
+  ::placeholder {
+    color: var(--text-muted);
+    opacity: 1;
+  }
+
+  /* One focus ring for the whole app, drawn from the brand instead of the
+     browser's default blue. */
+  :focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+
+  a {
+    text-underline-offset: 0.2em;
   }
 
   /* Only the colour properties transition, and only on the elements that
@@ -137,108 +200,138 @@
   h1,
   h2,
   h3,
-  h4 {
+  h4,
+  .font-display {
     font-family: var(--font-display);
+    font-stretch: 112%;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
   }
 
+  /* Headlines are the sign: fully expanded. */
+  h1,
+  h2 {
+    font-stretch: 125%;
+    letter-spacing: -0.025em;
+  }
 
   .locker-code {
     font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
     letter-spacing: 0.05em;
   }
 }
 
 @layer utilities {
-  /* ── Brand CTA gradient ─────────────────────────────────────────────
-     The one place this gradient is defined. It used to be copy-pasted as
-     `bg-linear-to-r from-deep-purple to-lavender` in 40 spots, which is
-     how a contrast bug survived in every primary button in the app:
-     white text measures 10.5:1 against the Deep Purple start but only
-     2.6:1 against the Lavender end, so the right-hand half of every CTA
-     failed WCAG AA.
+  /* ── Primary CTA ────────────────────────────────────────────────────
+     The one place the primary fill is defined. It used to be a Deep
+     Purple -> Lavender gradient copy-pasted in 40 spots, which is how a
+     contrast bug survived in every primary button: white text failed AA
+     on the pale end. The shutter world uses flat fields, so the fill is
+     now solid — see --cta above for the measured contrast per theme.
 
-     No text colour can fix that — black is 1.8:1 at the purple end — so
-     the gradient itself stops short of Lavender. The end is now #7050d4,
-     where white measures 5.3:1. The start is unchanged, and the ramp
-     still reads as the same brand sweep, just without the pale tail.
-
-     Both themes use the same fill: it is a self-contained surface, so its
-     contrast does not depend on the page behind it. */
-  .cta-brand {
-    background-image: linear-gradient(to right, var(--cta-from), var(--cta-to));
-  }
-
+     The -br variant is kept so existing call sites keep compiling; it is
+     the same flat fill. */
+  .cta-brand,
   .cta-brand-br {
-    background-image: linear-gradient(to bottom right, var(--cta-from), var(--cta-to));
+    background-color: var(--cta);
+    background-image: none;
   }
 
-  /* Slow ambient drift for the aurora gradient blobs (AuroraBlobs.jsx) —
-     kept as a shared keyframe since the same effect is reused behind the
-     Home hero, Explore header, and the auth screens. */
-  @keyframes aurora-drift {
-    0%,
+  .cta-brand:hover:not(:disabled),
+  .cta-brand-br:hover:not(:disabled) {
+    background-color: var(--cta-hover);
+  }
+
+  /* ── Numbers at sign scale ──────────────────────────────────────────
+     Prices, dates and counts are part of the lettering, not body text:
+     expanded, heavy, and tabular so columns of them line up. */
+  .num {
+    font-family: var(--font-display);
+    font-stretch: 125%;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+
+  /* ── Selection stamp ────────────────────────────────────────────────
+     Anything the user picks (a date, a category, a locker, a segment) is
+     stamped the same way on every screen: a Lavender fill with black
+     text, 8:1 in both themes. */
+  .stamp {
+    background-color: var(--brand-lavender);
+    color: var(--brand-jet-black);
+  }
+
+  /* ── Shutter steel ──────────────────────────────────────────────────
+     The ribbed roll-down shutter over a Deep Purple field. This is the
+     brand's only texture; it belongs on the shutter band and the reveal
+     moments, never behind ordinary content. Each rib is a lit top edge
+     and a shaded bottom edge, 14px apart, like corrugated slats. */
+  .shutter {
+    background-color: var(--brand-surface);
+    background-image: repeating-linear-gradient(
+      to bottom,
+      rgb(255 255 255 / 0.07) 0,
+      rgb(255 255 255 / 0.07) 1px,
+      transparent 1px,
+      transparent 12px,
+      rgb(0 0 0 / 0.18) 12px,
+      rgb(0 0 0 / 0.18) 14px
+    );
+    color: var(--brand-surface-text);
+  }
+
+  /* The roll-up: the shutter panel travels up and out of its frame once,
+     revealing what is behind it. Content underneath is always rendered
+     and visible without the animation. */
+  @keyframes shutter-roll {
+    0% {
+      transform: translateY(0);
+    }
     100% {
-      transform: translate(0, 0) scale(1);
-    }
-    50% {
-      transform: translate(4%, -5%) scale(1.08);
+      transform: translateY(-101%);
     }
   }
 
-  .animate-aurora {
-    animation: aurora-drift 16s ease-in-out infinite;
+  .animate-shutter-roll {
+    animation: shutter-roll 1100ms cubic-bezier(0.7, 0, 0.2, 1) 350ms both;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .animate-aurora {
+    .animate-shutter-roll {
       animation: none;
+      transform: translateY(-101%);
     }
   }
-}
 
-@layer utilities {
-  /* ── Design system: minimalist-futurist surfaces ───────────────────
-     Shared glass/elevation/glow primitives so every screen draws depth
-     from the same few rules instead of one-off arbitrary values. Plain
-     @layer utilities classes (not @utility) so they're always emitted
-     regardless of Tailwind's content-based detection, matching
-     .locker-code/.animate-aurora above. */
-
-  /* Frosted surfaces are built from the theme's own surface colour, so the
-     sticky headers stop being a white bar floating on a black page. */
-  .glass {
-    background-color: color-mix(in srgb, var(--surface) 78%, transparent);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid var(--border);
-  }
-
+  /* ── Surfaces and elevation ─────────────────────────────────────────
+     These names predate the redesign and are used across ~40 screens.
+     They used to be frosted glass and a lavender glow; the shutter world
+     has neither, so they are redefined here as solid panels and a real
+     offset shadow, which re-skins every call site at once. New code
+     should use bg-surface / border-border directly. */
+  .glass,
   .glass-strong {
-    background-color: color-mix(in srgb, var(--surface) 90%, transparent);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background-color: var(--surface);
     border: 1px solid var(--border);
   }
 
   .glass-dark {
-    background-color: rgb(67 48 117 / 0.55);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgb(255 255 255 / 0.14);
+    background-color: var(--brand-surface);
+    border: 1px solid rgb(255 255 255 / 0.12);
   }
 
-  /* Soft, brand-tinted elevation instead of default black shadows —
-     reads as "lit from the brand color" rather than a generic drop shadow. */
   .glow-sm {
-    box-shadow: 0 4px 20px -4px rgb(165 140 244 / 0.6);
+    box-shadow: 0 1px 2px rgb(13 13 13 / 0.12);
   }
 
   .glow {
-    box-shadow: 0 12px 32px -10px rgb(67 48 117 / 0.4), 0 4px 16px -4px rgb(165 140 244 / 0.45);
+    box-shadow: 0 2px 4px rgb(13 13 13 / 0.06), 0 8px 20px -6px rgb(67 48 117 / 0.18);
   }
 
   .glow-lg {
-    box-shadow: 0 24px 60px -16px rgb(67 48 117 / 0.45), 0 8px 24px -8px rgb(165 140 244 / 0.5);
+    box-shadow: 0 4px 8px rgb(13 13 13 / 0.06), 0 20px 40px -12px rgb(67 48 117 / 0.24);
   }
 
   /* Standard hover-lift for cards/surfaces — one timing curve everywhere. */

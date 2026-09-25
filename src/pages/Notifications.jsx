@@ -4,7 +4,6 @@ import { AlertTriangle, Bell, Calendar, DollarSign, MessageCircle, Star } from '
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import PageHeader from '../components/PageHeader'
-import AuroraBlobs from '../components/background/AuroraBlobs'
 
 const TYPE_ICON = {
   reservation: Calendar,
@@ -104,7 +103,6 @@ export default function Notifications() {
       <PageHeader backTo="/explore" backLabel="Back to Explore" />
 
       <div className="relative isolate overflow-hidden">
-        <AuroraBlobs className="opacity-25" />
         <div className="relative mx-auto max-w-3xl px-6 py-8 sm:px-10">
           <div className="flex items-center justify-between gap-3">
             <div>

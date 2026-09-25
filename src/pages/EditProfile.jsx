@@ -5,7 +5,6 @@ import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import LockerAvatar from '../components/LockerAvatar'
 import StatusMessage from '../components/StatusMessage'
-import AuroraBlobs from '../components/background/AuroraBlobs'
 import useSmartBack from '../hooks/useSmartBack'
 
 export default function EditProfile() {
@@ -120,7 +119,6 @@ export default function EditProfile() {
       </header>
 
       <div className="relative isolate overflow-hidden">
-        <AuroraBlobs className="opacity-25" />
         <form onSubmit={handleSubmit} className="relative mx-auto max-w-xl space-y-6 px-6 pt-8 sm:px-10">
           <div className="flex flex-col items-center gap-3">
             <div className="relative">

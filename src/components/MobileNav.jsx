@@ -130,10 +130,9 @@ export default function MobileNav() {
     return null
   }
 
-  // Portalled to <body> on purpose: every app header carries the .glass
-  // class, whose backdrop-filter makes the header a containing block for
-  // fixed-position descendants. Rendered in place, the overlay gets
-  // clipped to the header's box instead of covering the screen.
+  // Portalled to <body> on purpose: headers are sticky z-50 stacking
+  // contexts, and an overlay rendered inside one could only stack within
+  // it, and would clip to its box if a header ever regains a filter.
   const drawer = (
     <div className="fixed inset-0 z-[60] md:hidden">
       <button
@@ -151,7 +150,6 @@ export default function MobileNav() {
         aria-label="Main menu"
         className="absolute inset-y-0 right-0 flex w-[86%] max-w-sm flex-col overflow-y-auto bg-bg shadow-[0_0_60px_-12px_rgba(13,13,13,0.45)]"
       >
-        <div className="h-px shrink-0 bg-linear-to-r from-transparent via-lavender to-transparent" />
 
         <div className="flex items-start justify-between gap-3 px-5 pb-4 pt-5">
           <Link

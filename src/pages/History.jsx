@@ -6,25 +6,7 @@ import { supabase } from '../lib/supabaseClient'
 import PageHeader from '../components/PageHeader'
 import StarRating from '../components/StarRating'
 import StatusMessage from '../components/StatusMessage'
-import AuroraBlobs from '../components/background/AuroraBlobs'
-
-const STATUS_STYLES = {
-  pending: 'bg-jet-black/10 text-text-muted',
-  confirmed: 'bg-surface-raised text-primary',
-  active: 'bg-surface-raised text-primary',
-  completed: 'bg-emerald-100 text-emerald-700',
-  cancelled: 'bg-jet-black/10 text-text-muted',
-  disputed: 'bg-red-100 text-red-600',
-}
-
-const STATUS_LABELS = {
-  pending: 'Pending',
-  confirmed: 'Confirmed',
-  active: 'Active',
-  completed: 'Completed',
-  cancelled: 'Cancelled',
-  disputed: 'In dispute',
-}
+import RentalStatus from '../components/RentalStatus'
 
 function formatDateRange(start, end) {
   const opts = { month: 'short', day: 'numeric' }
@@ -200,7 +182,6 @@ export default function History() {
       <PageHeader backTo="/profile" backLabel="Back to Profile" />
 
       <div className="relative isolate overflow-hidden">
-        <AuroraBlobs className="opacity-25" />
         <div className="relative mx-auto max-w-3xl px-6 py-8 sm:px-10">
           <h1 className="font-display text-2xl font-bold text-text">Activity</h1>
           <p className="mt-1 text-sm text-text-muted">
@@ -245,13 +226,11 @@ export default function History() {
                         {tab === 'rentals' ? 'Lent by' : 'Rented by'} {row.counterparty}
                       </p>
                     </div>
-                    <span className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${STATUS_STYLES[row.status]}`}>
-                      {STATUS_LABELS[row.status]}
-                    </span>
+                    <RentalStatus status={row.status} className="shrink-0" />
                   </div>
                   <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
                     <span className="text-xs text-text-muted">{formatDateRange(row.startDate, row.endDate)}</span>
-                    <span className="font-mono text-sm font-semibold text-text">
+                    <span className="num text-sm text-text">
                       ${row.totalPrice.toFixed(2)}
                     </span>
                   </div>

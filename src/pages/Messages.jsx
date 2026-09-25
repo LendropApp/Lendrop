@@ -5,7 +5,6 @@ import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import PageHeader from '../components/PageHeader'
 import LockerAvatar from '../components/LockerAvatar'
-import AuroraBlobs from '../components/background/AuroraBlobs'
 
 function timeAgo(iso) {
   const diffMs = Date.now() - new Date(iso).getTime()
@@ -55,7 +54,6 @@ export default function Messages() {
       <PageHeader backTo="/explore" backLabel="Back to Explore" />
 
       <div className="relative isolate overflow-hidden">
-        <AuroraBlobs className="opacity-25" />
         <div className="relative mx-auto max-w-3xl px-6 py-8 sm:px-10">
           <h1 className="font-display text-2xl font-bold text-text">Messages</h1>
           <p className="mt-1 text-sm text-text-muted">

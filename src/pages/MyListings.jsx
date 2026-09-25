@@ -8,7 +8,6 @@ import { getCategoryIcon } from '../lib/categoryIcons'
 import PageHeader from '../components/PageHeader'
 import StatusMessage from '../components/StatusMessage'
 import VerificationNotice from '../components/VerificationNotice'
-import AuroraBlobs from '../components/background/AuroraBlobs'
 
 // is_available doubles as the published/paused switch: a paused listing
 // still exists and stays editable, it just drops out of Explore and out
@@ -120,7 +119,6 @@ export default function MyListings() {
       <PageHeader backTo="/profile" backLabel="Back to Profile" maxWidth="max-w-4xl" />
 
       <div className="relative isolate overflow-hidden">
-        <AuroraBlobs className="opacity-25" />
         <div className="relative mx-auto max-w-4xl px-6 py-8 sm:px-10">
           <div className="flex items-start justify-between gap-4">
             <div>

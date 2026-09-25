@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { ShieldCheck } from 'lucide-react'
 import { supabase } from '../lib/supabaseClient'
 import PageHeader from '../components/PageHeader'
-import AuroraBlobs from '../components/background/AuroraBlobs'
 
 const RESERVATION_STATUS_STYLES = {
   pending: 'bg-jet-black/10 text-text-muted',
@@ -78,7 +77,6 @@ export default function Admin() {
       <PageHeader backTo="/explore" backLabel="Back to Explore" />
 
       <div className="relative isolate overflow-hidden">
-        <AuroraBlobs className="opacity-25" />
         <div className="relative mx-auto max-w-6xl px-6 py-8 sm:px-10">
           <div className="flex items-center gap-2">
             <ShieldCheck className="h-5 w-5 text-primary" />

@@ -21,8 +21,8 @@ import { supabase } from '../lib/supabaseClient'
 import LockerAvatar from '../components/LockerAvatar'
 import StarRating from '../components/StarRating'
 import ProfileCompletion from '../components/ProfileCompletion'
-import AuroraBlobs from '../components/background/AuroraBlobs'
 import useSmartBack from '../hooks/useSmartBack'
+import Logo from '../components/Logo'
 
 const ACCOUNT_MENU = [
   { to: '/messages', icon: MessageCircle, label: 'Messages', desc: 'Coordinate pickups and drop offs' },
@@ -87,7 +87,7 @@ export default function Profile() {
             <ArrowLeft className="h-4 w-4" />
             Back to Explore
           </button>
-          <img src="/logo-lendrop.png" alt="Lendrop" className="h-7 w-auto" />
+          <Logo />
           <div className="flex items-center gap-2">
             <MobileNav />
             <button
@@ -104,7 +104,6 @@ export default function Profile() {
       </header>
 
       <div className="relative isolate overflow-hidden">
-        <AuroraBlobs className="opacity-25" />
         <div className="relative mx-auto max-w-3xl space-y-6 px-6 py-8 sm:px-10">
           {/* ================= PROFILE CARD ================= */}
           <section className="rounded-2xl border border-border bg-surface p-6 sm:p-8">

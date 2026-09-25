@@ -41,7 +41,7 @@ export default function ResetPassword() {
   }
 
   return (
-    <AuthLayout eyebrow="Recover access">
+    <AuthLayout subtitle="Recover access">
       <p className="mb-1 text-center font-display text-lg font-semibold text-primary">
         New password
       </p>

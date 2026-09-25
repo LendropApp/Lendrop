@@ -45,9 +45,8 @@ export default function MobileBottomNav() {
   return (
     <nav
       aria-label="Primary"
-      className="glass fixed inset-x-0 bottom-0 z-50 border-t border-border pb-[env(safe-area-inset-bottom)] md:hidden"
+      className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-surface pb-[env(safe-area-inset-bottom)] md:hidden"
     >
-      <div className="h-px bg-linear-to-r from-transparent via-lavender/40 to-transparent" />
       <div className="grid grid-cols-2">
         <button
           type="button"
@@ -63,7 +62,7 @@ export default function MobileBottomNav() {
           <span className="relative">
             <Plus className="h-5 w-5" />
             {blocked && (
-              <ShieldAlert className="absolute -right-2 -top-1 h-3 w-3 text-amber-500" />
+              <ShieldAlert className="absolute -right-2 -top-1 h-3 w-3 text-danger" />
             )}
           </span>
           Publish

@@ -10,7 +10,6 @@ import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import { getCategoryIcon } from '../lib/categoryIcons'
 import { getItemPhotoUrl } from '../lib/photos'
-import AuroraBlobs from '../components/background/AuroraBlobs'
 import useSmartBack from '../hooks/useSmartBack'
 
 const MAX_PHOTOS = 6
@@ -405,7 +404,6 @@ export default function PublishItem() {
       </header>
 
       <div className="relative isolate overflow-hidden">
-        <AuroraBlobs className="opacity-30" />
       <form onSubmit={handleSubmit} className="relative mx-auto max-w-2xl space-y-8 px-6 pt-8 sm:px-10">
         {!isEditing && <VerificationNotice status={verificationStatus} action="publish" />}
 

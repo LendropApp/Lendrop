@@ -40,6 +40,7 @@ import PaymentMethods from "./pages/PaymentMethods";
 import PaymentReturn from "./pages/PaymentReturn";
 import Premium from "./pages/Premium";
 import Admin from "./pages/Admin";
+import DesignSystem from "./pages/DesignSystem";
 
 export default function App() {
   return (
@@ -266,6 +267,9 @@ export default function App() {
               </AdminRoute>
             }
           />
+
+          {/* Dev-only design system reference sheet */}
+          {import.meta.env.DEV && <Route path="/system" element={<DesignSystem />} />}
 
           {/* Fallback */}
           <Route

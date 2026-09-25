@@ -8,7 +8,6 @@ import { supabase } from '../lib/supabaseClient'
 import PageHeader from '../components/PageHeader'
 import PasswordInput from '../components/PasswordInput'
 import StatusMessage from '../components/StatusMessage'
-import AuroraBlobs from '../components/background/AuroraBlobs'
 
 const DEFAULT_PREFS = {
   notify_messages: true,
@@ -159,7 +158,6 @@ export default function Settings() {
       <PageHeader backTo="/profile" backLabel="Back to Profile" />
 
       <div className="relative isolate overflow-hidden">
-        <AuroraBlobs className="opacity-25" />
         <div className="relative mx-auto max-w-3xl space-y-6 px-6 py-8 sm:px-10">
           <div>
             <h1 className="font-display text-2xl font-bold text-text">Settings</h1>

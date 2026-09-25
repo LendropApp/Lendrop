@@ -5,8 +5,8 @@ import { useAuth } from '../context/AuthContext'
 import MobileNav from '../components/MobileNav'
 import { supabase } from '../lib/supabaseClient'
 import ProductCard from '../components/ProductCard'
-import AuroraBlobs from '../components/background/AuroraBlobs'
 import useSmartBack from '../hooks/useSmartBack'
+import Logo from '../components/Logo'
 
 export default function Favorites() {
   const { user } = useAuth()
@@ -62,7 +62,7 @@ export default function Favorites() {
             <ArrowLeft className="h-4 w-4" />
             Back to Explore
           </button>
-          <img src="/logo-lendrop.png" alt="Lendrop" className="h-7 w-auto" />
+          <Logo />
           <div className="flex w-24 justify-end">
             <MobileNav />
           </div>
@@ -70,7 +70,6 @@ export default function Favorites() {
       </header>
 
       <div className="relative isolate overflow-hidden">
-        <AuroraBlobs className="opacity-25" />
         <div className="relative mx-auto max-w-6xl px-6 py-8 sm:px-10">
           <h1 className="font-display text-2xl font-bold text-text">Saved items</h1>
           <p className="mt-1 text-sm text-text-muted">

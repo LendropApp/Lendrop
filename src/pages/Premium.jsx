@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { BarChart3, Crown, Percent, Sparkles, Star } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
-import AuroraBlobs from '../components/background/AuroraBlobs'
 
 const FEATURES = [
   { icon: Star, title: 'Priority placement', desc: 'Your listings appear first in Explore results.' },
@@ -18,7 +17,6 @@ export default function Premium() {
       <PageHeader backTo="/profile" backLabel="Back to Profile" />
 
       <div className="relative isolate overflow-hidden">
-        <AuroraBlobs className="opacity-30" />
         <div className="relative mx-auto max-w-3xl px-6 py-10 sm:px-10">
           <div className="rounded-3xl cta-brand-br p-8 text-center text-white">
             <Sparkles className="mx-auto h-8 w-8" />

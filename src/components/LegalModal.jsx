@@ -42,7 +42,6 @@ export default function LegalModal({ open, onClose, title, children }) {
         onClick={(e) => e.stopPropagation()}
         className="relative flex max-h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-border bg-surface shadow-2xl shadow-lavender/25"
       >
-        <div className="h-px shrink-0 bg-linear-to-r from-transparent via-lavender to-transparent" />
 
         <div className="flex shrink-0 items-center justify-between border-b border-border px-6 py-4 sm:px-8">
           <h2 id="legal-modal-title" className="font-display text-lg font-semibold text-primary">

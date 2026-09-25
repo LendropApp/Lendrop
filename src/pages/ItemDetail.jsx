@@ -13,9 +13,9 @@ import StatusMessage from '../components/StatusMessage'
 import AvailabilityCalendar from '../components/AvailabilityCalendar'
 import VerificationNotice from '../components/VerificationNotice'
 import MobileNav from '../components/MobileNav'
-import AuroraBlobs from '../components/background/AuroraBlobs'
 import useSmartBack from '../hooks/useSmartBack'
 import { getLockerSizeClasses } from '../services/items/sizeService'
+import Logo from '../components/Logo'
 
 function photoUrl(photo) {
   return getItemPhotoUrl(photo.storage_path)
@@ -375,7 +375,7 @@ export default function ItemDetail() {
             <ArrowLeft className="h-4 w-4" />
             Back to Explore
           </button>
-          <img src="/logo-lendrop.png" alt="Lendrop" className="h-7 w-auto" />
+          <Logo />
           <div className="flex w-24 justify-end">
             <MobileNav />
           </div>
@@ -383,7 +383,6 @@ export default function ItemDetail() {
       </header>
 
       <div className="relative isolate overflow-hidden">
-        <AuroraBlobs className="opacity-25" />
         <div className="relative mx-auto max-w-5xl px-6 pt-8 sm:px-10">
           <div className="grid gap-8 lg:grid-cols-5">
             {/* ================= PHOTOS ================= */}

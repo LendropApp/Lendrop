@@ -28,8 +28,8 @@ import { getExploreHeroImage } from '../lib/exploreHero'
 import LockerAvatar from '../components/LockerAvatar'
 import ProductCard from '../components/ProductCard'
 import MobileNav from '../components/MobileNav'
-import AuroraBlobs from '../components/background/AuroraBlobs'
 import { buildSteps } from '../components/ProfileCompletion'
+import Logo from '../components/Logo'
 
 const ROUTES = {
   becomeLender: '/become-host',
@@ -273,7 +273,7 @@ export default function Explore() {
         {!scrolled && (
           <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-6 pt-4 sm:px-10">
             <Link to="/" className="shrink-0">
-              <img src="/logo-lendrop.png" alt="Lendrop" className="h-7 w-auto" />
+              <Logo />
             </Link>
 
             {/* Main nav — centered, like Airbnb's top tabs. Desktop only:
@@ -449,7 +449,6 @@ export default function Explore() {
 
       {/* ================= GREETING ================= */}
       <section className="relative isolate overflow-hidden border-b border-border">
-        <AuroraBlobs className="opacity-40" />
         <div className="relative mx-auto grid max-w-6xl gap-8 px-6 pt-10 pb-12 sm:px-10 sm:pt-14 sm:pb-16 lg:grid-cols-[1.3fr_1fr] lg:items-center lg:gap-12">
           <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface-raised px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-widest text-primary">
@@ -613,7 +612,7 @@ export default function Explore() {
         <div className="mx-auto max-w-6xl px-6 py-12 sm:px-10">
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
             <div className="col-span-2 sm:col-span-1">
-              <img src="/logo-lendrop.png" alt="Lendrop" className="h-7 w-auto" />
+              <Logo />
               <p className="mt-3 max-w-40 text-xs leading-relaxed text-text-muted">
                 Rent what you need, from people near you in El Salvador.
               </p>

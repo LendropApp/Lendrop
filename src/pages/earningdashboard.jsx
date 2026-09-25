@@ -3,7 +3,6 @@ import { CheckCircle, Clock, DollarSign, Package, Star, TrendingUp, XCircle } fr
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import PageHeader from '../components/PageHeader'
-import AuroraBlobs from '../components/background/AuroraBlobs'
 
 const PAYMENT_STATUS_META = {
   paid: { label: 'Completed', icon: CheckCircle, className: 'bg-emerald-100 text-emerald-700' },
@@ -104,7 +103,6 @@ export default function EarningsDashboard() {
       <PageHeader backTo="/profile" backLabel="Back to Profile" maxWidth="max-w-5xl" />
 
       <div className="relative isolate overflow-hidden">
-        <AuroraBlobs className="opacity-25" />
         <div className="relative mx-auto max-w-5xl px-6 py-8 sm:px-10">
           <h1 className="font-display text-2xl font-bold text-text">Lender statistics</h1>
           <p className="mt-1 text-sm text-text-muted">

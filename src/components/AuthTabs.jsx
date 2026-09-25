@@ -1,30 +1,17 @@
 import { Link } from 'react-router-dom'
 
-
 export default function AuthTabs({ active }) {
+  const tab = (key) =>
+    `flex-1 rounded-lg py-2 text-center text-sm font-semibold ${
+      active === key ? 'stamp' : 'text-text-muted hover:text-text'
+    }`
+
   return (
-    <div className="relative mb-8 flex rounded-full bg-surface-raised p-1">
-      <span
-        className="absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-full bg-surface shadow-sm transition-transform duration-300 ease-out"
-        style={{ transform: active === 'signup' ? 'translateX(100%)' : 'translateX(0)' }}
-        aria-hidden="true"
-      />
-      <Link
-        to="/login"
-        replace
-        className={`relative z-10 flex-1 rounded-full py-2 text-center text-sm font-medium transition-colors ${
-          active === 'login' ? 'text-primary' : 'text-text-muted hover:text-text-muted'
-        }`}
-      >
+    <div className="mb-8 flex gap-1 rounded-xl border border-border bg-surface-raised p-1">
+      <Link to="/login" replace aria-current={active === 'login' ? 'page' : undefined} className={tab('login')}>
         Log in
       </Link>
-      <Link
-        to="/signup"
-        replace
-        className={`relative z-10 flex-1 rounded-full py-2 text-center text-sm font-medium transition-colors ${
-          active === 'signup' ? 'text-primary' : 'text-text-muted hover:text-text-muted'
-        }`}
-      >
+      <Link to="/signup" replace aria-current={active === 'signup' ? 'page' : undefined} className={tab('signup')}>
         Sign up
       </Link>
     </div>

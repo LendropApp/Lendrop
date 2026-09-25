@@ -4,7 +4,6 @@ import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import PageHeader from '../components/PageHeader'
 import AddCardForm from '../components/AddCardForm'
-import AuroraBlobs from '../components/background/AuroraBlobs'
 
 export default function PaymentMethods() {
   const { user } = useAuth()
@@ -63,7 +62,6 @@ export default function PaymentMethods() {
       <PageHeader backTo="/profile" backLabel="Back to Profile" />
 
       <div className="relative isolate overflow-hidden">
-        <AuroraBlobs className="opacity-25" />
         <div className="relative mx-auto max-w-3xl px-6 py-8 sm:px-10">
           <h1 className="font-display text-2xl font-bold text-text">Payment methods</h1>
           <p className="mt-1 text-sm text-text-muted">

@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { supabase } from '../../lib/supabaseClient'
-import AuroraBlobs from '../../components/background/AuroraBlobs'
 import IntroStep from './IntroStep'
 import ContactCityStep from './ContactCityStep'
 import CoverageStep from './CoverageStep'
@@ -134,7 +133,6 @@ export default function HostOnboardingWizard() {
 
   return (
     <div className="relative isolate min-h-screen overflow-hidden bg-bg flex flex-col">
-      <AuroraBlobs className="opacity-30" />
       {stepIndex > 0 && stepIndex < STEPS.length - 1 && (
         <ProgressBar current={stepIndex} total={STEPS.length - 2} />
       )}

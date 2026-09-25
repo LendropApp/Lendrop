@@ -12,7 +12,7 @@ import Shutter from '../components/Shutter'
 // as such on the page (as is the locker demo in LockerLogDemo).
 const SAMPLE_LISTING = {
   code: 'B4',
-  item: 'Canon EOS R6',
+  item: 'Sony camera kit',
   price: 18,
   location: 'Downtown San Salvador',
   image:

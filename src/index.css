@@ -348,20 +348,40 @@
   }
 
   /* ── Locker log demo (LockerLogDemo.jsx) ────────────────────────────
-     Door: already on screen and moving, so ease-in-out at the
-     illustrative duration; it slides up to show the item, then back.
-     Log row: entering, so ease-out-quart at dur-3, from 8px above.
-     Hover on a compartment is colour only, and only where hover exists. */
-  .locker-door {
-    transition: transform var(--dur-illustrative) var(--ease-in-out-cubic);
+     Motion per the motion-design skill:
+     - The compartment that just changed hands flashes a Lavender ring
+       (ease-out-quart, 1.2s, illustrative) and its photo eases in by 6%
+       (ease-in-out-cubic, 700ms): it is already on screen, so ease-in-out.
+     - A new log row enters: ease-out-quart at dur-3, from 8px above.
+     - Hover is colour only, and only where hover exists.
+     With reduced motion the ring still marks the change, but nothing
+     moves. */
+  @keyframes locker-flash {
+    0% {
+      box-shadow: 0 0 0 0 rgb(165 140 244 / 0);
+    }
+    18% {
+      box-shadow: 0 0 0 3px rgb(165 140 244 / 0.9);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgb(165 140 244 / 0);
+    }
   }
 
-  .locker-cell.is-open .locker-door {
-    transform: translateY(-100%);
+  .locker-cell.is-flashing {
+    border-color: var(--brand-lavender);
+    animation: locker-flash 1200ms var(--ease-out-quart) both;
   }
 
-  .locker-door-static {
-    transition: none;
+  .locker-photo {
+    transition:
+      transform var(--dur-illustrative) var(--ease-in-out-cubic),
+      opacity var(--dur-illustrative) var(--ease-in-out-cubic),
+      filter var(--dur-illustrative) var(--ease-in-out-cubic);
+  }
+
+  .locker-cell.is-flashing .locker-photo {
+    transform: scale(1.06);
   }
 
   @media (hover: hover) {
@@ -386,9 +406,13 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .locker-door,
+    .locker-photo,
     .locker-cell {
       transition: none;
+    }
+
+    .locker-cell.is-flashing .locker-photo {
+      transform: none;
     }
 
     .log-row:first-child {

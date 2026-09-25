@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { MapPin, ChevronRight, Check } from "lucide-react";
 import { supabase } from "../lib/supabaseClient";
+import Logo from "../components/Logo";
 
 export default function LockerCoverage() {
   const [selectedLockers, setSelectedLockers] = useState([]);
@@ -38,11 +39,7 @@ export default function LockerCoverage() {
       <nav className="w-full border-b border-[#0d0d0d]/10 bg-surface">
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-5 lg:px-10">
           <div className="flex items-center">
-            <img
-              src="/logo-lendrop.png"
-              alt="Lendrop"
-              className="h-10 w-auto object-contain"
-            />
+            <Logo className="h-10" />
           </div>
 
           <div className="flex items-center gap-8 font-medium text-[#0d0d0d]">

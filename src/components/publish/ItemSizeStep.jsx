@@ -156,7 +156,6 @@ export default function ItemSizeStep({ category, title, description, initialDime
   if (!category || title.trim().length < 3) {
     return (
       <section aria-live="polite">
-        <label className="mb-2 block text-sm font-medium text-text">Size</label>
         <p className="text-xs text-text-muted">
           Pick a category and write a title to estimate your item's size.
         </p>
@@ -166,8 +165,6 @@ export default function ItemSizeStep({ category, title, description, initialDime
 
   return (
     <section aria-live="polite">
-      <label className="mb-2 block text-sm font-medium text-text">Size</label>
-
       {phase === 'loading' && (
         <div className="animate-pulse space-y-2 rounded-2xl border border-border bg-surface p-4">
           <div className="h-3 w-40 rounded bg-surface-raised" />

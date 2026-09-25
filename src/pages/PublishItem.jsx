@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, ImagePlus, X, Star } from 'lucide-react'
+import { ArrowLeft, Check, ImagePlus, X } from 'lucide-react'
 import StatusMessage from '../components/StatusMessage'
 import VerificationNotice from '../components/VerificationNotice'
 import { isVerificationError } from '../lib/verification'
@@ -20,6 +20,58 @@ const CONDITIONS = [
   { value: 'good', label: 'Good' },
   { value: 'fair', label: 'Fair' },
 ]
+
+// A numbered step of the form. The number is real sequence (the steps
+// are filled in order) and turns into a check once the step is complete.
+function Step({ step, hint, children }) {
+  return (
+    <section
+      id={`step-${step.id}`}
+      aria-labelledby={`step-${step.id}-title`}
+      className="scroll-mt-24 rounded-2xl border border-border bg-surface p-5 sm:p-6"
+    >
+      <div className="mb-4 flex items-start gap-3">
+        <span
+          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
+            step.done ? 'stamp' : 'bg-surface-raised text-primary'
+          }`}
+          aria-hidden="true"
+        >
+          {step.done ? <Check className="h-4 w-4" strokeWidth={3} /> : <span className="num text-base">{step.number}</span>}
+        </span>
+        <div>
+          <h2 id={`step-${step.id}-title`} className="text-xl font-extrabold">
+            {step.title}
+            {step.done && <span className="sr-only"> (done)</span>}
+          </h2>
+          {hint && <p className="mt-0.5 text-sm text-text-muted">{hint}</p>}
+        </div>
+      </div>
+      {children}
+    </section>
+  )
+}
+
+function PhotoTile({ src, alt, cover, onRemove }) {
+  return (
+    <div className="relative aspect-square overflow-hidden rounded-xl border border-border bg-surface-raised">
+      <img src={src} alt={alt} className="h-full w-full object-cover" />
+      {cover && (
+        <span className="cta-brand absolute left-1.5 top-1.5 rounded-md px-2 py-0.5 text-xs font-semibold text-soft-white">
+          Cover
+        </span>
+      )}
+      <button
+        type="button"
+        onClick={onRemove}
+        aria-label={`Remove ${alt.toLowerCase()}`}
+        className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-lg bg-jet-black/75 text-soft-white hover:bg-jet-black"
+      >
+        <X className="h-3.5 w-3.5" aria-hidden="true" />
+      </button>
+    </div>
+  )
+}
 
 // One form, two modes. With an :itemId in the route it loads that
 // listing and saves with an update; without one it creates a new item.
@@ -407,10 +459,51 @@ export default function PublishItem() {
     )
   }
 
+  // Step completion, mirroring handleSubmit's checks so the checklist
+  // never promises something the submit will then reject.
+  const steps = [
+    { id: 'photos', title: 'Photos', done: totalPhotoCount > 0 },
+    {
+      id: 'details',
+      title: 'What it is',
+      done: Boolean(selectedCategory) && title.trim().length >= 3 && description.trim().length >= 20,
+    },
+    { id: 'size', title: 'Size', done: sizeValues.lengthCm != null && !sizeValues.blocked },
+    { id: 'price', title: 'Price', done: Number(pricePerDay) > 0 },
+    { id: 'city', title: 'Pickup city', done: Boolean(locationCity) },
+  ]
+  const doneCount = steps.filter((st) => st.done).length
+  const stepById = Object.fromEntries(steps.map((st, i) => [st.id, { ...st, number: i + 1 }]))
+
+  const coverPreview = keptExistingPhotos[0]
+    ? getItemPhotoUrl(keptExistingPhotos[0].storage_path)
+    : photos[0]?.previewUrl ?? null
+  const CategoryIcon = selectedCategory ? getCategoryIcon(selectedCategory.slug) : null
+
+  const submitLabel = isEditing
+    ? isSubmitting
+      ? 'Saving…'
+      : 'Save changes'
+    : isSubmitting
+      ? 'Publishing…'
+      : isVerified
+        ? 'Publish item'
+        : 'Verify your identity to publish'
+
+  const submitButton = (
+    <button
+      type="submit"
+      disabled={isSubmitting || (!isEditing && !isVerified)}
+      className="cta-brand w-full rounded-xl py-3 text-base font-bold text-soft-white disabled:cursor-not-allowed disabled:opacity-50"
+    >
+      {submitLabel}
+    </button>
+  )
+
   return (
     <div className="min-h-screen bg-bg pb-28 md:pb-16">
       <header className="sticky top-0 z-50 border-b border-border bg-surface">
-        <div className="mx-auto flex max-w-2xl items-center gap-3 px-6 py-4 sm:px-10">
+        <div className="mx-auto flex max-w-6xl items-center gap-3 px-6 py-4 sm:px-10">
           <button
             type="button"
             onClick={goBack}
@@ -419,342 +512,303 @@ export default function PublishItem() {
           >
             <ArrowLeft className="h-4 w-4" />
           </button>
-          <div>
-            <h1 className="text-2xl font-extrabold">
-              {isEditing ? 'Edit listing' : 'Publish an item'}
-            </h1>
-          </div>
+          <h1 className="text-2xl font-extrabold">{isEditing ? 'Edit listing' : 'Publish an item'}</h1>
+          <p className="ml-auto text-sm text-text-muted" aria-live="polite">
+            <span className="num text-lg text-text">{doneCount}</span> of {steps.length} done
+          </p>
         </div>
       </header>
 
-      <div className="relative isolate overflow-hidden">
-      <form onSubmit={handleSubmit} className="relative mx-auto max-w-2xl space-y-8 px-6 pt-8 sm:px-10">
-        {!isEditing && <VerificationNotice status={verificationStatus} action="publish" />}
+      <form
+        onSubmit={handleSubmit}
+        className="mx-auto grid max-w-6xl gap-8 px-6 pt-8 sm:px-10 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start"
+      >
+        <div className="min-w-0 space-y-5">
+          {!isEditing && <VerificationNotice status={verificationStatus} action="publish" />}
 
-        {/* ================= PHOTOS ================= */}
-        <section>
-          <label className="mb-2 block text-sm font-medium text-text">
-            Photos
-          </label>
-          <p className="mb-3 text-xs text-text-muted">
-            Add up to {MAX_PHOTOS} photos. The first one is the cover.
-          </p>
-
-          <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
-            {keptExistingPhotos.map((photo, index) => (
-              <div
-                key={photo.id}
-                className="group relative aspect-square overflow-hidden rounded-xl bg-surface-raised"
-              >
-                <img
+          {/* ================= 1. PHOTOS ================= */}
+          <Step step={stepById.photos} hint={`Up to ${MAX_PHOTOS}. The first one is the cover renters see.`}>
+            <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
+              {keptExistingPhotos.map((photo, index) => (
+                <PhotoTile
+                  key={photo.id}
                   src={getItemPhotoUrl(photo.storage_path)}
                   alt={`Item photo ${index + 1}`}
-                  className="h-full w-full object-cover"
+                  cover={index === 0}
+                  onRemove={() => setRemovedPhotoIds((prev) => [...prev, photo.id])}
                 />
-                {index === 0 && (
-                  <span className="absolute left-1.5 top-1.5 rounded-md cta-brand px-2 py-0.5 text-xs font-semibold text-soft-white">
-                    Cover
-                  </span>
-                )}
-                <button
-                  type="button"
-                  onClick={() => setRemovedPhotoIds((prev) => [...prev, photo.id])}
-                  aria-label="Remove photo"
-                  className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-lg bg-jet-black/75 text-soft-white hover:bg-jet-black"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              </div>
-            ))}
-
-            {photos.map((photo, index) => (
-              <div
-                key={photo.id}
-                className="group relative aspect-square overflow-hidden rounded-xl bg-surface-raised"
-              >
-                <img
+              ))}
+              {photos.map((photo, index) => (
+                <PhotoTile
+                  key={photo.id}
                   src={photo.previewUrl}
                   alt={`Item photo ${keptExistingPhotos.length + index + 1}`}
-                  className="h-full w-full object-cover"
+                  cover={keptExistingPhotos.length === 0 && index === 0}
+                  onRemove={() => removePhoto(photo.id)}
                 />
-                {keptExistingPhotos.length === 0 && index === 0 && (
-                  <span className="absolute left-1.5 top-1.5 rounded-md cta-brand px-2 py-0.5 text-xs font-semibold text-soft-white">
-                    Cover
-                  </span>
-                )}
-                <button
-                  type="button"
-                  onClick={() => removePhoto(photo.id)}
-                  aria-label="Remove photo"
-                  className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-lg bg-jet-black/75 text-soft-white hover:bg-jet-black"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              </div>
-            ))}
+              ))}
+              {canAddMorePhotos && (
+                <label className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-border text-text-muted hover:border-primary hover:text-primary">
+                  <ImagePlus className="h-6 w-6" aria-hidden="true" />
+                  <span className="text-sm font-semibold">Add photo</span>
+                  <input type="file" accept="image/*" multiple onChange={handlePhotoChange} className="sr-only" />
+                </label>
+              )}
+            </div>
+          </Step>
 
-            {canAddMorePhotos && (
-              <label className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-border text-text-muted transition hover:border-primary hover:bg-surface-raised hover:text-primary">
-                <ImagePlus className="h-5 w-5" />
-                <span className="text-xs font-medium">Add photo</span>
+          {/* ================= 2. WHAT IT IS ================= */}
+          <Step step={stepById.details} hint="Category, a clear title, and what renters should know.">
+            <div className="space-y-5">
+              <div>
+                <p className="mb-2 text-sm font-semibold text-text">Category</p>
+                {categoriesError ? (
+                  <p className="text-sm text-danger">{categoriesError}</p>
+                ) : categories.length === 0 ? (
+                  <p className="text-sm text-text-muted">Loading categories…</p>
+                ) : (
+                  <div className="flex flex-wrap gap-2" role="group" aria-label="Category">
+                    {categories.map((cat) => {
+                      const active = categorySlug === cat.slug
+                      const Icon = getCategoryIcon(cat.slug)
+                      return (
+                        <button
+                          key={cat.id}
+                          type="button"
+                          onClick={() => setCategorySlug(cat.slug)}
+                          aria-pressed={active}
+                          className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-semibold ${
+                            active
+                              ? 'stamp border-transparent'
+                              : 'border-border bg-surface text-text-muted hover:border-primary hover:text-text'
+                          }`}
+                        >
+                          <Icon className="h-4 w-4" aria-hidden="true" />
+                          {cat.name}
+                        </button>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label htmlFor="title" className="mb-1 block text-sm font-semibold text-text">
+                  Title
+                </label>
                 <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handlePhotoChange}
-                  className="hidden"
+                  id="title"
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Canon EOS R6 camera, with 2 lenses"
+                  maxLength={80}
+                  className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-primary"
                 />
-              </label>
-            )}
-          </div>
-        </section>
-
-        {/* ================= CATEGORY ================= */}
-        <section>
-          <label className="mb-2 block text-sm font-medium text-text">
-            Category
-          </label>
-          {categoriesError ? (
-            <p className="text-sm text-danger">{categoriesError}</p>
-          ) : categories.length === 0 ? (
-            <p className="text-sm text-text-muted">Loading categories…</p>
-          ) : (
-            <div className="flex flex-wrap gap-2">
-              {categories.map((cat) => {
-                const active = categorySlug === cat.slug
-                const Icon = getCategoryIcon(cat.slug)
-                return (
-                  <button
-                    key={cat.id}
-                    type="button"
-                    onClick={() => setCategorySlug(cat.slug)}
-                    aria-pressed={active}
-                    className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-semibold ${
-                      active
-                        ? 'stamp border-transparent'
-                        : 'border-border bg-surface text-text-muted hover:border-primary hover:text-text'
-                    }`}
-                  >
-                    <Icon className="h-3.5 w-3.5" strokeWidth={active ? 2.25 : 1.75} />
-                    {cat.name}
-                  </button>
-                )
-              })}
-            </div>
-          )}
-        </section>
-
-        {/* ================= TITLE & DESCRIPTION ================= */}
-        <section className="space-y-4">
-          <div>
-            <label htmlFor="title" className="mb-1 block text-sm font-medium text-text">
-              Title
-            </label>
-            <input
-              id="title"
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Canon EOS R6 camera, with 2 lenses"
-              maxLength={80}
-              className="w-full rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary"
-            />
-          </div>
-
-          <div>
-            <div className="mb-1 flex items-center justify-between">
-              <label htmlFor="description" className="block text-sm font-medium text-text">
-                Description
-              </label>
-              <span className="text-xs text-text-muted">{descriptionCount}/500</span>
-            </div>
-            <textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value.slice(0, 500))}
-              placeholder="Condition, what's included, pickup notes…"
-              rows={4}
-              className="w-full resize-none rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary"
-            />
-          </div>
-        </section>
-
-        {/* ================= SIZE ================= */}
-        <ItemSizeStep
-          category={categorySlug}
-          title={title}
-          description={description}
-          initialDimensions={initialSizeValues}
-          onChange={setSizeValues}
-        />
-
-        {/* ================= CONDITION ================= */}
-        <section>
-          <label className="mb-2 block text-sm font-medium text-text">
-            Condition
-          </label>
-          <div className="grid grid-cols-4 gap-2">
-            {CONDITIONS.map((c) => {
-              const active = condition === c.value
-              return (
-                <button
-                  key={c.value}
-                  type="button"
-                  onClick={() => setCondition(c.value)}
-                  className={`rounded-xl border py-2.5 text-xs font-semibold transition ${
-                    active
-                      ? 'border-primary bg-surface-raised text-primary shadow-[0_0_0_1px_rgba(165,140,244,0.4)_inset]'
-                      : 'border-border text-text-muted hover:border-primary hover:text-primary'
-                  }`}
-                >
-                  {c.label}
-                </button>
-              )
-            })}
-          </div>
-        </section>
-
-        {/* ================= PRICE & DEPOSIT ================= */}
-        <section className="grid grid-cols-2 gap-3">
-          <div>
-            <label htmlFor="pricePerDay" className="mb-1 block text-sm font-medium text-text">
-              Price per day
-            </label>
-            <div className="flex items-center rounded-xl border border-border px-4 py-2.5 transition focus-within:border-primary focus-within:ring-2 focus-within:ring-lavender/30">
-              <span className="text-sm tabular-nums text-text-muted">$</span>
-              <input
-                id="pricePerDay"
-                type="number"
-                min="0"
-                step="0.01"
-                value={pricePerDay}
-                onChange={(e) => setPricePerDay(e.target.value)}
-                placeholder="15.00"
-                className="w-full bg-transparent pl-1.5 text-sm tabular-nums outline-none"
-              />
-            </div>
-            <PriceSuggestionButton
-              category={categorySlug}
-              description={description}
-              condition={condition}
-              onApply={(price) => setPricePerDay(String(price))}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="declaredValue" className="mb-1 block text-sm font-medium text-text">
-              Declared value <span className="font-normal text-text-muted">(what it costs to replace)</span>
-            </label>
-            <div className="flex items-center rounded-xl border border-border px-4 py-2.5 transition focus-within:border-primary focus-within:ring-2 focus-within:ring-lavender/30">
-              <span className="text-sm tabular-nums text-text-muted">$</span>
-              <input
-                id="declaredValue"
-                type="number"
-                min="0"
-                step="0.01"
-                value={declaredValue}
-                onChange={(e) => setDeclaredValue(e.target.value)}
-                placeholder="0.00"
-                className="w-full bg-transparent pl-1.5 text-sm tabular-nums outline-none"
-              />
-            </div>
-            <p className="mt-1 text-xs text-text-muted">
-              Used to set the renter's refundable damage-liability hold (35% of this, capped by category).
-            </p>
-          </div>
-        </section>
-
-        {/* ================= LOCATION ================= */}
-        <section>
-          <label htmlFor="locationCity" className="mb-1 block text-sm font-medium text-text">
-            Pickup city
-          </label>
-          <select
-            id="locationCity"
-            value={locationCity}
-            onChange={(e) => setLocationCity(e.target.value)}
-            required
-            disabled={lockerCitiesLoading || lockerCityOptions.length === 0}
-            aria-describedby="locationCity-hint"
-            className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-primary disabled:opacity-60"
-          >
-            <option value="" disabled>
-              {lockerCitiesLoading ? 'Loading cities…' : 'Choose a city'}
-            </option>
-            {lockerCityOptions.map((city) => (
-              <option key={city} value={city}>
-                {city}
-                {!lockerCities.includes(city) ? ' (no locker there any more)' : ''}
-              </option>
-            ))}
-          </select>
-          <p id="locationCity-hint" className="mt-1.5 text-xs text-text-muted">
-            {!lockerCitiesLoading && lockerCityOptions.length === 0
-              ? 'There are no active lockers yet, so items can’t be published right now.'
-              : 'Only cities with a Lendrop locker are listed: that’s where you’ll drop the item off.'}
-          </p>
-        </section>
-
-        {/* ================= SUMMARY PREVIEW ================= */}
-        {(photos[0] || title || pricePerDay) && (
-          <section>
-            <p className="mb-2 text-sm font-medium text-text">Preview</p>
-            <div className="flex items-center gap-3 rounded-2xl border border-border bg-surface p-3">
-              <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-surface-raised">
-                {photos[0] && (
-                  <img
-                    src={photos[0].previewUrl}
-                    alt="Cover preview"
-                    className="h-full w-full object-cover"
-                  />
-                )}
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-text">
-                  {title || 'Untitled item'}
-                </p>
-                <div className="mt-1 flex items-center gap-1.5 text-xs text-text-muted">
-                  {selectedCategory && (
-                    <>
-                      {(() => {
-                        const Icon = getCategoryIcon(selectedCategory.slug)
-                        return <Icon className="h-3 w-3" />
-                      })()}
-                      <span>{selectedCategory.name}</span>
-                      <span>·</span>
-                    </>
-                  )}
-                  <Star className="h-3 w-3 fill-jet-black/30 text-text-muted" />
-                  <span>New listing</span>
+
+              <div>
+                <div className="mb-1 flex items-center justify-between">
+                  <label htmlFor="description" className="block text-sm font-semibold text-text">
+                    Description
+                  </label>
+                  <span className={`text-xs tabular-nums ${descriptionCount < 20 ? 'text-text-muted' : 'text-success'}`}>
+                    {descriptionCount}/500{descriptionCount < 20 ? ` · ${20 - descriptionCount} more to go` : ''}
+                  </span>
+                </div>
+                <textarea
+                  id="description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value.slice(0, 500))}
+                  placeholder="Condition, what's included, anything a renter should know…"
+                  rows={4}
+                  className="w-full resize-none rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-primary"
+                />
+              </div>
+
+              <div>
+                <p className="mb-2 text-sm font-semibold text-text">Condition</p>
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4" role="group" aria-label="Condition">
+                  {CONDITIONS.map((c) => {
+                    const active = condition === c.value
+                    return (
+                      <button
+                        key={c.value}
+                        type="button"
+                        onClick={() => setCondition(c.value)}
+                        aria-pressed={active}
+                        className={`rounded-lg border py-2 text-sm font-semibold ${
+                          active
+                            ? 'stamp border-transparent'
+                            : 'border-border bg-surface text-text-muted hover:border-primary hover:text-text'
+                        }`}
+                      >
+                        {c.label}
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
-              <p className="num shrink-0 text-lg text-text">
-                ${pricePerDay || '0'}
-                <span className="font-body font-normal text-text-muted"> /day</span>
+            </div>
+          </Step>
+
+          {/* ================= 3. SIZE ================= */}
+          <Step step={stepById.size} hint="So we know it fits a locker compartment.">
+            <ItemSizeStep
+              category={categorySlug}
+              title={title}
+              description={description}
+              initialDimensions={initialSizeValues}
+              onChange={setSizeValues}
+            />
+          </Step>
+
+          {/* ================= 4. PRICE ================= */}
+          <Step step={stepById.price} hint="You always set the final price.">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label htmlFor="pricePerDay" className="mb-1 block text-sm font-semibold text-text">
+                  Price per day
+                </label>
+                <div className="flex items-center rounded-xl border border-border bg-surface px-4 py-2.5 focus-within:border-primary">
+                  <span className="text-sm tabular-nums text-text-muted">$</span>
+                  <input
+                    id="pricePerDay"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={pricePerDay}
+                    onChange={(e) => setPricePerDay(e.target.value)}
+                    placeholder="15.00"
+                    className="w-full bg-transparent pl-1.5 text-sm tabular-nums outline-none"
+                  />
+                </div>
+                <PriceSuggestionButton
+                  category={categorySlug}
+                  description={description}
+                  condition={condition}
+                  onApply={(price) => setPricePerDay(String(price))}
+                />
+              </div>
+
+              <div>
+                <label htmlFor="declaredValue" className="mb-1 block text-sm font-semibold text-text">
+                  Replacement value
+                </label>
+                <div className="flex items-center rounded-xl border border-border bg-surface px-4 py-2.5 focus-within:border-primary">
+                  <span className="text-sm tabular-nums text-text-muted">$</span>
+                  <input
+                    id="declaredValue"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={declaredValue}
+                    onChange={(e) => setDeclaredValue(e.target.value)}
+                    placeholder="0.00"
+                    aria-describedby="declaredValue-hint"
+                    className="w-full bg-transparent pl-1.5 text-sm tabular-nums outline-none"
+                  />
+                </div>
+                <p id="declaredValue-hint" className="mt-1.5 text-xs text-text-muted">
+                  What it would cost to replace. Sets the renter's refundable damage hold (35% of this,
+                  capped by category).
+                </p>
+              </div>
+            </div>
+          </Step>
+
+          {/* ================= 5. PICKUP CITY ================= */}
+          <Step step={stepById.city} hint="Only cities with a Lendrop locker: that's where you'll drop it off.">
+            <label htmlFor="locationCity" className="sr-only">
+              Pickup city
+            </label>
+            <select
+              id="locationCity"
+              value={locationCity}
+              onChange={(e) => setLocationCity(e.target.value)}
+              required
+              disabled={lockerCitiesLoading || lockerCityOptions.length === 0}
+              className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-primary disabled:opacity-60"
+            >
+              <option value="" disabled>
+                {lockerCitiesLoading ? 'Loading cities…' : 'Choose a city'}
+              </option>
+              {lockerCityOptions.map((city) => (
+                <option key={city} value={city}>
+                  {city}
+                  {!lockerCities.includes(city) ? ' (no locker there any more)' : ''}
+                </option>
+              ))}
+            </select>
+            {!lockerCitiesLoading && lockerCityOptions.length === 0 && (
+              <p className="mt-2 text-sm text-danger">
+                There are no active lockers yet, so items can't be published right now.
+              </p>
+            )}
+          </Step>
+
+          {/* Submit on phones and tablets; desktop uses the sidebar. */}
+          <div className="space-y-3 lg:hidden">
+            <StatusMessage type={status.type} text={status.text} />
+            {submitButton}
+          </div>
+        </div>
+
+        {/* ================= LIVE PREVIEW (sticky on desktop) ================= */}
+        <aside className="space-y-4 lg:sticky lg:top-24" aria-label="Listing preview">
+          <div className="overflow-hidden rounded-2xl border border-border bg-surface">
+            <div className="aspect-4/3 bg-surface-raised">
+              {coverPreview ? (
+                <img src={coverPreview} alt="Cover preview" className="h-full w-full object-cover" />
+              ) : (
+                <div className="flex h-full flex-col items-center justify-center gap-2 text-text-muted">
+                  <ImagePlus className="h-7 w-7" aria-hidden="true" />
+                  <span className="text-sm">Your cover photo</span>
+                </div>
+              )}
+            </div>
+            <div className="p-4">
+              <p className="flex items-center gap-1.5 text-xs text-text-muted">
+                {CategoryIcon && <CategoryIcon className="h-3.5 w-3.5" aria-hidden="true" />}
+                {selectedCategory?.name ?? 'Category'}
+                {locationCity && <span>· {locationCity}</span>}
+              </p>
+              <p className="mt-1 truncate text-lg font-bold">{title.trim() || 'Your item title'}</p>
+              <p className="mt-2 text-text">
+                <span className="num text-2xl">${Number(pricePerDay) > 0 ? pricePerDay : '0'}</span>
+                <span className="text-sm text-text-muted"> / day</span>
               </p>
             </div>
-          </section>
-        )}
+          </div>
 
-        <StatusMessage type={status.type} text={status.text} />
+          <ol className="rounded-2xl border border-border bg-surface p-4" aria-label="Steps">
+            {steps.map((st, index) => (
+              <li key={st.id}>
+                <a
+                  href={`#step-${st.id}`}
+                  className="flex items-center gap-3 rounded-lg px-2 py-1.5 text-sm hover:bg-surface-raised"
+                >
+                  <span
+                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-xs font-bold ${
+                      st.done ? 'stamp' : 'border border-border text-text-muted'
+                    }`}
+                    aria-hidden="true"
+                  >
+                    {st.done ? <Check className="h-3.5 w-3.5" strokeWidth={3} /> : index + 1}
+                  </span>
+                  <span className={st.done ? 'font-semibold text-text' : 'text-text-muted'}>{st.title}</span>
+                  <span className="sr-only">{st.done ? '(done)' : '(to do)'}</span>
+                </a>
+              </li>
+            ))}
+          </ol>
 
-        <button
-          type="submit"
-          disabled={isSubmitting || (!isEditing && !isVerified)}
-          className="w-full rounded-xl cta-brand py-3 text-sm font-semibold text-soft-white glow-sm transition disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {isEditing
-            ? isSubmitting
-              ? 'Saving…'
-              : 'Save changes'
-            : isSubmitting
-              ? 'Publishing…'
-              : isVerified
-                ? 'Publish item'
-                : 'Verify your identity to publish'}
-        </button>
+          <div className="hidden space-y-3 lg:block">
+            <StatusMessage type={status.type} text={status.text} />
+            {submitButton}
+          </div>
+        </aside>
       </form>
-      </div>
     </div>
   )
 }

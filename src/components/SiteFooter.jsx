@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Mail } from 'lucide-react'
 import Logo from './Logo'
-import BuiltWithClaude from './BuiltWithClaude'
+import PoweredBy from './PoweredBy'
 
 export const SUPPORT_EMAIL = 'lendrop2026@gmail.com'
 
@@ -83,7 +83,7 @@ export default function SiteFooter() {
 
         <div className="mt-10 flex flex-col items-start gap-4 border-t border-border pt-6 text-xs text-text-muted sm:flex-row sm:items-center sm:justify-between">
           <span>© {new Date().getFullYear()} Lendrop · San Salvador, El Salvador</span>
-          <BuiltWithClaude />
+          <PoweredBy />
         </div>
       </div>
     </footer>

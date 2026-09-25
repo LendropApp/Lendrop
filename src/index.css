@@ -162,6 +162,9 @@
 @layer base {
   html {
     font-family: var(--font-body);
+    /* Stop iOS from enlarging text on its own in landscape. */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
     accent-color: var(--primary);
     caret-color: var(--primary);
     scrollbar-color: var(--steel) transparent;
@@ -227,6 +230,17 @@
   h2 {
     font-stretch: 125%;
     letter-spacing: -0.025em;
+  }
+
+  /* On phones the fully expanded lettering fills the screen edge to edge
+     and reads as oversized, so it narrows a step below the sm breakpoint. */
+  @media (max-width: 639px) {
+    h1,
+    h2,
+    .num {
+      font-stretch: 110%;
+      letter-spacing: -0.02em;
+    }
   }
 
   .locker-code {

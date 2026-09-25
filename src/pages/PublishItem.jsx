@@ -46,12 +46,37 @@ export default function PublishItem() {
   const [condition, setCondition] = useState('good')
   const [pricePerDay, setPricePerDay] = useState('')
   const [declaredValue, setDeclaredValue] = useState('')
-  const [locationCity, setLocationCity] = useState('San Salvador')
+  const [locationCity, setLocationCity] = useState('')
+  // Cities that have at least one active locker: an item can only be
+  // dropped off where there is a locker, so these are the only choices.
+  const [lockerCities, setLockerCities] = useState([])
+  const [lockerCitiesLoading, setLockerCitiesLoading] = useState(true)
   const [status, setStatus] = useState({ type: '', text: '' })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [published, setPublished] = useState(null)
   const [sizeValues, setSizeValues] = useState({ lengthCm: null, widthCm: null, heightCm: null, weightKg: null, blocked: false })
   const [initialSizeValues, setInitialSizeValues] = useState(null)
+
+  useEffect(() => {
+    let cancelled = false
+    supabase
+      .from('lockers')
+      .select('city')
+      .eq('is_active', true)
+      .then(({ data }) => {
+        if (cancelled) return
+        const cities = [...new Set((data ?? []).map((l) => l.city).filter(Boolean))].sort((x, y) =>
+          x.localeCompare(y)
+        )
+        setLockerCities(cities)
+        // New listing with a single option: pick it for them.
+        if (!isEditing && cities.length === 1) setLocationCity(cities[0])
+        setLockerCitiesLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [isEditing])
 
   useEffect(() => {
     let cancelled = false
@@ -104,7 +129,7 @@ export default function PublishItem() {
         setCondition(data.condition ?? 'good')
         setPricePerDay(String(data.price_per_day ?? ''))
         setDeclaredValue(data.declared_value ? String(data.declared_value) : '')
-        setLocationCity(data.location_city ?? 'San Salvador')
+        setLocationCity(data.location_city ?? '')
         if (data.length_cm != null) {
           setInitialSizeValues({
             lengthCm: Number(data.length_cm),
@@ -195,6 +220,10 @@ export default function PublishItem() {
       setStatus({ type: 'error', text: 'This item is too large for our lockers. Adjust its measurements before publishing.' })
       return
     }
+    if (!locationCity) {
+      setStatus({ type: 'error', text: 'Choose the pickup city where you’ll drop the item off.' })
+      return
+    }
 
     // Only creating a listing is gated on verification — editing one you
     // already own isn't, which matches items_update_own server-side.
@@ -220,7 +249,7 @@ export default function PublishItem() {
       price_per_day: price,
       declared_value: Number(declaredValue) || 0,
       currency: 'USD',
-      location_city: locationCity.trim() || 'San Salvador',
+      location_city: locationCity,
       // required_locker_size / dimensions_source are never sent -- the
       // set_item_required_locker_size trigger always computes them.
       ...(sizeValues.lengthCm != null
@@ -317,6 +346,11 @@ export default function PublishItem() {
 
     setPublished({ ...item, coverUrl })
   }
+
+  // When editing a listing whose city no longer has a locker, keep it
+  // selectable so saving other changes doesn't silently move the item.
+  const lockerCityOptions =
+    locationCity && !lockerCities.includes(locationCity) ? [...lockerCities, locationCity] : lockerCities
 
   if (published) {
     return (
@@ -635,14 +669,30 @@ export default function PublishItem() {
           <label htmlFor="locationCity" className="mb-1 block text-sm font-medium text-text">
             Pickup city
           </label>
-          <input
+          <select
             id="locationCity"
-            type="text"
             value={locationCity}
             onChange={(e) => setLocationCity(e.target.value)}
-            placeholder="San Salvador"
-            className="w-full rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary"
-          />
+            required
+            disabled={lockerCitiesLoading || lockerCityOptions.length === 0}
+            aria-describedby="locationCity-hint"
+            className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-primary disabled:opacity-60"
+          >
+            <option value="" disabled>
+              {lockerCitiesLoading ? 'Loading cities…' : 'Choose a city'}
+            </option>
+            {lockerCityOptions.map((city) => (
+              <option key={city} value={city}>
+                {city}
+                {!lockerCities.includes(city) ? ' (no locker there any more)' : ''}
+              </option>
+            ))}
+          </select>
+          <p id="locationCity-hint" className="mt-1.5 text-xs text-text-muted">
+            {!lockerCitiesLoading && lockerCityOptions.length === 0
+              ? 'There are no active lockers yet, so items can’t be published right now.'
+              : 'Only cities with a Lendrop locker are listed: that’s where you’ll drop the item off.'}
+          </p>
         </section>
 
         {/* ================= SUMMARY PREVIEW ================= */}

@@ -173,12 +173,12 @@ export default function Home() {
       <main>
         {/* ================= HERO: the shutter ================= */}
         <section className="brand-field">
-          <div className="mx-auto grid max-w-6xl gap-10 px-6 pb-10 pt-14 sm:px-10 lg:grid-cols-12 lg:gap-12 lg:pb-14 lg:pt-20">
+          <div className="mx-auto grid max-w-6xl gap-8 px-5 pb-8 pt-10 sm:gap-10 sm:px-10 sm:pb-10 sm:pt-14 lg:grid-cols-12 lg:gap-12 lg:pb-14 lg:pt-20">
             <div className="lg:col-span-7">
-              <h1 className="text-5xl font-extrabold leading-[0.98] text-soft-white sm:text-7xl lg:text-8xl">
+              <h1 className="text-[2.6rem] font-extrabold leading-[1] text-soft-white sm:text-7xl lg:text-8xl">
                 Rent it. Skip the meetup.
               </h1>
-              <p className="mt-6 max-w-[52ch] text-lg leading-relaxed text-soft-white/85">
+              <p className="mt-5 max-w-[52ch] text-base leading-relaxed text-soft-white/85 sm:mt-6 sm:text-lg">
                 Borrow cameras, tools, bikes and more from people in El Salvador. The owner leaves it
                 in a locker and you pick it up by confirming it is you. You never have to meet.
               </p>
@@ -219,7 +219,7 @@ export default function Home() {
             <form
               onSubmit={handleSearch}
               role="search"
-              className="mx-auto flex max-w-6xl flex-col gap-3 px-6 py-5 sm:flex-row sm:items-center sm:px-10"
+              className="mx-auto flex max-w-6xl flex-col gap-3 px-5 py-5 sm:flex-row sm:items-center sm:px-10"
             >
               <label htmlFor="hero-search" className="sr-only">
                 What do you need?
@@ -251,7 +251,7 @@ export default function Home() {
         {/* ================= RENT / HOST ================= */}
         <section className="border-b border-border">
           <div className="mx-auto grid max-w-6xl md:grid-cols-2">
-            <div className="px-6 py-16 sm:px-10 lg:py-20">
+            <div className="px-5 py-12 sm:px-10 sm:py-16 lg:py-20">
               <h2 className="text-3xl font-extrabold sm:text-4xl">Need it for a few days?</h2>
               <p className="mt-4 max-w-[48ch] text-text-muted">
                 Reserve the dates, pay online, and collect it from a locker when it suits you.
@@ -268,7 +268,7 @@ export default function Home() {
               </Link>
             </div>
 
-            <div id="hosting" className="scroll-mt-20 border-t border-border px-6 py-16 sm:px-10 md:border-l md:border-t-0 lg:py-20">
+            <div id="hosting" className="scroll-mt-20 border-t border-border px-5 py-12 sm:px-10 sm:py-16 md:border-l md:border-t-0 lg:py-20">
               <h2 className="text-3xl font-extrabold sm:text-4xl">Own it? Let it earn.</h2>
               <p className="mt-4 max-w-[48ch] text-text-muted">
                 List what sits unused. Drop it at a locker once the rental is paid, and pick it up
@@ -292,9 +292,9 @@ export default function Home() {
         </section>
 
         {/* ================= HOW A HANDOFF WORKS ================= */}
-        <section id="how-it-works" className="scroll-mt-20 px-6 py-20 sm:px-10 lg:py-28">
+        <section id="how-it-works" className="scroll-mt-20 px-5 py-14 sm:px-10 sm:py-20 lg:py-28">
           <div className="mx-auto max-w-6xl">
-            <h2 className="max-w-[16ch] text-3xl font-extrabold sm:text-5xl">How a handoff works</h2>
+            <h2 className="max-w-[16ch] text-2xl font-extrabold sm:text-5xl">How a handoff works</h2>
 
             <ol className="mt-12 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-5">
               {HANDOFF_STEPS.map((step, index) => (
@@ -312,10 +312,10 @@ export default function Home() {
         </section>
 
         {/* ================= TRUST ================= */}
-        <section id="trust" className="scroll-mt-20 border-t border-border bg-surface px-6 py-20 sm:px-10 lg:py-28">
+        <section id="trust" className="scroll-mt-20 border-t border-border bg-surface px-5 py-14 sm:px-10 sm:py-20 lg:py-28">
           <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-12">
             <div className="lg:col-span-5">
-              <h2 className="text-3xl font-extrabold sm:text-5xl">Every handoff leaves a record.</h2>
+              <h2 className="text-2xl font-extrabold sm:text-5xl">Every handoff leaves a record.</h2>
               <dl className="mt-10 space-y-6">
                 {TRUST_FACTS.map((fact) => (
                   <div key={fact.title}>
@@ -331,7 +331,7 @@ export default function Home() {
         </section>
 
         {/* ================= CATEGORIES ================= */}
-        <section id="categories" className="scroll-mt-20 border-t border-border px-6 py-20 sm:px-10">
+        <section id="categories" className="scroll-mt-20 border-t border-border px-5 py-14 sm:px-10 sm:py-20">
           <div className="mx-auto max-w-6xl">
             <h2 className="text-3xl font-extrabold sm:text-4xl">What people lend</h2>
             {categories.length > 0 ? (
@@ -362,9 +362,9 @@ export default function Home() {
         </section>
 
         {/* ================= CLOSE ================= */}
-        <section className="brand-field px-6 py-16 sm:px-10 lg:py-20">
+        <section className="brand-field px-5 py-12 sm:px-10 sm:py-16 lg:py-20">
           <div className="mx-auto flex max-w-6xl flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
-            <h2 className="max-w-[18ch] text-4xl font-extrabold text-soft-white sm:text-6xl">
+            <h2 className="max-w-[18ch] text-3xl font-extrabold text-soft-white sm:text-6xl">
               Find it. Reserve it. Pick it up.
             </h2>
             <div className="flex shrink-0 flex-wrap gap-3">

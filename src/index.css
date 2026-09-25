@@ -364,21 +364,4 @@
   .glow-lg {
     box-shadow: 0 4px 8px rgb(13 13 13 / 0.06), 0 20px 40px -12px rgb(67 48 117 / 0.24);
   }
-
-  /* Standard hover-lift for cards/surfaces — one timing curve everywhere. */
-  .lift {
-    transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .lift:hover {
-    transform: translateY(-2px);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .lift,
-    .lift:hover {
-      transition: none;
-      transform: none;
-    }
-  }
 }

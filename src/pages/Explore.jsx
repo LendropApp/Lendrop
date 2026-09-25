@@ -24,7 +24,6 @@ import {
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import { getCategoryIcon } from '../lib/categoryIcons'
-import { getExploreHeroImage } from '../lib/exploreHero'
 import LockerAvatar from '../components/LockerAvatar'
 import ProductCard from '../components/ProductCard'
 import MobileNav from '../components/MobileNav'
@@ -68,7 +67,6 @@ export default function Explore() {
 
   const isVerified = Boolean(user)
   const hasUnreadNotifications = unreadNotifications > 0
-  const heroImage = useMemo(() => getExploreHeroImage(), [])
 
   useEffect(() => {
     let cancelled = false
@@ -269,8 +267,7 @@ export default function Explore() {
   return (
     <div className="min-h-screen bg-bg pb-28 md:pb-0">
       {/* ================= HEADER ================= */}
-      <header className="glass sticky top-0 z-50 shadow-[0_8px_24px_-18px_rgba(67,48,117,0.35)]">
-        <div className="h-px bg-linear-to-r from-transparent via-lavender/50 to-transparent" />
+      <header className="sticky top-0 z-50 border-b border-border bg-surface">
 
         {!scrolled && (
           <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-6 pt-4 sm:px-10">
@@ -281,11 +278,11 @@ export default function Explore() {
             {/* Main nav — centered, like Airbnb's top tabs. Desktop only:
                 on mobile every one of these lives in MobileNav instead,
                 so the two never show the same link twice. */}
-            <nav className="hidden items-center gap-1 rounded-full border border-border bg-surface p-1 shadow-sm md:flex">
+            <nav aria-label="Main" className="hidden items-center gap-1 md:flex">
               {isHost && (
                 <Link
                   to={ROUTES.publish}
-                  className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:bg-surface-raised hover:text-primary"
+                  className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-text-muted hover:bg-surface-raised hover:text-primary"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   <span className="hidden sm:inline">Publish</span>
@@ -293,31 +290,31 @@ export default function Explore() {
               )}
               <Link
                 to={ROUTES.favorites}
-                className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:bg-surface-raised hover:text-primary"
+                className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-text-muted hover:bg-surface-raised hover:text-primary"
               >
                 <Heart className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">Saved</span>
               </Link>
               <Link
                 to={ROUTES.messages}
-                className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:bg-surface-raised hover:text-primary"
+                className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-text-muted hover:bg-surface-raised hover:text-primary"
               >
                 <MessageCircle className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">Messages</span>
               </Link>
               <Link
                 to={ROUTES.notifications}
-                className="relative flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:bg-surface-raised hover:text-primary"
+                className="relative flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-text-muted hover:bg-surface-raised hover:text-primary"
               >
                 <Bell className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">Alerts</span>
                 {hasUnreadNotifications && (
-                  <span className="absolute right-1.5 top-1 h-1.5 w-1.5 animate-pulse rounded-full bg-lavender ring-2 ring-white" />
+                  <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-lavender ring-2 ring-surface" aria-label="Unread" />
                 )}
               </Link>
               <Link
                 to={ROUTES.tracking}
-                className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:bg-surface-raised hover:text-primary"
+                className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-text-muted hover:bg-surface-raised hover:text-primary"
               >
                 <PackageSearch className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">Track</span>
@@ -327,10 +324,10 @@ export default function Explore() {
             {!isHost && (
               <Link
                 to={ROUTES.becomeLender}
-                className="hidden shrink-0 items-center gap-1.5 rounded-full cta-brand px-4 py-2 text-xs font-semibold text-soft-white shadow-[0_4px_20px_-4px_rgba(67,48,117,0.5)] transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.6)] hover:brightness-105 md:flex"
+                className="hidden shrink-0 items-center gap-1.5 rounded-xl cta-brand px-4 py-2 text-sm font-semibold text-soft-white md:flex"
               >
                 <Store className="h-3.5 w-3.5" />
-                Become a Lender
+                Become a host
               </Link>
             )}
 
@@ -339,7 +336,7 @@ export default function Explore() {
               <Link
                 to={ROUTES.profile}
                 aria-label="Your account"
-                className="rounded-full transition hover:ring-2 hover:ring-lavender/40"
+                className="rounded-full hover:ring-2 hover:ring-primary"
               >
                 <LockerAvatar label={firstName} photoUrl={profile?.avatar_url} verified={isVerified} size="md" />
               </Link>
@@ -349,7 +346,7 @@ export default function Explore() {
                 aria-label="More options"
                 aria-expanded={menuOpen}
                 onClick={() => setMenuOpen((v) => !v)}
-                className="hidden h-9 w-9 items-center justify-center rounded-full border border-border text-text-muted transition hover:border-primary hover:text-primary md:flex"
+                className="hidden h-9 w-9 items-center justify-center rounded-lg border border-border text-text-muted hover:border-primary hover:text-primary md:flex"
               >
                 <Menu className="h-4 w-4" />
               </button>
@@ -357,7 +354,7 @@ export default function Explore() {
               {menuOpen && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
-                  <div className="absolute right-0 top-full z-50 mt-2 w-60 overflow-hidden rounded-2xl border border-border bg-surface py-1.5 shadow-xl">
+                  <div className="glow absolute right-0 top-full z-50 mt-2 w-60 overflow-hidden rounded-xl border border-border bg-surface py-1.5">
                     <Link
                       to="/history"
                       onClick={() => setMenuOpen(false)}
@@ -422,7 +419,7 @@ export default function Explore() {
                     <button
                       type="button"
                       onClick={handleSignOut}
-                      className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-500 transition hover:bg-red-50"
+                      className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-danger hover:bg-danger-soft"
                     >
                       <LogOut className="h-4 w-4" />
                       Sign out
@@ -436,55 +433,39 @@ export default function Explore() {
 
         {/* Search — the one thing that stays visible once you scroll */}
         <div className={`mx-auto max-w-2xl px-6 sm:px-10 ${scrolled ? 'py-3' : 'pb-4 pt-3'}`}>
-          <div className="flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-2.5 shadow-sm transition hover:shadow-md focus-within:border-primary focus-within:shadow-[0_0_0_1px_rgba(165,140,244,0.4),0_8px_24px_-8px_rgba(165,140,244,0.5)] focus-within:ring-2 focus-within:ring-lavender/30">
-            <Search className="h-4 w-4 shrink-0 text-text-muted" />
+          <div className="flex items-center gap-2 rounded-xl border border-border bg-bg px-4 py-2.5 focus-within:border-primary">
+            <Search className="h-4 w-4 shrink-0 text-text-muted" aria-hidden="true" />
+            <label htmlFor="explore-search" className="sr-only">Search items</label>
             <input
-              type="text"
+              id="explore-search"
+              type="search"
               value={searchTerm}
               onChange={handleSearchChange}
               placeholder="Search cameras, tools, gear…"
-              className="w-full bg-transparent text-sm outline-none placeholder:text-text-muted"
+              className="w-full bg-transparent text-sm outline-none"
             />
           </div>
         </div>
       </header>
 
-      {/* ================= GREETING ================= */}
-      <section className="relative isolate overflow-hidden border-b border-border">
-        <div className="relative mx-auto grid max-w-6xl gap-8 px-6 pt-10 pb-12 sm:px-10 sm:pt-14 sm:pb-16 lg:grid-cols-[1.3fr_1fr] lg:items-center lg:gap-12">
-          <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface-raised px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-widest text-primary">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-lavender" />
-              Live inventory · San Salvador
-            </span>
-            <h1 className="mt-3 font-display text-2xl font-bold text-text sm:text-3xl">
-              {firstName ? `Welcome back, ${firstName}.` : 'Find what you need, nearby.'}
-            </h1>
-            <p className="mt-3 max-w-md text-sm leading-relaxed text-text-muted">
-              Every listing below is verified and ready to pick up from a locker near you.
-            </p>
-          </div>
-
-          <div className="relative aspect-4/3 overflow-hidden rounded-3xl shadow-[0_24px_60px_-24px_rgba(67,48,117,0.45)]">
-            <img
-              src={heroImage.src}
-              alt={heroImage.alt}
-              className="h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-linear-to-t from-jet-black/45 via-transparent to-transparent" />
-            <span className="absolute bottom-4 left-4 rounded-full border border-white/30 bg-white/20 px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-white backdrop-blur-md">
-              Ready for pickup
-            </span>
-          </div>
+      {/* ================= GREETING: the shutter band ================= */}
+      <section className="shutter">
+        <div className="mx-auto max-w-6xl px-6 py-10 sm:px-10 sm:py-14">
+          <h1 className="text-4xl font-extrabold leading-[1.02] text-soft-white sm:text-6xl">
+            {firstName ? `Welcome back, ${firstName}.` : 'Find what you need, nearby.'}
+          </h1>
+          <p className="mt-4 max-w-[52ch] text-brand-surface-muted">
+            Everything here is picked up from a locker. No meetups.
+          </p>
         </div>
       </section>
 
       {/* ================= PROFILE COMPLETION NUDGE ================= */}
       {profileIncomplete && (
         <section className="mx-auto max-w-6xl px-6 pt-6 sm:px-10">
-          <div className="flex flex-col items-start gap-3 rounded-2xl border border-border bg-surface-raised p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col items-start gap-3 rounded-2xl border border-border bg-surface p-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-surface text-primary">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-surface-raised text-primary">
                 <UserCircle2 className="h-5 w-5" />
               </span>
               <div>
@@ -496,7 +477,7 @@ export default function Explore() {
             </div>
             <Link
               to="/profile/edit"
-              className="shrink-0 rounded-full cta-brand px-4 py-2 text-xs font-semibold text-soft-white glow-sm transition hover:brightness-105"
+              className="shrink-0 rounded-xl cta-brand px-4 py-2 text-sm font-semibold text-soft-white"
             >
               Complete profile
             </Link>
@@ -506,7 +487,7 @@ export default function Explore() {
 
       {/* ================= CATEGORIES ================= */}
       <section className="mx-auto max-w-6xl px-6 sm:px-10">
-        <div className="mt-6 flex gap-5 overflow-x-auto pb-1 sm:gap-7">
+        <div className="mt-6 flex gap-2 overflow-x-auto pb-2" role="group" aria-label="Categories">
           {categories.map((cat) => {
             const active = selectedCategory === cat.slug
             const Icon = getCategoryIcon(cat.slug)
@@ -515,13 +496,14 @@ export default function Explore() {
                 key={cat.id}
                 type="button"
                 onClick={() => handleCategoryClick(cat.slug)}
-                className={`flex shrink-0 flex-col items-center gap-1.5 border-b-2 pb-2 pt-1 text-[11px] font-semibold transition ${
+                aria-pressed={active}
+                className={`flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold ${
                   active
-                    ? 'border-primary text-primary'
-                    : 'border-transparent text-text-muted hover:border-border hover:text-text'
+                    ? 'stamp'
+                    : 'border border-border bg-surface text-text-muted hover:border-primary hover:text-text'
                 }`}
               >
-                <Icon className="h-5 w-5" strokeWidth={active ? 2.25 : 1.6} />
+                <Icon className="h-4 w-4" aria-hidden="true" />
                 {cat.name}
               </button>
             )
@@ -531,12 +513,13 @@ export default function Explore() {
         {/* City + availability filters */}
         <div className="mt-3 flex flex-wrap items-center gap-2">
           {cities.length > 1 && (
-            <div className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5">
-              <MapPin className="h-3.5 w-3.5 text-text-muted" />
+            <div className="flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-2">
+              <MapPin className="h-4 w-4 text-text-muted" aria-hidden="true" />
               <select
                 value={selectedCity ?? ''}
                 onChange={(e) => setSelectedCity(e.target.value || null)}
-                className="bg-transparent text-xs font-medium text-text-muted outline-none"
+                aria-label="City"
+                className="bg-transparent text-sm font-semibold text-text outline-none"
               >
                 <option value="">All cities</option>
                 {cities.map((city) => (
@@ -551,28 +534,35 @@ export default function Explore() {
           <button
             type="button"
             onClick={() => setOnlyAvailable((prev) => !prev)}
-            className={`rounded-full border px-3.5 py-1.5 text-xs font-semibold transition ${
+            aria-pressed={onlyAvailable}
+            className={`rounded-lg px-3 py-2 text-sm font-semibold ${
               onlyAvailable
-                ? 'border-border bg-surface-raised text-primary'
-                : 'border-border text-text-muted hover:border-primary hover:text-primary'
+                ? 'stamp'
+                : 'border border-border bg-surface text-text-muted hover:border-primary hover:text-text'
             }`}
           >
-            {onlyAvailable ? 'Available now' : 'Showing all'}
+            Available now
           </button>
         </div>
       </section>
 
       {/* ================= LISTINGS ================= */}
       <section className="mx-auto max-w-6xl px-6 py-8 sm:px-10">
-        <div className="mb-6 flex items-center justify-between">
-          <h2 className="font-display text-xl font-semibold text-text">
-            {sectionTitle}
-          </h2>
+        <div className="mb-6 flex items-end justify-between gap-4">
+          <div>
+            <h2 className="text-2xl font-extrabold sm:text-3xl">{sectionTitle}</h2>
+            {!itemsLoading && !itemsError && (
+              <p className="mt-1 text-sm text-text-muted">
+                <span className="num text-text">{filteredListings.length}</span>{' '}
+                {filteredListings.length === 1 ? 'item' : 'items'}
+              </p>
+            )}
+          </div>
           {isFiltering && (
             <button
               type="button"
               onClick={clearFilters}
-              className="text-sm font-medium text-primary hover:underline"
+              className="shrink-0 text-sm font-semibold text-primary hover:underline"
             >
               Clear filters
             </button>
@@ -580,7 +570,7 @@ export default function Explore() {
         </div>
 
         {itemsError ? (
-          <p className="py-20 text-center text-sm text-red-600">{itemsError}</p>
+          <p role="alert" className="py-20 text-center text-sm text-danger">{itemsError}</p>
         ) : itemsLoading ? (
           <p className="py-20 text-center text-sm text-text-muted">Loading listings…</p>
         ) : filteredListings.length > 0 ? (
@@ -599,12 +589,19 @@ export default function Explore() {
           </div>
         ) : (
           <div className="flex flex-col items-center gap-1 py-20 text-center">
-            <p className="font-display text-lg font-semibold text-text">
-              No items found
-            </p>
+            <p className="text-xl font-bold">No items match</p>
             <p className="text-sm text-text-muted">
               Try a different search, or browse another category.
             </p>
+            {isFiltering && (
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="mt-4 rounded-xl border border-border bg-surface px-4 py-2 text-sm font-semibold hover:border-primary hover:text-primary"
+              >
+                Clear filters
+              </button>
+            )}
           </div>
         )}
       </section>
@@ -622,7 +619,7 @@ export default function Explore() {
                 <a
                   href="mailto:hola@lendrop.app"
                   aria-label="Email"
-                  className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-text-muted transition hover:border-primary hover:text-primary"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-border text-text-muted hover:border-primary hover:text-primary"
                 >
                   <Mail className="h-3.5 w-3.5" />
                 </a>
@@ -630,16 +627,16 @@ export default function Explore() {
             </div>
 
             <div>
-              <p className="font-display text-xs font-semibold uppercase tracking-wide text-text-muted">Explore</p>
+              <p className="text-sm font-bold text-text">Explore</p>
               <ul className="mt-3 space-y-2 text-sm text-text-muted">
                 <li><Link to="/categories" className="hover:text-primary">Browse categories</Link></li>
-                <li><Link to={ROUTES.becomeLender} className="hover:text-primary">Become a Lender</Link></li>
+                <li><Link to={ROUTES.becomeLender} className="hover:text-primary">Become a host</Link></li>
                 <li><Link to="/locker-coverage" className="hover:text-primary">Locker locations</Link></li>
               </ul>
             </div>
 
             <div>
-              <p className="font-display text-xs font-semibold uppercase tracking-wide text-text-muted">Support</p>
+              <p className="text-sm font-bold text-text">Support</p>
               <ul className="mt-3 space-y-2 text-sm text-text-muted">
                 <li><Link to="/help" className="hover:text-primary">Help center</Link></li>
                 <li><Link to="/history" className="hover:text-primary">Your activity</Link></li>
@@ -648,7 +645,7 @@ export default function Explore() {
             </div>
 
             <div>
-              <p className="font-display text-xs font-semibold uppercase tracking-wide text-text-muted">Account</p>
+              <p className="text-sm font-bold text-text">Account</p>
               <ul className="mt-3 space-y-2 text-sm text-text-muted">
                 <li><Link to={ROUTES.profile} className="hover:text-primary">Your profile</Link></li>
                 <li><Link to="/payment-methods" className="hover:text-primary">Payment methods</Link></li>

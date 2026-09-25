@@ -35,7 +35,7 @@ export default function LockerAvatar({
 
   return (
     <span
-      className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-surface-raised font-mono font-bold text-primary ${s.frame} ${s.text} ${className}`}
+      className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-surface-raised font-display font-bold text-primary ${s.frame} ${s.text} ${className}`}
     >
       {photoUrl ? (
         <img src={photoUrl} alt={label || 'Avatar'} className="h-full w-full object-cover" />
@@ -47,7 +47,7 @@ export default function LockerAvatar({
 
       {verified && (
         <span
-          className={`absolute animate-pulse rounded-full bg-lavender ring-2 ring-soft-white ${s.dot}`}
+          className={`absolute rounded-full bg-lavender ring-2 ring-surface ${s.dot}`}
         />
       )}
     </span>

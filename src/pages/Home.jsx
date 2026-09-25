@@ -7,6 +7,8 @@ import LockerLogDemo from '../components/LockerLogDemo'
 import Logo from '../components/Logo'
 import RentalStatus from '../components/RentalStatus'
 import Shutter from '../components/Shutter'
+import SiteFooter from '../components/SiteFooter'
+import useHashScroll from '../hooks/useHashScroll'
 
 // Illustrative only: the compartment in the hero is sample data, labelled
 // as such on the page (as is the locker demo in LockerLogDemo).
@@ -84,6 +86,7 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [categories, setCategories] = useState([])
+  useHashScroll()
 
   useEffect(() => {
     let cancelled = false
@@ -382,17 +385,7 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="border-t border-border bg-surface px-6 py-10 sm:px-10">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 sm:flex-row">
-          <Logo className="h-5" />
-          <nav aria-label="Footer" className="flex gap-6 text-sm text-text-muted">
-            <Link to="/explore" className="hover:text-primary">Explore</Link>
-            <Link to="/become-host" className="hover:text-primary">Become a host</Link>
-            <Link to="/login" className="hover:text-primary">Log in</Link>
-          </nav>
-          <p className="text-xs text-text-muted">&copy; 2026 Lendrop</p>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   )
 }

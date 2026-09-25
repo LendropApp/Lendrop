@@ -40,6 +40,8 @@ import PaymentMethods from "./pages/PaymentMethods";
 import PaymentReturn from "./pages/PaymentReturn";
 import Premium from "./pages/Premium";
 import Admin from "./pages/Admin";
+import Help from "./pages/Help";
+import LegalPage from "./pages/LegalPage";
 import DesignSystem from "./pages/DesignSystem";
 
 export default function App() {
@@ -97,8 +99,11 @@ export default function App() {
 
           <Route
             path="/help"
-            element={<RentalTracking />}
+            element={<Help />}
           />
+
+          <Route path="/terms" element={<LegalPage document="terms" />} />
+          <Route path="/privacy" element={<LegalPage document="privacy" />} />
 
           <Route
             path="/become-host"

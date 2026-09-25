@@ -420,6 +420,28 @@
     }
   }
 
+  /* ── Help-center FAQ (Help.jsx) ─────────────────────────────────────
+     Native <details>. The chevron turns to show the state: a small
+     on-screen morph, so ease-out-quart at dur-2 (motion-design skill).
+     The browser's own disclosure triangle is hidden. */
+  .faq summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-chevron {
+    transition: transform var(--dur-2) var(--ease-out-quart);
+  }
+
+  .faq[open] .faq-chevron {
+    transform: rotate(180deg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .faq-chevron {
+      transition: none;
+    }
+  }
+
   /* Slow ambient drift for the aurora blobs behind the auth screens
      (AuroraBlobs.jsx, AuthLayout.jsx). */
   @keyframes aurora-drift {

@@ -18,7 +18,6 @@ import {
   Sparkles,
   History,
   LogOut,
-  Mail,
   PackageSearch,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
@@ -29,6 +28,7 @@ import ProductCard from '../components/ProductCard'
 import MobileNav from '../components/MobileNav'
 import { buildSteps } from '../components/ProfileCompletion'
 import Logo from '../components/Logo'
+import SiteFooter from '../components/SiteFooter'
 
 const ROUTES = {
   becomeLender: '/become-host',
@@ -606,62 +606,7 @@ export default function Explore() {
       </section>
 
       {/* ================= FOOTER ================= */}
-      <footer className="border-t border-border bg-surface">
-        <div className="mx-auto max-w-6xl px-6 py-12 sm:px-10">
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
-            <div className="col-span-2 sm:col-span-1">
-              <Logo />
-              <p className="mt-3 max-w-40 text-xs leading-relaxed text-text-muted">
-                Rent what you need, from people near you in El Salvador.
-              </p>
-              <div className="mt-4 flex items-center gap-2">
-                <a
-                  href="mailto:hola@lendrop.app"
-                  aria-label="Email"
-                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-border text-text-muted hover:border-primary hover:text-primary"
-                >
-                  <Mail className="h-3.5 w-3.5" />
-                </a>
-              </div>
-            </div>
-
-            <div>
-              <p className="text-sm font-bold text-text">Explore</p>
-              <ul className="mt-3 space-y-2 text-sm text-text-muted">
-                <li><Link to="/categories" className="hover:text-primary">Browse categories</Link></li>
-                <li><Link to={ROUTES.becomeLender} className="hover:text-primary">Become a host</Link></li>
-                <li><Link to="/locker-coverage" className="hover:text-primary">Locker locations</Link></li>
-              </ul>
-            </div>
-
-            <div>
-              <p className="text-sm font-bold text-text">Support</p>
-              <ul className="mt-3 space-y-2 text-sm text-text-muted">
-                <li><Link to="/help" className="hover:text-primary">Help center</Link></li>
-                <li><Link to="/history" className="hover:text-primary">Your activity</Link></li>
-                <li><a href="mailto:hola@lendrop.app" className="hover:text-primary">Contact us</a></li>
-              </ul>
-            </div>
-
-            <div>
-              <p className="text-sm font-bold text-text">Account</p>
-              <ul className="mt-3 space-y-2 text-sm text-text-muted">
-                <li><Link to={ROUTES.profile} className="hover:text-primary">Your profile</Link></li>
-                <li><Link to="/payment-methods" className="hover:text-primary">Payment methods</Link></li>
-                <li><Link to="/verification" className="hover:text-primary">Verification</Link></li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="mt-10 flex flex-col items-center gap-3 border-t border-border pt-6 text-xs text-text-muted sm:flex-row sm:justify-between">
-            <span>© {new Date().getFullYear()} Lendrop · San Salvador, El Salvador</span>
-            <div className="flex items-center gap-4">
-              <a href="#" className="hover:text-primary">Terms</a>
-              <a href="#" className="hover:text-primary">Privacy</a>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   )
 }

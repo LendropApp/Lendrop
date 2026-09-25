@@ -23,7 +23,7 @@ export default function SuccessStep() {
       <div className="flex flex-col gap-3">
         <Link
           to="/publish"
-          className="w-full flex items-center justify-center gap-2 cta-brand text-white font-medium text-base py-3.5 rounded-xl glow-sm transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-deep-purple focus-visible:ring-offset-2"
+          className="w-full flex items-center justify-center gap-2 cta-brand text-soft-white font-medium text-base py-3.5 rounded-xl glow-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-deep-purple focus-visible:ring-offset-2"
         >
           Publish your first item
           <ArrowRight className="w-4 h-4" />

@@ -107,7 +107,7 @@ export default function ContactCityStep({ record, onNext, onBack }) {
           </label>
           <div
             className={`flex items-center rounded-xl border bg-surface focus-within:ring-2 focus-within:ring-deep-purple ${
-              errors.phone ? "border-red-400" : "border-border"
+              errors.phone ? "border-danger" : "border-border"
             }`}
           >
             <span className="pl-4 pr-2 py-3 text-base text-text-muted border-r border-border select-none">
@@ -123,7 +123,7 @@ export default function ContactCityStep({ record, onNext, onBack }) {
               className="flex-1 min-w-0 px-3 py-3 text-base text-text placeholder:text-text-muted bg-transparent focus:outline-none rounded-r-xl"
             />
           </div>
-          {errors.phone && <p className="text-xs text-red-500 mt-1.5">{errors.phone}</p>}
+          {errors.phone && <p className="text-xs text-danger mt-1.5">{errors.phone}</p>}
         </div>
 
         <div>
@@ -135,7 +135,7 @@ export default function ContactCityStep({ record, onNext, onBack }) {
             value={form.zone}
             onChange={handleDepartmentChange}
             className={`w-full rounded-xl border px-4 py-3 text-base text-text bg-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-deep-purple ${
-              errors.zone ? "border-red-400" : "border-border"
+              errors.zone ? "border-danger" : "border-border"
             }`}
           >
             <option value="" disabled>Select your department</option>
@@ -143,7 +143,7 @@ export default function ContactCityStep({ record, onNext, onBack }) {
               <option key={d} value={d}>{d}</option>
             ))}
           </select>
-          {errors.zone && <p className="text-xs text-red-500 mt-1.5">{errors.zone}</p>}
+          {errors.zone && <p className="text-xs text-danger mt-1.5">{errors.zone}</p>}
         </div>
 
         <div>
@@ -156,7 +156,7 @@ export default function ContactCityStep({ record, onNext, onBack }) {
             onChange={handleCityChange}
             disabled={!form.zone}
             className={`w-full rounded-xl border px-4 py-3 text-base text-text bg-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-deep-purple disabled:bg-surface-raised disabled:text-text-muted ${
-              errors.city ? "border-red-400" : "border-border"
+              errors.city ? "border-danger" : "border-border"
             }`}
           >
             <option value="" disabled>
@@ -166,7 +166,7 @@ export default function ContactCityStep({ record, onNext, onBack }) {
               <option key={c} value={c}>{c}</option>
             ))}
           </select>
-          {errors.city && <p className="text-xs text-red-500 mt-1.5">{errors.city}</p>}
+          {errors.city && <p className="text-xs text-danger mt-1.5">{errors.city}</p>}
         </div>
 
         <div className="flex items-center gap-3 pt-4">
@@ -180,7 +180,7 @@ export default function ContactCityStep({ record, onNext, onBack }) {
           </button>
           <button
             type="submit"
-            className="flex-1 flex items-center justify-center gap-2 cta-brand text-white font-medium text-base py-3.5 rounded-xl glow-sm transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-deep-purple focus-visible:ring-offset-2"
+            className="flex-1 flex items-center justify-center gap-2 cta-brand text-soft-white font-medium text-base py-3.5 rounded-xl glow-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-deep-purple focus-visible:ring-offset-2"
           >
             Continue
             <ArrowRight className="w-4 h-4" />

@@ -13,8 +13,8 @@ import VerificationNotice from '../components/VerificationNotice'
 // still exists and stays editable, it just drops out of Explore and out
 // of the reservation RPCs, which only pick up available items.
 const STATUS_META = {
-  active: { label: 'Active', className: 'bg-emerald-100 text-emerald-700' },
-  paused: { label: 'Paused', className: 'bg-amber-100 text-amber-700' },
+  active: { label: 'Active', className: 'bg-success-soft text-success' },
+  paused: { label: 'Paused', className: 'bg-surface-raised text-primary' },
 }
 
 export default function MyListings() {
@@ -131,7 +131,7 @@ export default function MyListings() {
               <button
                 type="button"
                 onClick={handlePublishClick}
-                className="flex shrink-0 items-center gap-1.5 rounded-xl cta-brand px-4 py-2.5 text-sm font-semibold text-soft-white glow-sm transition hover:brightness-105"
+                className="flex shrink-0 items-center gap-1.5 rounded-xl cta-brand px-4 py-2.5 text-sm font-semibold text-soft-white glow-sm transition"
               >
                 <PackagePlus className="h-4 w-4" />
                 <span className="hidden sm:inline">New listing</span>
@@ -148,7 +148,7 @@ export default function MyListings() {
           )}
 
           {error ? (
-            <p className="py-20 text-center text-sm text-red-600">{error}</p>
+            <p className="py-20 text-center text-sm text-danger">{error}</p>
           ) : loading ? (
             <p className="py-20 text-center text-sm text-text-muted">Loading your listings…</p>
           ) : items.length === 0 ? (
@@ -167,7 +167,7 @@ export default function MyListings() {
               <button
                 type="button"
                 onClick={handlePublishClick}
-                className="mt-6 inline-flex items-center gap-2 rounded-xl cta-brand px-5 py-2.5 text-sm font-semibold text-soft-white glow-sm transition hover:brightness-105"
+                className="mt-6 inline-flex items-center gap-2 rounded-xl cta-brand px-5 py-2.5 text-sm font-semibold text-soft-white glow-sm transition"
               >
                 <PackagePlus className="h-4 w-4" />
                 {isVerified ? 'Publish your first item' : 'Verify to start listing'}
@@ -211,14 +211,14 @@ export default function MyListings() {
                             {item.title}
                           </Link>
                           <span
-                            className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${meta.className}`}
+                            className={`shrink-0 rounded-md px-2 py-0.5 text-xs font-semibold ${meta.className}`}
                           >
                             {meta.label}
                           </span>
                           {!item.required_locker_size && (
                             <span
                               title="This item doesn't fit in any of our lockers yet — fix its measurements in Edit."
-                              className="flex shrink-0 items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold text-red-700"
+                              className="flex shrink-0 items-center gap-1 rounded-md bg-danger-soft px-2 py-0.5 text-xs font-semibold text-danger"
                             >
                               <AlertTriangle className="h-2.5 w-2.5" />
                               Too large
@@ -229,7 +229,7 @@ export default function MyListings() {
                           <CategoryIcon className="h-3 w-3" />
                           {item.category?.name ?? 'Uncategorised'}
                         </p>
-                        <p className="mt-1 font-mono text-sm font-semibold text-text">
+                        <p className="num mt-1 text-lg text-text">
                           ${Number(item.price_per_day).toFixed(2)}
                           <span className="font-body font-normal text-text-muted"> /day</span>
                         </p>
@@ -243,7 +243,7 @@ export default function MyListings() {
                           type="button"
                           onClick={() => setConfirmDeleteId(null)}
                           disabled={busy}
-                          className="ml-auto rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:bg-surface-raised"
+                          className="cta-outline ml-auto rounded-lg px-3 py-1 text-xs font-semibold"
                         >
                           Cancel
                         </button>
@@ -251,7 +251,7 @@ export default function MyListings() {
                           type="button"
                           onClick={() => handleDelete(item)}
                           disabled={busy}
-                          className="rounded-full bg-red-500 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-red-600 disabled:opacity-50"
+                          className="rounded-lg bg-red-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-800 disabled:opacity-50"
                         >
                           {busy ? 'Deleting…' : 'Confirm delete'}
                         </button>
@@ -260,7 +260,7 @@ export default function MyListings() {
                       <div className="mt-3 flex items-center gap-2 border-t border-border pt-3">
                         <Link
                           to={`/my-listings/${item.id}/edit`}
-                          className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-primary hover:text-primary"
+                          className="cta-outline flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-semibold"
                         >
                           <Pencil className="h-3.5 w-3.5" />
                           Edit
@@ -269,7 +269,7 @@ export default function MyListings() {
                           type="button"
                           onClick={() => handleTogglePause(item)}
                           disabled={busy}
-                          className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-text-muted transition hover:border-primary hover:text-primary disabled:opacity-50"
+                          className="cta-outline flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-semibold disabled:opacity-50"
                         >
                           {item.is_available ? (
                             <>
@@ -287,7 +287,7 @@ export default function MyListings() {
                           type="button"
                           onClick={() => setConfirmDeleteId(item.id)}
                           disabled={busy}
-                          className="ml-auto flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-red-500 transition hover:bg-red-50"
+                          className="ml-auto flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-danger hover:bg-danger-soft"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                           Delete

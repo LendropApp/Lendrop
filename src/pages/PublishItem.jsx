@@ -321,35 +321,29 @@ export default function PublishItem() {
   if (published) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-bg px-6">
-        <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-border bg-surface p-8 text-center shadow-[0_16px_48px_-16px_rgba(67,48,117,0.35)]">
-          <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-lavender to-transparent" />
-          <div className="mx-auto mb-4 h-16 w-16 overflow-hidden rounded-xl bg-surface-raised shadow-[0_0_0_3px_rgba(165,140,244,0.25)]">
+        <div className="relative w-full max-w-md overflow-hidden glow-lg rounded-2xl border border-border bg-surface p-8 text-center">
+          <div className="mx-auto mb-4 h-16 w-16 overflow-hidden rounded-xl bg-surface-raised ring-1 ring-border">
             {published.coverUrl && (
               <img src={published.coverUrl} alt="" className="h-full w-full object-cover" />
             )}
           </div>
-          <span className="font-mono text-[10px] font-semibold uppercase tracking-widest text-primary">
-            Live on Lendrop
-          </span>
-          <p className="mt-1 font-display text-lg font-semibold text-text">
-            Item published
-          </p>
+          <p className="text-2xl font-extrabold">It's live on Lendrop</p>
           <p className="mt-2 text-sm text-text-muted">
             "{published.title}" is now listed at{' '}
-            <span className="font-mono">${published.price_per_day}/day</span>.
+            <span className="num">${published.price_per_day}</span>/day.
           </p>
           <div className="mt-6 flex gap-3">
             <button
               type="button"
               onClick={() => navigate('/explore')}
-              className="w-full rounded-xl border border-border py-2.5 text-sm font-semibold text-text transition hover:bg-surface-raised"
+              className="cta-outline w-full rounded-xl py-2 text-sm font-semibold"
             >
               Go to Explore
             </button>
             <button
               type="button"
               onClick={() => window.location.reload()}
-              className="w-full rounded-xl cta-brand py-2.5 text-sm font-semibold text-soft-white glow-sm transition hover:brightness-105"
+              className="w-full rounded-xl cta-brand py-2.5 text-sm font-semibold text-soft-white glow-sm transition"
             >
               Publish another
             </button>
@@ -364,10 +358,10 @@ export default function PublishItem() {
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-bg px-6">
         {loadError ? (
           <>
-            <p className="text-sm text-red-600">{loadError}</p>
+            <p className="text-sm text-danger">{loadError}</p>
             <Link
               to="/my-listings"
-              className="rounded-xl border border-border px-4 py-2 text-sm font-semibold text-text transition hover:bg-surface-raised"
+              className="cta-outline rounded-xl px-4 py-1.5 text-sm font-semibold"
             >
               Back to my listings
             </Link>
@@ -381,24 +375,20 @@ export default function PublishItem() {
 
   return (
     <div className="min-h-screen bg-bg pb-28 md:pb-16">
-      <header className="glass sticky top-0 z-50">
-        <div className="h-px bg-linear-to-r from-transparent via-lavender/50 to-transparent" />
+      <header className="sticky top-0 z-50 border-b border-border bg-surface">
         <div className="mx-auto flex max-w-2xl items-center gap-3 px-6 py-4 sm:px-10">
           <button
             type="button"
             onClick={goBack}
             aria-label={isEditing ? 'Back to my listings' : 'Back to Explore'}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-text-muted transition hover:border-primary hover:text-primary"
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-text-muted hover:border-primary hover:text-primary"
           >
             <ArrowLeft className="h-4 w-4" />
           </button>
           <div>
-            <h1 className="font-display text-lg font-semibold text-text">
+            <h1 className="text-2xl font-extrabold">
               {isEditing ? 'Edit listing' : 'Publish an item'}
             </h1>
-            <p className="font-mono text-[10px] uppercase tracking-widest text-primary">
-              {isEditing ? 'Update details' : 'New listing'}
-            </p>
           </div>
         </div>
       </header>
@@ -428,7 +418,7 @@ export default function PublishItem() {
                   className="h-full w-full object-cover"
                 />
                 {index === 0 && (
-                  <span className="absolute left-1.5 top-1.5 rounded-full cta-brand px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-soft-white shadow-[0_2px_10px_-2px_rgba(165,140,244,0.7)]">
+                  <span className="absolute left-1.5 top-1.5 rounded-md cta-brand px-2 py-0.5 text-xs font-semibold text-soft-white">
                     Cover
                   </span>
                 )}
@@ -436,7 +426,7 @@ export default function PublishItem() {
                   type="button"
                   onClick={() => setRemovedPhotoIds((prev) => [...prev, photo.id])}
                   aria-label="Remove photo"
-                  className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-jet-black/60 text-soft-white backdrop-blur transition hover:bg-jet-black/80"
+                  className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-lg bg-jet-black/75 text-soft-white hover:bg-jet-black"
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
@@ -454,7 +444,7 @@ export default function PublishItem() {
                   className="h-full w-full object-cover"
                 />
                 {keptExistingPhotos.length === 0 && index === 0 && (
-                  <span className="absolute left-1.5 top-1.5 rounded-full cta-brand px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-soft-white shadow-[0_2px_10px_-2px_rgba(165,140,244,0.7)]">
+                  <span className="absolute left-1.5 top-1.5 rounded-md cta-brand px-2 py-0.5 text-xs font-semibold text-soft-white">
                     Cover
                   </span>
                 )}
@@ -462,7 +452,7 @@ export default function PublishItem() {
                   type="button"
                   onClick={() => removePhoto(photo.id)}
                   aria-label="Remove photo"
-                  className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-jet-black/60 text-soft-white backdrop-blur transition hover:bg-jet-black/80"
+                  className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-lg bg-jet-black/75 text-soft-white hover:bg-jet-black"
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
@@ -470,9 +460,9 @@ export default function PublishItem() {
             ))}
 
             {canAddMorePhotos && (
-              <label className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-border text-text-muted transition hover:border-primary hover:bg-surface-raised hover:text-primary hover:shadow-[0_0_0_4px_rgba(165,140,244,0.12)]">
+              <label className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-border text-text-muted transition hover:border-primary hover:bg-surface-raised hover:text-primary">
                 <ImagePlus className="h-5 w-5" />
-                <span className="text-[11px] font-medium">Add photo</span>
+                <span className="text-xs font-medium">Add photo</span>
                 <input
                   type="file"
                   accept="image/*"
@@ -491,7 +481,7 @@ export default function PublishItem() {
             Category
           </label>
           {categoriesError ? (
-            <p className="text-sm text-red-600">{categoriesError}</p>
+            <p className="text-sm text-danger">{categoriesError}</p>
           ) : categories.length === 0 ? (
             <p className="text-sm text-text-muted">Loading categories…</p>
           ) : (
@@ -504,10 +494,11 @@ export default function PublishItem() {
                     key={cat.id}
                     type="button"
                     onClick={() => setCategorySlug(cat.slug)}
-                    className={`flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-xs font-medium transition ${
+                    aria-pressed={active}
+                    className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-semibold ${
                       active
-                        ? 'border-transparent cta-brand text-soft-white glow-sm'
-                        : 'border-border text-text-muted hover:border-primary hover:text-primary'
+                        ? 'stamp border-transparent'
+                        : 'border-border bg-surface text-text-muted hover:border-primary hover:text-text'
                     }`}
                   >
                     <Icon className="h-3.5 w-3.5" strokeWidth={active ? 2.25 : 1.75} />
@@ -532,7 +523,7 @@ export default function PublishItem() {
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Canon EOS R6 camera, with 2 lenses"
               maxLength={80}
-              className="w-full rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
+              className="w-full rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary"
             />
           </div>
 
@@ -549,7 +540,7 @@ export default function PublishItem() {
               onChange={(e) => setDescription(e.target.value.slice(0, 500))}
               placeholder="Condition, what's included, pickup notes…"
               rows={4}
-              className="w-full resize-none rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
+              className="w-full resize-none rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary"
             />
           </div>
         </section>
@@ -596,7 +587,7 @@ export default function PublishItem() {
               Price per day
             </label>
             <div className="flex items-center rounded-xl border border-border px-4 py-2.5 transition focus-within:border-primary focus-within:ring-2 focus-within:ring-lavender/30">
-              <span className="font-mono text-sm text-text-muted">$</span>
+              <span className="text-sm tabular-nums text-text-muted">$</span>
               <input
                 id="pricePerDay"
                 type="number"
@@ -605,7 +596,7 @@ export default function PublishItem() {
                 value={pricePerDay}
                 onChange={(e) => setPricePerDay(e.target.value)}
                 placeholder="15.00"
-                className="w-full bg-transparent pl-1.5 font-mono text-sm outline-none"
+                className="w-full bg-transparent pl-1.5 text-sm tabular-nums outline-none"
               />
             </div>
             <PriceSuggestionButton
@@ -621,7 +612,7 @@ export default function PublishItem() {
               Declared value <span className="font-normal text-text-muted">(what it costs to replace)</span>
             </label>
             <div className="flex items-center rounded-xl border border-border px-4 py-2.5 transition focus-within:border-primary focus-within:ring-2 focus-within:ring-lavender/30">
-              <span className="font-mono text-sm text-text-muted">$</span>
+              <span className="text-sm tabular-nums text-text-muted">$</span>
               <input
                 id="declaredValue"
                 type="number"
@@ -630,7 +621,7 @@ export default function PublishItem() {
                 value={declaredValue}
                 onChange={(e) => setDeclaredValue(e.target.value)}
                 placeholder="0.00"
-                className="w-full bg-transparent pl-1.5 font-mono text-sm outline-none"
+                className="w-full bg-transparent pl-1.5 text-sm tabular-nums outline-none"
               />
             </div>
             <p className="mt-1 text-xs text-text-muted">
@@ -650,7 +641,7 @@ export default function PublishItem() {
             value={locationCity}
             onChange={(e) => setLocationCity(e.target.value)}
             placeholder="San Salvador"
-            className="w-full rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
+            className="w-full rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary"
           />
         </section>
 
@@ -687,7 +678,7 @@ export default function PublishItem() {
                   <span>New listing</span>
                 </div>
               </div>
-              <p className="shrink-0 font-mono text-sm font-semibold text-text">
+              <p className="num shrink-0 text-lg text-text">
                 ${pricePerDay || '0'}
                 <span className="font-body font-normal text-text-muted"> /day</span>
               </p>
@@ -700,7 +691,7 @@ export default function PublishItem() {
         <button
           type="submit"
           disabled={isSubmitting || (!isEditing && !isVerified)}
-          className="w-full rounded-xl cta-brand py-3 text-sm font-semibold text-soft-white glow-sm transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50"
+          className="w-full rounded-xl cta-brand py-3 text-sm font-semibold text-soft-white glow-sm transition disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isEditing
             ? isSubmitting

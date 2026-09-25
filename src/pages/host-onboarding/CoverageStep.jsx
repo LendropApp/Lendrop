@@ -90,7 +90,7 @@ export default function CoverageStep({ record, onNext, onBack }) {
 
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         {loadError ? (
-          <p className="text-sm text-red-500">{loadError}</p>
+          <p className="text-sm text-danger">{loadError}</p>
         ) : loading ? (
           <p className="text-sm text-text-muted">Loading lockers…</p>
         ) : lockers.length === 0 ? (
@@ -114,7 +114,7 @@ export default function CoverageStep({ record, onNext, onBack }) {
                   >
                     <span
                       className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
-                        active ? "bg-primary text-white" : "bg-surface-raised text-primary"
+                        active ? "stamp" : "bg-surface-raised text-primary"
                       }`}
                     >
                       {active ? <Check className="w-4 h-4" /> : <MapPin className="w-4 h-4" />}
@@ -133,7 +133,7 @@ export default function CoverageStep({ record, onNext, onBack }) {
             })}
           </ul>
         )}
-        {error && <p className="text-xs text-red-500">{error}</p>}
+        {error && <p className="text-xs text-danger">{error}</p>}
 
         <div className="flex items-center gap-3 pt-4">
           <button
@@ -146,7 +146,7 @@ export default function CoverageStep({ record, onNext, onBack }) {
           </button>
           <button
             type="submit"
-            className="flex-1 flex items-center justify-center gap-2 cta-brand text-white font-medium text-base py-3.5 rounded-xl glow-sm transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-deep-purple focus-visible:ring-offset-2"
+            className="flex-1 flex items-center justify-center gap-2 cta-brand text-soft-white font-medium text-base py-3.5 rounded-xl glow-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-deep-purple focus-visible:ring-offset-2"
           >
             Continue
             <ArrowRight className="w-4 h-4" />

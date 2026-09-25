@@ -3,9 +3,9 @@ import { AlertTriangle, Info, Ruler, Sparkles, Weight } from 'lucide-react'
 import { estimateItemSize, computeRequiredLockerSize, getLockerSizeClasses } from '../../services/items/sizeService'
 
 const CONFIDENCE_COPY = {
-  high: { label: 'Accurate estimate', tone: 'text-emerald-700 bg-emerald-100' },
-  medium: { label: 'Approximate estimate', tone: 'text-amber-700 bg-amber-100' },
-  low: { label: 'Double-check the measurements', tone: 'text-red-700 bg-red-100' },
+  high: { label: 'Accurate estimate', tone: 'text-success bg-success-soft' },
+  medium: { label: 'Approximate estimate', tone: 'text-primary bg-surface-raised' },
+  low: { label: 'Double-check the measurements', tone: 'text-danger bg-danger-soft' },
 }
 
 const XLARGE_LIMITS = { height: 190, width: 110, depth: 60, weight: 40 }
@@ -30,10 +30,10 @@ function SizeScaleIllustration({ sizeClasses, recommendedCode }) {
                 className={`rounded-sm border-2 transition ${
                   active
                     ? 'border-primary bg-lavender/30 shadow-[0_0_0_3px_rgba(165,140,244,0.25)]'
-                    : 'border-border bg-jet-black/[0.03]'
+                    : 'border-border bg-surface-raised'
                 }`}
               />
-              <span className={`font-mono text-[10px] font-semibold ${active ? 'text-primary' : 'text-text-muted'}`}>
+              <span className={`font-mono text-xs font-semibold ${active ? 'text-primary' : 'text-text-muted'}`}>
                 {s.label}
               </span>
             </div>
@@ -170,14 +170,14 @@ export default function ItemSizeStep({ category, title, description, initialDime
 
       {phase === 'loading' && (
         <div className="animate-pulse space-y-2 rounded-2xl border border-border bg-surface p-4">
-          <div className="h-3 w-40 rounded bg-jet-black/10" />
+          <div className="h-3 w-40 rounded bg-surface-raised" />
           <div className="h-16 rounded bg-surface-raised" />
           <p className="pt-1 text-xs text-text-muted">Estimating your item's size…</p>
         </div>
       )}
 
       {phase === 'error' && (
-        <div className="rounded-2xl border border-border bg-jet-black/[0.02] p-4 text-xs text-text-muted">
+        <div className="rounded-2xl border border-border bg-surface-raised p-4 text-xs text-text-muted">
           {errorMessage} You can enter the measurements manually below.
         </div>
       )}
@@ -185,7 +185,7 @@ export default function ItemSizeStep({ category, title, description, initialDime
       {(phase === 'result' || phase === 'fallback') && estimate && (
         <div className="space-y-3 rounded-2xl border border-border bg-surface p-4">
           {phase === 'fallback' ? (
-            <div className="flex items-start gap-2 rounded-xl bg-jet-black/[0.03] p-3 text-xs text-text-muted">
+            <div className="flex items-start gap-2 rounded-xl bg-surface-raised p-3 text-xs text-text-muted">
               <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-text-muted" />
               <span>{estimate.reasoning}</span>
             </div>
@@ -199,7 +199,7 @@ export default function ItemSizeStep({ category, title, description, initialDime
               </div>
               {estimate.confidence && (
                 <span
-                  className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ${CONFIDENCE_COPY[estimate.confidence]?.tone ?? ''}`}
+                  className={`rounded-md px-2 py-1 text-xs font-semibold ${CONFIDENCE_COPY[estimate.confidence]?.tone ?? ''}`}
                 >
                   {CONFIDENCE_COPY[estimate.confidence]?.label ?? estimate.confidence}
                 </span>
@@ -252,7 +252,7 @@ export default function ItemSizeStep({ category, title, description, initialDime
           </p>
           <div className="grid grid-cols-3 gap-2">
             <div>
-              <label htmlFor="size-length" className="mb-1 block text-[11px] text-text-muted">
+              <label htmlFor="size-length" className="mb-1 block text-xs text-text-muted">
                 Length (cm)
               </label>
               <input
@@ -268,7 +268,7 @@ export default function ItemSizeStep({ category, title, description, initialDime
               />
             </div>
             <div>
-              <label htmlFor="size-width" className="mb-1 block text-[11px] text-text-muted">
+              <label htmlFor="size-width" className="mb-1 block text-xs text-text-muted">
                 Width (cm)
               </label>
               <input
@@ -284,7 +284,7 @@ export default function ItemSizeStep({ category, title, description, initialDime
               />
             </div>
             <div>
-              <label htmlFor="size-height" className="mb-1 block text-[11px] text-text-muted">
+              <label htmlFor="size-height" className="mb-1 block text-xs text-text-muted">
                 Height (cm)
               </label>
               <input
@@ -301,7 +301,7 @@ export default function ItemSizeStep({ category, title, description, initialDime
             </div>
           </div>
           <div>
-            <label htmlFor="size-weight" className="mb-1 flex items-center gap-1.5 text-[11px] text-text-muted">
+            <label htmlFor="size-weight" className="mb-1 flex items-center gap-1.5 text-xs text-text-muted">
               <Weight className="h-3 w-3" />
               Weight (kg)
             </label>
@@ -327,14 +327,14 @@ export default function ItemSizeStep({ category, title, description, initialDime
       )}
 
       {blocked && (
-        <div className="mt-3 flex items-start gap-2 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+        <div className="mt-3 flex items-start gap-2 rounded-2xl border border-danger/30 bg-danger-soft p-4 text-sm text-danger">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
           <div>
             <p className="font-semibold">
               This item is too large for our lockers (max {XLARGE_LIMITS.height}×{XLARGE_LIMITS.width}×
               {XLARGE_LIMITS.depth} cm, {XLARGE_LIMITS.weight} kg).
             </p>
-            <p className="mt-1 text-xs text-red-600">It can't be published as available. Please review the measurements you entered.</p>
+            <p className="mt-1 text-xs text-danger">It can't be published as available. Please review the measurements you entered.</p>
           </div>
         </div>
       )}

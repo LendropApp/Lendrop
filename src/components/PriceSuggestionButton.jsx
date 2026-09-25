@@ -45,18 +45,18 @@ export default function PriceSuggestionButton({ category, description, condition
         <div className="min-w-0">
           <p className="text-xs text-text-muted">
             Suggestion:{' '}
-            <span className="font-mono font-semibold text-primary">
+            <span className="num text-primary">
               ${suggestion.min}–${suggestion.max}
             </span>{' '}
             <span className="text-text-muted">/ day</span>
           </p>
-          {suggestion.reasoning && <p className="mt-0.5 truncate text-[11px] text-text-muted">{suggestion.reasoning}</p>}
+          {suggestion.reasoning && <p className="mt-0.5 truncate text-xs text-text-muted">{suggestion.reasoning}</p>}
         </div>
         <div className="flex shrink-0 items-center gap-1.5">
           <button
             type="button"
             onClick={handleApply}
-            className="flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-xs font-semibold text-white transition hover:opacity-90"
+            className="cta-brand flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold text-soft-white"
           >
             <Check className="h-3 w-3" />
             Use this price
@@ -65,7 +65,7 @@ export default function PriceSuggestionButton({ category, description, condition
             type="button"
             onClick={handleDismiss}
             aria-label="Dismiss suggestion"
-            className="flex items-center justify-center rounded-full p-1.5 text-text-muted transition hover:bg-surface-raised hover:text-text-muted"
+            className="flex items-center justify-center rounded-lg p-1.5 text-text-muted hover:bg-surface-raised hover:text-text"
           >
             <X className="h-3.5 w-3.5" />
           </button>
@@ -80,13 +80,13 @@ export default function PriceSuggestionButton({ category, description, condition
         type="button"
         onClick={handleClick}
         disabled={state === 'loading'}
-        className="flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-primary transition hover:border-primary hover:bg-surface-raised disabled:opacity-60"
+        className="cta-outline flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-semibold disabled:opacity-60"
       >
         <Sparkles className="h-3.5 w-3.5 text-primary" />
         {state === 'loading' ? 'Thinking…' : 'Suggest a price'}
       </button>
       {state === 'error' && (
-        <p className="mt-1 text-[11px] text-text-muted">Could not get a price suggestion right now.</p>
+        <p className="mt-1 text-xs text-text-muted">Could not get a price suggestion right now.</p>
       )}
     </div>
   )

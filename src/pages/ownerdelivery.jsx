@@ -80,7 +80,7 @@ function DeliveryForm({ reservation, onDelivered }) {
       </div>
 
       {locker && (
-        <div className="mt-3 flex items-start gap-2 rounded-xl bg-jet-black/[0.02] p-3 text-xs text-text-muted">
+        <div className="mt-3 flex items-start gap-2 rounded-xl bg-surface-raised p-3 text-xs text-text-muted">
           <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
           <span>
             {locker.name} · Compartment {reservation.compartment?.compartment_code} — {locker.address}, {locker.city}
@@ -120,7 +120,7 @@ function DeliveryForm({ reservation, onDelivered }) {
           onChange={(e) => setDui(e.target.value)}
           placeholder="DUI"
           required
-          className="w-full rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
+          className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-primary"
         />
         <input
           type="password"
@@ -128,14 +128,14 @@ function DeliveryForm({ reservation, onDelivered }) {
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
           required
-          className="w-full rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
+          className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-primary"
         />
         <div className="flex items-center justify-between gap-3">
           <StatusMessage type={status.type} text={status.text} />
           <button
             type="submit"
             disabled={submitting}
-            className="ml-auto shrink-0 rounded-full cta-brand px-4 py-2 text-xs font-semibold text-soft-white glow-sm transition hover:brightness-105 disabled:opacity-50"
+            className="cta-brand ml-auto shrink-0 rounded-xl px-5 py-2.5 text-sm font-bold text-soft-white disabled:opacity-50"
           >
             {submitting ? 'Verifying…' : 'Confirm drop-off'}
           </button>
@@ -244,7 +244,7 @@ function ReturnPickupForm({ reservation, onCompleted }) {
       </div>
 
       {locker && (
-        <div className="mt-3 flex items-start gap-2 rounded-xl bg-jet-black/[0.02] p-3 text-xs text-text-muted">
+        <div className="mt-3 flex items-start gap-2 rounded-xl bg-surface-raised p-3 text-xs text-text-muted">
           <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
           <span>
             {locker.name} · Compartment {reservation.compartment?.compartment_code} — {locker.address}, {locker.city}
@@ -254,13 +254,13 @@ function ReturnPickupForm({ reservation, onCompleted }) {
 
       <form onSubmit={handleSubmit} className="mt-4 space-y-3">
         {reportingDamage && (
-          <div className="rounded-xl border border-red-100 bg-red-50 p-3">
+          <div className="rounded-xl border border-danger/30 bg-danger-soft p-3">
             <div>
               <label
                 htmlFor={`damage-photo-${reservation.id}`}
-                className="flex cursor-pointer items-center gap-2 rounded-xl border border-dashed border-red-200 bg-surface px-4 py-3 text-xs text-text-muted transition hover:border-red-400"
+                className="flex cursor-pointer items-center gap-2 rounded-xl border border-dashed border-danger/30 bg-surface px-4 py-3 text-xs text-text-muted transition hover:border-red-400"
               >
-                <Camera className="h-4 w-4 shrink-0 text-red-500" />
+                <Camera className="h-4 w-4 shrink-0 text-danger" />
                 {damagePhoto ? damagePhoto.name : 'Attach a photo of the damage (required)'}
               </label>
               <input
@@ -281,7 +281,7 @@ function ReturnPickupForm({ reservation, onCompleted }) {
               placeholder="Describe the damage…"
               rows={2}
               required
-              className="mt-2 w-full resize-none rounded-xl border border-red-200 bg-surface px-3 py-2 text-xs outline-none transition focus:border-red-400 focus:ring-2 focus:ring-red-200"
+              className="mt-2 w-full resize-none rounded-xl border border-danger/30 bg-surface px-3 py-2 text-xs outline-none transition focus:border-danger"
             />
           </div>
         )}
@@ -296,7 +296,7 @@ function ReturnPickupForm({ reservation, onCompleted }) {
           onChange={(e) => setDui(e.target.value)}
           placeholder="DUI"
           required
-          className="w-full rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
+          className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-primary"
         />
         <input
           type="password"
@@ -304,14 +304,14 @@ function ReturnPickupForm({ reservation, onCompleted }) {
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
           required
-          className="w-full rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
+          className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-primary"
         />
         <div className="flex items-center justify-between gap-3">
           <button
             type="button"
             onClick={toggleDamageReport}
             className={`flex items-center gap-1.5 text-xs font-semibold ${
-              reportingDamage ? 'text-text-muted hover:text-text' : 'text-red-500 hover:text-red-600'
+              reportingDamage ? 'text-text-muted hover:text-text' : 'text-danger hover:text-danger'
             }`}
           >
             <AlertTriangle className="h-3.5 w-3.5" />
@@ -320,8 +320,8 @@ function ReturnPickupForm({ reservation, onCompleted }) {
           <button
             type="submit"
             disabled={submitting}
-            className={`shrink-0 rounded-full px-4 py-2 text-xs font-semibold text-soft-white glow-sm transition hover:brightness-105 disabled:opacity-50 ${
-              reportingDamage ? 'bg-red-500' : 'cta-brand'
+            className={`shrink-0 rounded-xl px-5 py-2.5 text-sm font-bold text-soft-white disabled:opacity-50 ${
+              reportingDamage ? 'bg-red-700' : 'cta-brand'
             }`}
           >
             {submitting ? 'Verifying…' : reportingDamage ? 'Submit damage report' : 'Confirm return pickup'}
@@ -444,9 +444,9 @@ export default function OwnerDeliveryReturn() {
                   <h2 className="text-sm font-semibold text-text-muted">Delivered — awaiting pickup</h2>
                   <div className="mt-3 space-y-2">
                     {delivered.map((r) => (
-                      <div key={r.id} className="flex items-center gap-3 rounded-2xl border border-emerald-100 bg-emerald-50 p-3 text-sm">
-                        <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />
-                        <span className="text-emerald-700">
+                      <div key={r.id} className="flex items-center gap-3 rounded-2xl border border-success/30 bg-success-soft p-3 text-sm">
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-success" />
+                        <span className="text-success">
                           {r.item?.title} — waiting for {r.renter?.full_name ?? 'the renter'} to pick it up.
                         </span>
                       </div>

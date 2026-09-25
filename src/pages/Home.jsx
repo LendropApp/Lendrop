@@ -15,7 +15,7 @@ import useHashScroll from '../hooks/useHashScroll'
 const SAMPLE_LISTING = {
   code: 'B4',
   item: 'Sony camera kit',
-  price: 18,
+  price: 5,
   location: 'Downtown San Salvador',
   image:
     'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=900&q=80',

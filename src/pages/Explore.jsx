@@ -587,19 +587,48 @@ export default function Explore() {
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center gap-1 py-20 text-center">
-            <p className="text-xl font-bold">No items match</p>
-            <p className="text-sm text-text-muted">
-              Try a different search, or browse another category.
-            </p>
-            {isFiltering && (
-              <button
-                type="button"
-                onClick={clearFilters}
-                className="cta-outline mt-4 rounded-xl px-4 py-1.5 text-sm font-semibold"
-              >
-                Clear filters
-              </button>
+          // Three different empties: nothing listed yet, filters that
+          // exclude everything, or listings that are all rented right now.
+          <div className="flex flex-col items-center gap-1 rounded-2xl border border-border bg-surface px-6 py-14 text-center">
+            <PackageSearch className="mb-2 h-8 w-8 text-text-muted" aria-hidden="true" />
+            {items.length === 0 ? (
+              <>
+                <p className="text-xl font-bold">Nothing listed yet</p>
+                <p className="max-w-sm text-sm text-text-muted">
+                  Lendrop is just getting started. Have a camera, a drill or a tent you rarely use? Be
+                  the first to list it.
+                </p>
+                <Link
+                  to={isHost ? ROUTES.publish : ROUTES.becomeLender}
+                  className="cta-brand mt-4 rounded-xl px-6 py-2.5 text-sm font-bold text-soft-white"
+                >
+                  {isHost ? 'List an item' : 'Start hosting'}
+                </Link>
+              </>
+            ) : isFiltering ? (
+              <>
+                <p className="text-xl font-bold">No items match</p>
+                <p className="text-sm text-text-muted">Try a different search, or browse another category.</p>
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className="cta-outline mt-4 rounded-xl px-4 py-1.5 text-sm font-semibold"
+                >
+                  Clear filters
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="text-xl font-bold">Everything is rented right now</p>
+                <p className="text-sm text-text-muted">Check back soon, or see every listing, including rented ones.</p>
+                <button
+                  type="button"
+                  onClick={() => setOnlyAvailable(false)}
+                  className="cta-outline mt-4 rounded-xl px-4 py-1.5 text-sm font-semibold"
+                >
+                  Show all items
+                </button>
+              </>
             )}
           </div>
         )}

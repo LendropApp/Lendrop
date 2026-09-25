@@ -1,294 +1,157 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import {
-  Shirt,
-  Wrench,
-  Camera,
-  Bot,
-  Music,
-  Dumbbell,
-  Calendar,
-  Key,
-  Box,
-  Clock,
-  ShieldCheck,
-  Star,
-  ArrowRight,
-  Menu,
-  X,
-} from 'lucide-react'
+import { Check, Menu, Search, X } from 'lucide-react'
+import { supabase } from '../lib/supabaseClient'
+import { getCategoryIcon } from '../lib/categoryIcons'
+import Logo from '../components/Logo'
+import RentalStatus from '../components/RentalStatus'
+import Shutter from '../components/Shutter'
 
-const INITIAL_LOCKERS = [
-  {
-    id: 'A1',
-    item: 'Canon EOS R6 Camera',
-    shortName: 'EOS R6',
-    status: 'available',
-    location: 'Downtown San Salvador',
-    image:
-      'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=500&q=80',
-  },
-  {
-    id: 'A2',
-    item: 'Bosch Cordless Drill',
-    shortName: 'Cordless Drill',
-    status: 'rented',
-    location: 'Downtown San Salvador',
-    image:
-      'https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&w=500&q=80',
-  },
-  {
-    id: 'A3',
-    item: 'DJI Mini 4 Drone',
-    shortName: 'Mini 4 Drone',
-    status: 'available',
-    location: 'Downtown San Salvador',
-    image:
-      'https://images.unsplash.com/photo-1527977966376-1c8408f9f108?auto=format&fit=crop&w=500&q=80',
-  },
-  {
-    id: 'B1',
-    item: 'Yamaha Acoustic Guitar',
-    shortName: 'Acoustic Guitar',
-    status: 'available',
-    location: 'Downtown San Salvador',
-    image:
-      'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?auto=format&fit=crop&w=500&q=80',
-  },
-  {
-    id: 'B2',
-    item: 'Trek Mountain Bike',
-    shortName: 'Mountain Bike',
-    status: 'rented',
-    location: 'Downtown San Salvador',
-    image:
-      'https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=500&q=80',
-  },
-  {
-    id: 'B3',
-    item: 'Samsonite 28" Suitcase',
-    shortName: 'Suitcase',
-    status: 'available',
-    location: 'Downtown San Salvador',
-    image:
-      'https://images.unsplash.com/photo-1565026057447-bc90a3dceb87?auto=format&fit=crop&w=500&q=80',
-  },
-  {
-    id: 'C1',
-    item: '4-Person Camping Tent',
-    shortName: 'Camping Tent',
-    status: 'available',
-    location: 'Downtown San Salvador',
-    image:
-      'https://images.unsplash.com/photo-1510312305653-8ed496efae75?auto=format&fit=crop&w=500&q=80',
-  },
-  {
-    id: 'C2',
-    item: 'Gaming Console',
-    shortName: 'Gaming Console',
-    status: 'rented',
-    location: 'Downtown San Salvador',
-    image:
-      'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=500&q=80',
-  },
-  {
-    id: 'C3',
-    item: 'PlayStation 5 Console',
-    shortName: 'PlayStation 5',
-    status: 'available',
-    location: 'Downtown San Salvador',
-    image:
-      'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=500&q=80',
-  },
-];
-const categories = [
-  { id: 'cat-1', name: 'Clothing', icon: Shirt },
-  { id: 'cat-2', name: 'Tools', icon: Wrench },
-  { id: 'cat-3', name: 'Cameras', icon: Camera },
-  { id: 'cat-4', name: 'Drones', icon: Bot },
-  { id: 'cat-5', name: 'Instruments', icon: Music },
-  { id: 'cat-6', name: 'Sports gear', icon: Dumbbell },
+// Illustrative only: the compartment in the hero and the locker log below
+// are sample data, and both are labelled as such on the page.
+const SAMPLE_LISTING = {
+  code: 'B4',
+  item: 'Canon EOS R6',
+  price: 18,
+  location: 'Downtown San Salvador',
+  pin: '482 913',
+  image:
+    'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=900&q=80',
+}
+
+const SAMPLE_LOG = [
+  { time: 'Oct 4 · 09:12', who: 'Owner', event: 'Item deposited, photo attached' },
+  { time: 'Oct 4 · 18:40', who: 'Renter', event: 'Item retrieved with PIN' },
+  { time: 'Oct 7 · 17:05', who: 'Renter', event: 'Return deposited, photo attached' },
+  { time: 'Oct 7 · 19:30', who: 'Owner', event: 'Return retrieved' },
 ]
 
-const steps = [
+const HANDOFF_STEPS = [
   {
-    step: 'Step 01',
-    title: 'Book & pay',
-    desc: 'Pick the item, the dates, and pay from the app. Everything is confirmed instantly.',
-    icon: Calendar,
+    title: 'Reserve and pay',
+    desc: 'Pick your dates and pay online. The rental is confirmed once the payment clears.',
+    status: 'confirmed',
   },
   {
-    step: 'Step 02',
-    title: 'Type your password',
-    desc: 'With your password, open your assigned locker, ready whenever you are.',
-    icon: Key,
+    title: 'The owner drops it off',
+    desc: 'They open an assigned compartment, photograph the item and close the door.',
   },
   {
-    step: 'Step 03',
-    title: 'Pick up & go',
-    desc: 'Type your password, open the locker, and check the item. Already verified by our AI.',
-    icon: Box,
+    title: 'You pick it up',
+    desc: 'Your PIN opens the compartment. The drop-off photo shows the condition it was left in.',
+    status: 'active',
   },
   {
-    step: 'Step 04',
-    title: 'Return it',
-    desc: 'When you’re done, drop the item back at the same locker. We handle the rest.',
-    icon: Clock,
+    title: 'You bring it back',
+    desc: 'Same locker, a new photo, door closed. No need to find the owner.',
+  },
+  {
+    title: 'Deposit released',
+    desc: 'Once the return is checked, the deposit is released and you review each other.',
+    status: 'completed',
   },
 ]
 
-const securityFeatures = [
+const TRUST_FACTS = [
   {
-    title: 'AI verification',
-    desc: 'Every item is scanned with computer vision before and after the rental, to catch damage and inconsistencies.',
-    icon: ShieldCheck,
+    title: 'Identity tied to a DUI',
+    desc: 'Hosts verify their Salvadoran national ID before they can list anything.',
   },
   {
-    title: 'Photo evidence',
-    desc: 'We keep photos of the item’s condition at every drop off and pickup, backing up every transaction.',
-    icon: Camera,
+    title: 'Photos at both ends',
+    desc: 'The item is photographed when it goes into the locker and when it comes back.',
   },
   {
-    title: 'Verified reputation',
-    desc: 'Every profile builds a real reputation based on completed rentals and how well items are cared for.',
-    icon: Star,
+    title: 'Every door opening logged',
+    desc: 'Who opened which compartment, and when, is recorded for every rental.',
   },
 ]
 
 const navLinks = [
   { href: '#how-it-works', label: 'How it works' },
-  { href: '#categories', label: 'Categories' },
-  { href: '#security', label: 'Security' },
+  { href: '#hosting', label: 'Hosting' },
+  { href: '#trust', label: 'Trust' },
 ]
+
+function Checklist({ items }) {
+  return (
+    <ul className="mt-6 space-y-3">
+      {items.map((text) => (
+        <li key={text} className="flex gap-3 text-sm text-text">
+          <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+          {text}
+        </li>
+      ))}
+    </ul>
+  )
+}
 
 export default function Home() {
   const navigate = useNavigate()
-
-  const [lockers, setLockers] = useState(INITIAL_LOCKERS)
-  const [selectedLocker, setSelectedLocker] = useState(null)
-  const [hoveredLocker, setHoveredLocker] = useState(null)
-  const [flashLocker, setFlashLocker] = useState(null)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [query, setQuery] = useState('')
+  const [categories, setCategories] = useState([])
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setLockers((prev) => {
-        const index = Math.floor(Math.random() * prev.length)
-        const next = [...prev]
-
-        next[index] = {
-          ...next[index],
-          status:
-            next[index].status === 'available'
-              ? 'rented'
-              : 'available',
-        }
-
-        setFlashLocker(next[index].id)
-
-        return next
+    let cancelled = false
+    supabase
+      .from('categories')
+      .select('id, name, slug')
+      .eq('is_active', true)
+      .order('display_order')
+      .then(({ data }) => {
+        if (!cancelled) setCategories(data ?? [])
       })
-    }, 3000)
-
-    return () => clearInterval(interval)
+    return () => {
+      cancelled = true
+    }
   }, [])
 
-  useEffect(() => {
-    if (!flashLocker) return
-
-    const timeout = setTimeout(() => {
-      setFlashLocker(null)
-    }, 700)
-
-    return () => clearTimeout(timeout)
-  }, [flashLocker])
-
-  const selectedLockerData = lockers.find(
-    (locker) => locker.id === selectedLocker
-  )
-
-  const hoveredLockerData = lockers.find(
-    (locker) => locker.id === hoveredLocker
-  )
-
-  const displayedLocker =
-    hoveredLockerData ?? selectedLockerData
-
-  const canReserve =
-    displayedLocker?.status === 'available'
-
-  function handleReserve() {
-    if (!canReserve) return
-    navigate('/signup')
+  function handleSearch(event) {
+    event.preventDefault()
+    const q = query.trim()
+    navigate(q ? `/explore?q=${encodeURIComponent(q)}` : '/explore')
   }
 
   return (
-    <div className="min-h-screen bg-bg">
-
+    <div className="min-h-dvh bg-bg">
       {/* ================= HEADER ================= */}
-
-      <header className="glass sticky top-0 z-50">
-
+      <header className="sticky top-0 z-50 border-b border-border bg-surface">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 sm:px-10">
-
-          <Link to="/" className="flex items-center">
-            <img
-              src="/logo-lendrop.png"
-              alt="Lendrop"
-              className="h-7 w-auto"
-            />
+          <Link to="/" aria-label="Lendrop home">
+            <Logo />
           </Link>
 
-          <nav className="hidden items-center gap-8 md:flex">
-
+          <nav aria-label="Sections" className="hidden items-center gap-8 md:flex">
             {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="text-sm font-medium text-text-muted transition hover:text-primary"
-              >
+              <a key={link.href} href={link.href} className="text-sm font-medium text-text-muted hover:text-primary">
                 {link.label}
               </a>
             ))}
-
           </nav>
 
-          <div className="hidden items-center gap-3 md:flex">
-
-            <Link
-              to="/login"
-              className="text-sm font-semibold text-text-muted transition hover:text-primary"
-            >
+          <div className="hidden items-center gap-4 md:flex">
+            <Link to="/login" className="text-sm font-semibold text-text-muted hover:text-primary">
               Log in
             </Link>
-
-            <Link
-              to="/signup"
-              className="rounded-full cta-brand px-5 py-2.5 text-sm font-semibold text-soft-white glow-sm transition hover:brightness-105"
-            >
-              Get started
+            <Link to="/signup" className="cta-brand rounded-xl px-5 py-2.5 text-sm font-semibold text-soft-white">
+              Sign up
             </Link>
-
           </div>
 
           <button
             type="button"
             onClick={() => setMenuOpen((open) => !open)}
-            className="text-text md:hidden"
+            className="rounded-lg p-1 text-text md:hidden"
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={menuOpen}
           >
-            {menuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
+            {menuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
-
         </div>
 
         {menuOpen && (
           <div className="flex flex-col gap-1 border-t border-border px-6 py-4 md:hidden">
-
             {navLinks.map((link) => (
               <a
                 key={link.href}
@@ -299,677 +162,269 @@ export default function Home() {
                 {link.label}
               </a>
             ))}
-
             <div className="mt-2 flex flex-col gap-2 border-t border-border pt-3">
-
-              <Link
-                to="/login"
-                className="rounded-lg px-2 py-2.5 text-sm font-semibold text-text-muted hover:bg-surface-raised"
-              >
+              <Link to="/login" className="rounded-lg px-2 py-2.5 text-sm font-semibold text-text-muted hover:bg-surface-raised">
                 Log in
               </Link>
-
-              <Link
-                to="/signup"
-                className="rounded-full cta-brand px-5 py-2.5 text-center text-sm font-semibold text-soft-white glow-sm"
-              >
-                Get started
+              <Link to="/signup" className="cta-brand rounded-xl px-5 py-2.5 text-center text-sm font-semibold text-soft-white">
+                Sign up
               </Link>
-
             </div>
           </div>
         )}
-
       </header>
 
-      {/* ================= HERO ================= */}
-
-      <main className="mx-auto grid max-w-6xl gap-12 px-6 py-16 sm:px-10 lg:grid-cols-2 lg:items-start lg:py-24">
-
-        <div className="pt-5 lg:pt-5">
-
-          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface-raised px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-widest text-primary">
-
-            <span className="h-1.5 w-1.5 rounded-full bg-lavender" />
-
-            Own Nothing. Miss Nothing · El Salvador
-
-          </span>
-
-          <h1 className="mt-6 font-display text-5xl font-bold leading-[1.05] tracking-tight text-text sm:text-6xl">
-
-            Rent what you
-            <br />
-            need.
-            <br />
-
-            <span className="text-primary">
-              Without coordinating
-            </span>
-
-            <br />
-
-            with anyone.
-
-          </h1>
-
-          <p className="mt-6 max-w-lg text-lg leading-relaxed text-text-muted">
-            Cameras, tools, drones, bikes, and more. Reserve, pay, and pick
-            them up from a smart locker near you. No messages, no waiting,
-            no strangers.
-          </p>
-
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-
-            <Link
-              to="/signup"
-              className="inline-flex items-center gap-2 rounded-full cta-brand px-6 py-3 text-sm font-semibold text-soft-white glow-sm transition hover:brightness-105"
-            >
-              Explore items
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-
-            <a
-              href="#how-it-works"
-              className="rounded-full border border-border px-6 py-3 text-sm font-semibold text-text transition hover:bg-surface-raised"
-            >
-              How it works
-            </a>
-
-          </div>
-
-          <div className="mt-10 flex items-center gap-8">
-
-            <div>
-              <p className="font-display text-2xl font-bold text-text">
-                24/7
-              </p>
-              <p className="text-xs font-medium uppercase tracking-wide text-text-muted">
-                Access
+      <main>
+        {/* ================= HERO: the shutter ================= */}
+        <section className="shutter">
+          <div className="mx-auto grid max-w-6xl gap-10 px-6 pb-10 pt-14 sm:px-10 lg:grid-cols-12 lg:gap-12 lg:pb-14 lg:pt-20">
+            <div className="lg:col-span-7">
+              <h1 className="text-5xl font-extrabold leading-[0.98] text-soft-white sm:text-7xl lg:text-8xl">
+                Rent it. Skip the meetup.
+              </h1>
+              <p className="mt-6 max-w-[52ch] text-lg leading-relaxed text-brand-surface-muted">
+                Borrow cameras, tools, bikes and more from people in El Salvador. The owner leaves it
+                in a locker and you pick it up with a PIN. You never have to meet.
               </p>
             </div>
 
-            <div>
-              <p className="font-display text-2xl font-bold text-text">
-                100%
-              </p>
-              <p className="text-xs font-medium uppercase tracking-wide text-text-muted">
-                Secure
-              </p>
-            </div>
-
-            <div>
-              <p className="font-display text-2xl font-bold text-text">
-                5K+
-              </p>
-              <p className="text-xs font-medium uppercase tracking-wide text-text-muted">
-                Items
-              </p>
-            </div>
-
-          </div>
-
-        </div>
-
-        {/* ================= SMART LOCKER ================= */}
-
-        <div className="flex justify-center lg:justify-end">
-
-          <div className="relative w-full max-w-md overflow-hidden rounded-[28px] border border-border bg-surface p-5 shadow-2xl shadow-lavender/20">
-
-            <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-lavender/60 to-transparent" />
-
-            {/* TERMINAL HEADER */}
-
-            <div className="flex items-center justify-between border-b border-border pb-4">
-
-              <div className="flex items-center gap-2.5">
-
-                <span className="relative flex h-2.5 w-2.5">
-
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-50" />
-
-                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
-
-                </span>
-
-                <div>
-
-                  <p className="font-mono text-[10px] font-bold tracking-[0.18em] text-primary">
-                    SYSTEM ONLINE
-                  </p>
-
-                  <p className="mt-0.5 text-[9px] text-text-muted">
-                    SMART LOCKER NETWORK
-                  </p>
-
-                </div>
-
-              </div>
-
-              <span className="rounded-md border border-border bg-surface px-2 py-1 font-mono text-[9px] font-semibold text-primary shadow-sm">
-                LD-14
-              </span>
-
-            </div>
-
-            {/* LOCATION */}
-
-            <div className="my-4 flex items-end justify-between">
-
-              <div>
-
-                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
-                  Available nearby
-                </p>
-
-                <p className="mt-1 font-display text-base font-semibold text-text">
-                  Downtown San Salvador
-                </p>
-
-              </div>
-
-              <span className="font-mono text-[9px] font-medium text-text-muted">
-                09 ITEMS
-              </span>
-
-            </div>
-
-            {/* LOCKER GRID */}
-
-            <div className="grid grid-cols-3 gap-2.5">
-
-              {lockers.map((locker) => {
-
-                const isSelected =
-                  selectedLocker === locker.id
-
-                const isHovered =
-                  hoveredLocker === locker.id
-
-                const isActive =
-                  isSelected || isHovered
-
-                const isFlashing =
-                  flashLocker === locker.id
-
-                const isAvailable =
-                  locker.status === 'available'
-
-                return (
-                  <button
-                    key={locker.id}
-                    type="button"
-                    onClick={() =>
-                      setSelectedLocker(locker.id)
-                    }
-                    onMouseEnter={() =>
-                      setHoveredLocker(locker.id)
-                    }
-                    onMouseLeave={() =>
-                      setHoveredLocker(null)
-                    }
-                    className={`group relative overflow-hidden rounded-xl border p-2 text-left transition-all duration-300 ${
-                      isActive
-                        ? 'border-primary bg-surface-raised shadow-[0_8px_25px_-10px_rgba(165,140,244,0.55)]'
-                        : 'border-border bg-surface hover:border-primary hover:bg-surface-raised'
-                    } ${
-                      isFlashing
-                        ? 'ring-2 ring-lavender/50'
-                        : ''
-                    }`}
-                  >
-
-                    <div className="mb-1.5 flex items-center justify-between">
-
-                      <span
-                        className={`font-mono text-[9px] font-bold tracking-widest ${
-                          isActive
-                            ? 'text-primary'
-                            : 'text-text-muted'
-                        }`}
-                      >
-                        {locker.id}
-                      </span>
-
-                      <span
-                        className={`h-1.5 w-1.5 rounded-full ${
-                          isAvailable
-                            ? 'bg-emerald-400'
-                            : 'bg-jet-black/20'
-                        }`}
-                      />
-
-                    </div>
-
-                    <div className="relative aspect-[1.15] overflow-hidden rounded-lg border border-border bg-surface-raised">
-
-                      <img
-                        src={locker.image}
-                        alt={locker.item}
-                        className={`h-full w-full object-cover transition duration-500 ${
-                          isActive
-                            ? 'scale-105 opacity-100'
-                            : 'opacity-85 group-hover:scale-105 group-hover:opacity-100'
-                        } ${
-                          !isAvailable
-                            ? 'grayscale opacity-40'
-                            : ''
-                        }`}
-                      />
-
-                      <div className="absolute inset-0 bg-linear-to-t from-jet-black/35 via-transparent to-transparent" />
-
-                      {!isAvailable && (
-                        <div className="absolute inset-0 flex items-center justify-center">
-
-                          <span className="rounded-full border border-white/60 bg-jet-black/75 px-2 py-1 font-mono text-[7px] uppercase tracking-wider text-white backdrop-blur">
-                            Rented
-                          </span>
-
-                        </div>
-                      )}
-
-                    </div>
-
-                    <div className="mt-2">
-
-                      <p
-                        className={`truncate text-[10px] font-semibold ${
-                          isActive
-                            ? 'text-primary'
-                            : 'text-text-muted'
-                        }`}
-                      >
-                        {locker.shortName}
-                      </p>
-
-                      <p
-                        className={`mt-0.5 font-mono text-[8px] uppercase tracking-wide ${
-                          isAvailable
-                            ? 'text-emerald-500'
-                            : 'text-text-muted'
-                        }`}
-                      >
-                        {isAvailable
-                          ? 'Available'
-                          : 'Rented'}
-                      </p>
-
-                    </div>
-
-                    <div
-                      className={`absolute right-1 top-1/2 h-8 w-0.5 -translate-y-1/2 rounded-full transition ${
-                        isActive
-                          ? 'bg-primary shadow-[0_0_8px_rgba(165,140,244,0.55)]'
-                          : 'bg-lavender/25'
-                      }`}
-                    />
-
-                  </button>
-                )
-              })}
-
-            </div>
-
-            {/* PREVIEW */}
-
-            <div className="mt-4 overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
-
-              {displayedLocker ? (
-
-                <div className="flex min-h-[150px]">
-
-                  <div className="relative w-[42%] shrink-0 overflow-hidden bg-surface-raised">
-
+            {/* The compartment: a door in the shutter that rolls up once. */}
+            <div className="lg:col-span-5">
+              <div className="rounded-2xl border border-white/15 bg-jet-black/35 p-2">
+                <Shutter label={`Compartment ${SAMPLE_LISTING.code}`} className="rounded-xl">
+                  <figure className="overflow-hidden rounded-xl bg-surface text-text">
                     <img
-                      src={displayedLocker.image}
-                      alt={displayedLocker.item}
-                      className="h-full w-full object-cover"
+                      src={SAMPLE_LISTING.image}
+                      alt={SAMPLE_LISTING.item}
+                      className="aspect-[4/3] w-full object-cover"
                     />
-
-                    <div className="absolute inset-0 bg-linear-to-r from-transparent to-white/80" />
-
-                    <span className="absolute left-2.5 top-2.5 rounded-md border border-white/70 bg-white/90 px-2 py-1 font-mono text-[8px] font-bold tracking-widest text-primary shadow-sm">
-                      {displayedLocker.id}
-                    </span>
-
-                  </div>
-
-                  <div className="flex min-w-0 flex-1 flex-col justify-between p-3.5">
-
-                    <div>
-
-                      <div className="flex items-center justify-between gap-2">
-
-                        <span className="font-mono text-[8px] uppercase tracking-[0.15em] text-primary">
-                          Item preview
-                        </span>
-
-                        <span
-                          className={`rounded-full px-2 py-1 font-mono text-[7px] uppercase tracking-wide ${
-                            displayedLocker.status ===
-                            'available'
-                              ? 'bg-surface-raised text-primary'
-                              : 'bg-jet-black/10 text-text-muted'
-                          }`}
-                        >
-                          {displayedLocker.status}
-                        </span>
-
+                    <figcaption className="flex items-end justify-between gap-4 p-4">
+                      <div className="min-w-0">
+                        <p className="locker-code text-xs text-text-muted">
+                          {SAMPLE_LISTING.code} · {SAMPLE_LISTING.location}
+                        </p>
+                        <p className="mt-1 truncate text-lg font-bold">{SAMPLE_LISTING.item}</p>
+                        <RentalStatus status="confirmed" className="mt-2" />
                       </div>
-
-                      <h3 className="mt-2 line-clamp-2 font-display text-sm font-semibold leading-snug text-text">
-                        {displayedLocker.item}
-                      </h3>
-
-                      <p className="mt-2 text-[9px] leading-relaxed text-text-muted">
-                        Smart locker {displayedLocker.id}
-                      </p>
-
-                      <p className="mt-0.5 text-[9px] text-text-muted">
-                        {displayedLocker.location}
-                      </p>
-
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={handleReserve}
-                      disabled={
-                        displayedLocker.status !==
-                        'available'
-                      }
-                      className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg cta-brand px-3 py-2 font-mono text-[9px] font-bold uppercase tracking-wider text-white glow-sm transition hover:brightness-105 disabled:cursor-not-allowed disabled:bg-none disabled:bg-jet-black/10 disabled:text-text-muted disabled:shadow-none"
-                    >
-                      {displayedLocker.status ===
-                      'available'
-                        ? 'Reserve item'
-                        : 'Currently rented'}
-
-                      {displayedLocker.status ===
-                        'available' && (
-                        <ArrowRight className="h-3 w-3" />
-                      )}
-                    </button>
-
-                  </div>
-
-                </div>
-
-              ) : (
-
-                <div className="flex min-h-[150px] items-center justify-center p-8 text-center">
-
-                  <div>
-
-                    <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface-raised">
-
-                      <Box className="h-4 w-4 text-primary" />
-
-                    </div>
-
-                    <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.15em] text-text-muted">
-                      Select a compartment
-                    </p>
-
-                    <p className="mt-1 text-[9px] text-text-muted">
-                      Hover or tap an item to preview
-                    </p>
-
-                  </div>
-
-                </div>
-
-              )}
-
+                      <div className="text-right">
+                        <p className="num text-3xl">${SAMPLE_LISTING.price}</p>
+                        <p className="text-xs text-text-muted">per day</p>
+                      </div>
+                    </figcaption>
+                  </figure>
+                </Shutter>
+              </div>
+              <p className="mt-2 text-xs text-brand-surface-muted">Sample listing.</p>
             </div>
-
-            {/* TERMINAL FOOTER */}
-
-            <div className="mt-3 flex items-center justify-between font-mono text-[8px] uppercase tracking-wider text-text-muted">
-
-              <span>Secure access</span>
-
-              <span className="text-primary">
-                AI verified
-              </span>
-
-              <span>24/7 pickup</span>
-
-            </div>
-
           </div>
 
-        </div>
+          {/* Bottom rail of the shutter: where you start. */}
+          <div className="border-t border-white/10 bg-jet-black/30">
+            <form
+              onSubmit={handleSearch}
+              role="search"
+              className="mx-auto flex max-w-6xl flex-col gap-3 px-6 py-5 sm:flex-row sm:items-center sm:px-10"
+            >
+              <label htmlFor="hero-search" className="sr-only">
+                What do you need?
+              </label>
+              <div className="flex flex-1 items-center gap-3 rounded-xl bg-soft-white px-4 text-jet-black">
+                <Search className="h-5 w-5 shrink-0 text-deep-purple" aria-hidden="true" />
+                <input
+                  id="hero-search"
+                  type="search"
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="Search cameras, drills, tents…"
+                  className="w-full bg-transparent py-3.5 text-base text-jet-black outline-none placeholder:text-[#5d5a6b]"
+                />
+              </div>
+              <button type="submit" className="stamp rounded-xl px-6 py-3.5 text-sm font-bold hover:brightness-105">
+                Search
+              </button>
+              <Link
+                to="/become-host"
+                className="text-sm font-semibold text-soft-white underline decoration-white/40 hover:decoration-white sm:ml-4"
+              >
+                Have something to lend?
+              </Link>
+            </form>
+          </div>
+        </section>
 
+        {/* ================= RENT / HOST ================= */}
+        <section className="border-b border-border">
+          <div className="mx-auto grid max-w-6xl md:grid-cols-2">
+            <div className="px-6 py-16 sm:px-10 lg:py-20">
+              <h2 className="text-3xl font-extrabold sm:text-4xl">Need it for a few days?</h2>
+              <p className="mt-4 max-w-[48ch] text-text-muted">
+                Reserve the dates, pay online, and collect it from a locker when it suits you.
+              </p>
+              <Checklist
+                items={[
+                  'Pay by card online, before anything changes hands',
+                  'Get your pickup PIN once the owner drops it off',
+                  'Return it to the same locker when you are done',
+                ]}
+              />
+              <Link to="/explore" className="cta-brand mt-8 inline-block rounded-xl px-6 py-3 text-sm font-semibold text-soft-white">
+                Browse items
+              </Link>
+            </div>
+
+            <div id="hosting" className="scroll-mt-20 border-t border-border px-6 py-16 sm:px-10 md:border-l md:border-t-0 lg:py-20">
+              <h2 className="text-3xl font-extrabold sm:text-4xl">Own it? Let it earn.</h2>
+              <p className="mt-4 max-w-[48ch] text-text-muted">
+                List what sits unused. Drop it at a locker once the rental is paid, and pick it up
+                again when it comes back.
+              </p>
+              <Checklist
+                items={[
+                  'A suggested daily price, based on similar items',
+                  'A size check that your item fits a locker before you list it',
+                  'A deposit held until the item is returned',
+                ]}
+              />
+              <Link
+                to="/become-host"
+                className="mt-8 inline-block rounded-xl border border-border bg-surface px-6 py-3 text-sm font-semibold text-text hover:border-primary hover:text-primary"
+              >
+                Start hosting
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* ================= HOW A HANDOFF WORKS ================= */}
+        <section id="how-it-works" className="scroll-mt-20 px-6 py-20 sm:px-10 lg:py-28">
+          <div className="mx-auto max-w-6xl">
+            <h2 className="max-w-[16ch] text-3xl font-extrabold sm:text-5xl">How a handoff works</h2>
+
+            <ol className="mt-12 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-5">
+              {HANDOFF_STEPS.map((step, index) => (
+                <li key={step.title} className="flex flex-col bg-surface p-6">
+                  <span className="num text-4xl text-primary" aria-hidden="true">
+                    {index + 1}
+                  </span>
+                  <h3 className="mt-4 text-base font-bold">{step.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-text-muted">{step.desc}</p>
+                  {step.status && <RentalStatus status={step.status} className="mt-auto pt-5" />}
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        {/* ================= TRUST ================= */}
+        <section id="trust" className="scroll-mt-20 border-t border-border bg-surface px-6 py-20 sm:px-10 lg:py-28">
+          <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-12">
+            <div className="lg:col-span-5">
+              <h2 className="text-3xl font-extrabold sm:text-5xl">Every handoff leaves a record.</h2>
+              <dl className="mt-10 space-y-6">
+                {TRUST_FACTS.map((fact) => (
+                  <div key={fact.title}>
+                    <dt className="font-bold">{fact.title}</dt>
+                    <dd className="mt-1 text-sm leading-relaxed text-text-muted">{fact.desc}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+
+            <figure className="self-start rounded-2xl border border-border bg-bg lg:col-span-7">
+              <figcaption className="flex items-center justify-between border-b border-border px-5 py-4">
+                <span className="font-bold">
+                  Locker log <span className="locker-code font-normal text-text-muted">· B4</span>
+                </span>
+                <span className="text-xs text-text-muted">Sample data</span>
+              </figcaption>
+              <table className="w-full text-left text-sm">
+                <thead className="sr-only">
+                  <tr>
+                    <th>Time</th>
+                    <th>Opened by</th>
+                    <th>Event</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {SAMPLE_LOG.map((row) => (
+                    <tr key={row.time} className="border-b border-border last:border-0">
+                      <td className="locker-code whitespace-nowrap px-5 py-4 align-top text-xs text-text-muted">{row.time}</td>
+                      <td className="px-2 py-4 align-top font-semibold">{row.who}</td>
+                      <td className="px-5 py-4 align-top text-text-muted">{row.event}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </figure>
+          </div>
+        </section>
+
+        {/* ================= CATEGORIES ================= */}
+        <section id="categories" className="scroll-mt-20 border-t border-border px-6 py-20 sm:px-10">
+          <div className="mx-auto max-w-6xl">
+            <h2 className="text-3xl font-extrabold sm:text-4xl">What people lend</h2>
+            {categories.length > 0 ? (
+              <ul className="mt-8 flex flex-wrap gap-2">
+                {categories.map((category) => {
+                  const Icon = getCategoryIcon(category.slug)
+                  return (
+                    <li key={category.id}>
+                      <Link
+                        to={`/explore?category=${encodeURIComponent(category.slug)}`}
+                        className="inline-flex items-center gap-2 rounded-lg border border-border bg-surface px-4 py-2.5 text-sm font-semibold hover:border-primary hover:text-primary"
+                      >
+                        <Icon className="h-4 w-4 text-primary" aria-hidden="true" />
+                        {category.name}
+                      </Link>
+                    </li>
+                  )
+                })}
+              </ul>
+            ) : (
+              <p className="mt-6 text-text-muted">
+                <Link to="/explore" className="font-semibold text-primary underline">
+                  Browse everything available
+                </Link>
+              </p>
+            )}
+          </div>
+        </section>
+
+        {/* ================= CLOSE ================= */}
+        <section className="shutter px-6 py-16 sm:px-10 lg:py-20">
+          <div className="mx-auto flex max-w-6xl flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+            <h2 className="max-w-[18ch] text-4xl font-extrabold text-soft-white sm:text-6xl">
+              Find it. Reserve it. Pick it up.
+            </h2>
+            <div className="flex shrink-0 flex-wrap gap-3">
+              <Link
+                to="/explore"
+                className="rounded-xl bg-soft-white px-6 py-3 text-sm font-bold text-deep-purple hover:bg-white"
+              >
+                Browse items
+              </Link>
+              <Link
+                to="/become-host"
+                className="rounded-xl border border-white/40 px-6 py-3 text-sm font-bold text-soft-white hover:border-white"
+              >
+                Start hosting
+              </Link>
+            </div>
+          </div>
+        </section>
       </main>
 
-      {/* ================= CATEGORIES ================= */}
-
-      <section
-        id="categories"
-        className="border-t border-border bg-surface px-6 py-20 sm:px-10 lg:py-28"
-      >
-
-        <div className="mx-auto max-w-6xl">
-
-          <div className="max-w-xl">
-
-            <span className="text-[11px] font-mono font-semibold uppercase tracking-widest text-primary">
-              What you can rent
-            </span>
-
-            <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-text sm:text-4xl">
-              One locker, hundreds of possibilities.
-            </h2>
-
-            <p className="mt-3 text-text-muted">
-              From a camera for the weekend to the perfect costume for tonight.
-            </p>
-
-          </div>
-
-          <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-7">
-
-            {categories.map((category) => {
-
-              const Icon = category.icon
-
-              return (
-                <Link
-                  key={category.id}
-                  to="/signup"
-                  className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border bg-surface px-3 py-7 text-center transition hover:-translate-y-0.5 hover:border-primary hover:shadow-md"
-                >
-
-                  <Icon className="h-6 w-6 text-primary" />
-
-                  <span className="text-xs font-semibold text-text">
-                    {category.name}
-                  </span>
-
-                </Link>
-              )
-            })}
-
-            <Link
-              to="/signup"
-              className="flex flex-col items-center justify-center gap-1 rounded-2xl cta-brand px-3 py-7 text-center text-xs font-semibold text-soft-white glow-sm transition hover:brightness-105"
-            >
-              View full
-              <br />
-              catalog
-              <ArrowRight className="mt-1 h-4 w-4" />
-            </Link>
-
-          </div>
-
-        </div>
-
-        {/* ================= HOW IT WORKS ================= */}
-
-        <div
-          id="how-it-works"
-          className="mx-auto mt-24 max-w-6xl"
-        >
-
-          <span className="text-[11px] font-mono font-semibold uppercase tracking-widest text-primary">
-            How it works
-          </span>
-
-          <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-text sm:text-4xl">
-            Four steps, zero friction.
-          </h2>
-
-          <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-
-            {steps.map((step) => {
-
-              const Icon = step.icon
-
-              return (
-                <div
-                  key={step.step}
-                  className="flex flex-col gap-3 rounded-2xl border border-border bg-surface p-6"
-                >
-
-                  <span className="font-mono text-[11px] font-semibold uppercase tracking-wide text-primary">
-                    {step.step}
-                  </span>
-
-                  <Icon className="h-6 w-6 text-primary" />
-
-                  <h3 className="font-display text-base font-semibold text-text">
-                    {step.title}
-                  </h3>
-
-                  <p className="text-sm leading-relaxed text-text-muted">
-                    {step.desc}
-                  </p>
-
-                </div>
-              )
-            })}
-
-          </div>
-
-        </div>
-
-      </section>
-
-      {/* ================= SECURITY ================= */}
-
-      <section
-        id="security"
-        className="bg-brand-surface px-6 py-20 text-brand-surface-text sm:px-10 lg:py-28"
-      >
-
-        <div className="mx-auto max-w-6xl">
-
-          <div className="max-w-xl">
-
-            <span className="text-[11px] font-mono font-semibold uppercase tracking-widest text-brand-surface-muted">
-              Security first
-            </span>
-
-            <h2 className="mt-3 font-display text-3xl font-bold tracking-tight sm:text-4xl">
-              Trust, verified at every step.
-            </h2>
-
-            <p className="mt-3 text-brand-surface-muted">
-              Renting between strangers only works if both sides can trust each other.
-              So we automated it.
-            </p>
-
-          </div>
-
-          <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-3">
-
-            {securityFeatures.map((feature) => {
-
-              const Icon = feature.icon
-
-              return (
-                <div
-                  key={feature.title}
-                  className="rounded-2xl border border-white/10 bg-jet-black/30 p-6"
-                >
-
-                  <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-white/10">
-
-                    <Icon className="h-5 w-5 text-brand-surface-muted" />
-
-                  </div>
-
-                  <h3 className="font-display text-base font-semibold">
-                    {feature.title}
-                  </h3>
-
-                  <p className="mt-2 text-sm leading-relaxed text-brand-surface-muted">
-                    {feature.desc}
-                  </p>
-
-                </div>
-              )
-            })}
-
-          </div>
-
-        </div>
-
-      </section>
-
-      {/* ================= FINAL CTA ================= */}
-
-      <section className="border-t border-border bg-bg px-6 py-16 sm:px-10">
-
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-8 sm:flex-row">
-
-          <div className="text-center sm:text-left">
-
-            <h2 className="font-display text-2xl font-bold tracking-tight text-text sm:text-3xl">
-              Your next locker is closer than you think.
-            </h2>
-
-            <p className="mt-2 text-text-muted">
-              Join the safest rental network in El Salvador.
-            </p>
-
-          </div>
-
-          <Link
-            to="/signup"
-            className="inline-flex shrink-0 items-center gap-2 rounded-full cta-brand px-6 py-3 text-sm font-semibold text-soft-white glow-sm transition hover:brightness-105"
-          >
-            Get started now
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-
-        </div>
-
-      </section>
-
-      {/* ================= FOOTER ================= */}
-
       <footer className="border-t border-border bg-surface px-6 py-10 sm:px-10">
-
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 sm:flex-row">
-
-          <img
-            src="/logo-lendrop.png"
-            alt="Lendrop"
-            className="h-5 w-auto opacity-70"
-          />
-
-          <p className="text-xs text-text-muted">
-            &copy; 2026 Lendrop. All rights reserved.
-          </p>
-
+          <Logo className="h-5" />
+          <nav aria-label="Footer" className="flex gap-6 text-sm text-text-muted">
+            <Link to="/explore" className="hover:text-primary">Explore</Link>
+            <Link to="/become-host" className="hover:text-primary">Become a host</Link>
+            <Link to="/login" className="hover:text-primary">Log in</Link>
+          </nav>
+          <p className="text-xs text-text-muted">&copy; 2026 Lendrop</p>
         </div>
-
       </footer>
-
     </div>
   )
 }

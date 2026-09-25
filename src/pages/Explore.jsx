@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import {
   Search,
   Heart,
@@ -44,16 +44,18 @@ const ROUTES = {
 export default function Explore() {
   const { user, isHost, profile, profileLoading, signOut } = useAuth()
   const navigate = useNavigate()
+  // The landing page links here with ?q= (hero search) and ?category=.
+  const [searchParams] = useSearchParams()
 
   const [categories, setCategories] = useState([])
   const [items, setItems] = useState([])
   const [itemsLoading, setItemsLoading] = useState(true)
   const [itemsError, setItemsError] = useState('')
 
-  const [selectedCategory, setSelectedCategory] = useState(null)
+  const [selectedCategory, setSelectedCategory] = useState(() => searchParams.get('category'))
   const [selectedCity, setSelectedCity] = useState(null)
   const [onlyAvailable, setOnlyAvailable] = useState(true)
-  const [searchTerm, setSearchTerm] = useState('')
+  const [searchTerm, setSearchTerm] = useState(() => searchParams.get('q') ?? '')
   const [favoriteIds, setFavoriteIds] = useState(new Set())
   const [rentedItemIds, setRentedItemIds] = useState(new Set())
 

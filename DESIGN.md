@@ -176,7 +176,7 @@ Cut-metal corners: 8px for small controls, 10px for buttons and inputs, 12px for
 ### Buttons
 - **Shape:** gently cut corners (10px).
 - **Primary:** the brand gradient, left to right from Shutter Purple (#433075) to Dark-mode CTA Purple (#7050d4), with Soft White text (5.3:1 at the light end), the same in both themes. Hover brightens it slightly. It never runs to Lavender: white text fails there.
-- **Secondary:** the panel fill with the same gradient as a 2px border, and text in the page's text colour; hover raises the fill and turns the text primary. Used for Log in, Start hosting, Message host, Clear filters, Cancel, and the active auth tab.
+- **Secondary:** the panel fill with the same gradient as a 1px hairline border, and text in the page's text colour; hover raises the fill and turns the text primary. Used for Log in, Start hosting, Message host, Clear filters, Cancel, and the active auth tab.
 - **On the shutter:** primary keeps the gradient fill with a thin white ring (white at 30%); secondary uses the panel fill with the gradient border.
 - **Not buttons in this sense:** selection chips and toggles take the Lavender stamp, icon-only buttons stay neutral, and destructive confirmations stay red.
 
@@ -212,7 +212,7 @@ A 12px shape plus a label: hollow circle pending, filled square confirmed, trian
 
 ### Do:
 - **Do** put the shutter texture only on shutter bands and reveal moments.
-- **Do** give every labelled action button the brand gradient: filled for primary, as a 2px border on the panel fill for secondary.
+- **Do** give every labelled action button the brand gradient: filled for primary, as a 1px hairline border on the panel fill for secondary.
 - **Do** use the Lavender stamp for every selected state, the same way everywhere.
 - **Do** show rental states with the Rental Status shape and label.
 - **Do** label sample or illustrative data on the page.

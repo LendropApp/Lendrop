@@ -33,7 +33,7 @@ export default function StarRating({ value = 0, onChange, size = 'md', className
             className={interactive ? 'transition hover:scale-110' : undefined}
           >
             <Star
-              className={`${starClass} ${filled ? 'fill-jet-black text-jet-black' : 'fill-transparent text-jet-black/25'}`}
+              className={`${starClass} ${filled ? 'fill-jet-black text-text' : 'fill-transparent text-text-muted'}`}
               strokeWidth={1.75}
             />
           </Tag>

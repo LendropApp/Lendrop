@@ -1,8 +1,20 @@
+import { CircleAlert, CircleCheck } from 'lucide-react'
 
 export default function StatusMessage({ type, text }) {
   if (!text) return null
 
-  const styles = type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'
+  const success = type === 'success'
+  const Icon = success ? CircleCheck : CircleAlert
 
-  return <p className={`rounded-lg px-3 py-2 text-sm ${styles}`}>{text}</p>
+  return (
+    <p
+      role={success ? 'status' : 'alert'}
+      className={`flex items-start gap-2 rounded-lg px-3 py-2 text-sm ${
+        success ? 'bg-success-soft text-success' : 'bg-danger-soft text-danger'
+      }`}
+    >
+      <Icon className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+      {text}
+    </p>
+  )
 }

@@ -1,13 +1,46 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { Camera, CheckCircle2, Clock3, Lock, MapPin } from 'lucide-react'
+import { Camera, Check, CheckCircle2, Clock3, Lock, MapPin } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import PageHeader from '../components/PageHeader'
+import RentalStatus from '../components/RentalStatus'
+import Shutter from '../components/Shutter'
 import StatusMessage from '../components/StatusMessage'
-import AuroraBlobs from '../components/background/AuroraBlobs'
+import LendropIdInput from '../components/LendropIdInput'
+import { functionErrorMessage } from '../lib/functionError'
 
 const STEPS = ['Reserved', 'Delivered', 'In Use', 'Returned']
+
+// The assigned compartment. Once the owner has dropped the item off, the
+// card sits behind the shutter and rolls it up: the item is ready.
+function LockerCard({ locker, code, reveal }) {
+  const card = (
+    <div className="flex items-end justify-between gap-4 bg-surface p-5">
+      <div className="min-w-0 text-sm">
+        <p className="flex items-center gap-1.5 font-semibold text-text">
+          <MapPin className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+          {locker.name}
+        </p>
+        <p className="mt-1 text-text-muted">
+          {locker.address}, {locker.city}
+        </p>
+      </div>
+      <div className="shrink-0 text-right">
+        <p className="locker-code text-3xl font-medium text-text">{code}</p>
+        <p className="text-xs text-text-muted">compartment</p>
+      </div>
+    </div>
+  )
+
+  return reveal ? (
+    <Shutter label="Ready for pickup" className="mt-4 rounded-2xl border border-border">
+      {card}
+    </Shutter>
+  ) : (
+    <section className="mt-4 overflow-hidden rounded-2xl border border-border">{card}</section>
+  )
+}
 
 function formatDateRange(start, end) {
   const opts = { month: 'short', day: 'numeric' }
@@ -26,14 +59,14 @@ export default function RentalTracking() {
   const [pickList, setPickList] = useState(null)
 
   const [dui, setDui] = useState('')
-  const [password, setPassword] = useState('')
+  const [lendropId, setLendropId] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [formStatus, setFormStatus] = useState({ type: '', text: '' })
 
   const [returnPhoto, setReturnPhoto] = useState(null)
   const [returnPhotoPreview, setReturnPhotoPreview] = useState(null)
   const [returnDui, setReturnDui] = useState('')
-  const [returnPassword, setReturnPassword] = useState('')
+  const [returnLendropId, setReturnLendropId] = useState('')
   const [returnSubmitting, setReturnSubmitting] = useState(false)
   const [returnStatus, setReturnStatus] = useState({ type: '', text: '' })
 
@@ -119,18 +152,18 @@ export default function RentalTracking() {
     setFormStatus({ type: '', text: '' })
 
     const { data, error } = await supabase.functions.invoke('locker-access', {
-      body: { reservationId: reservation.id, dui, password, action: 'pickup' },
+      body: { reservationId: reservation.id, dui, lendropId, action: 'pickup' },
     })
 
     setSubmitting(false)
 
     if (error || data?.error) {
-      setFormStatus({ type: 'error', text: data?.error ?? 'Could not verify your identity. Please try again.' })
+      setFormStatus({ type: 'error', text: await functionErrorMessage(error, data, 'Could not verify your identity. Please try again.') })
       return
     }
 
     setDui('')
-    setPassword('')
+    setLendropId('')
     setFormStatus({ type: 'success', text: 'Locker opened — enjoy your rental!' })
     await loadReservation()
   }
@@ -172,37 +205,37 @@ export default function RentalTracking() {
     }
 
     const { data, error } = await supabase.functions.invoke('locker-access', {
-      body: { reservationId: reservation.id, dui: returnDui, password: returnPassword, action: 'return_dropoff' },
+      body: { reservationId: reservation.id, dui: returnDui, lendropId: returnLendropId, action: 'return_dropoff' },
     })
 
     setReturnSubmitting(false)
 
     if (error || data?.error) {
-      setReturnStatus({ type: 'error', text: data?.error ?? 'Could not verify your identity. Please try again.' })
+      setReturnStatus({ type: 'error', text: await functionErrorMessage(error, data, 'Could not verify your identity. Please try again.') })
       return
     }
 
     setReturnDui('')
-    setReturnPassword('')
+    setReturnLendropId('')
     setReturnStatus({ type: 'success', text: 'Return confirmed — thanks!' })
     await loadReservation()
   }
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-soft-white">
-        <p className="text-sm text-jet-black/50">Loading your rental…</p>
+      <div className="flex min-h-screen items-center justify-center bg-bg">
+        <p className="text-sm text-text-muted">Loading your rental…</p>
       </div>
     )
   }
 
   if (pickList) {
     return (
-      <div className="min-h-screen bg-soft-white pb-16">
+      <div className="min-h-screen bg-bg pb-16">
         <PageHeader backTo="/history" backLabel="Back to Activity" />
         <div className="mx-auto max-w-2xl px-6 py-8 sm:px-10">
-          <h1 className="font-display text-2xl font-bold text-jet-black">Which rental?</h1>
-          <p className="mt-1 text-sm text-jet-black/50">
+          <h1 className="text-3xl font-extrabold">Which rental?</h1>
+          <p className="mt-1 text-sm text-text-muted">
             You have {pickList.length} active rentals — pick one to track.
           </p>
           <div className="mt-6 space-y-3">
@@ -210,13 +243,13 @@ export default function RentalTracking() {
               <Link
                 key={r.id}
                 to={`/rental-tracking?reservationId=${r.id}`}
-                className="flex items-center justify-between gap-3 rounded-2xl border border-lavender/15 bg-white p-4 transition hover:border-lavender"
+                className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-surface p-4 hover:border-primary"
               >
                 <div className="min-w-0">
-                  <p className="truncate font-semibold text-jet-black">{r.item?.title ?? 'Item'}</p>
-                  <p className="text-xs text-jet-black/45">{formatDateRange(r.start_date, r.end_date)}</p>
+                  <p className="truncate font-semibold text-text">{r.item?.title ?? 'Item'}</p>
+                  <p className="text-xs text-text-muted">{formatDateRange(r.start_date, r.end_date)}</p>
                 </div>
-                <span className="shrink-0 text-xs font-semibold text-deep-purple">Track →</span>
+                <span className="shrink-0 text-sm font-semibold text-primary">Track</span>
               </Link>
             ))}
           </div>
@@ -227,14 +260,14 @@ export default function RentalTracking() {
 
   if (notFound || !reservation) {
     return (
-      <div className="min-h-screen bg-soft-white pb-28 md:pb-16">
+      <div className="min-h-screen bg-bg pb-28 md:pb-16">
         <PageHeader backTo="/history" backLabel="Back to Activity" />
         <div className="flex flex-col items-center gap-2 px-6 py-24 text-center">
-          <Clock3 className="h-8 w-8 text-jet-black/20" />
-          <p className="font-display text-lg font-semibold text-jet-black">No active rental right now</p>
-          <p className="text-sm text-jet-black/50">Once you book an item, track its pickup here.</p>
-          <Link to="/explore" className="mt-2 text-sm font-semibold text-deep-purple hover:text-lavender">
-            Browse Explore
+          <Clock3 className="h-8 w-8 text-text-muted" aria-hidden="true" />
+          <p className="text-xl font-bold">No active rental right now</p>
+          <p className="text-sm text-text-muted">Once you book an item, track its pickup here.</p>
+          <Link to="/explore" className="cta-brand mt-4 rounded-xl px-6 py-3 text-sm font-bold text-soft-white">
+            Browse items
           </Link>
         </div>
       </div>
@@ -249,78 +282,70 @@ export default function RentalTracking() {
   const locker = reservation.compartment?.locker
 
   return (
-    <div className="min-h-screen bg-soft-white pb-28 md:pb-16">
+    <div className="min-h-screen bg-bg pb-28 md:pb-16">
       <PageHeader backTo="/history" backLabel="Back to Activity" />
 
       <div className="relative isolate overflow-hidden">
-        <AuroraBlobs className="opacity-25" />
         <div className="relative mx-auto max-w-2xl px-6 py-8 sm:px-10">
-          <h1 className="font-display text-2xl font-bold text-jet-black">{reservation.item?.title}</h1>
-          <p className="mt-1 text-sm text-jet-black/50">Lent by {reservation.item?.owner?.full_name ?? 'the lender'}</p>
+          <RentalStatus status={reservation.status} />
+          <h1 className="mt-2 text-3xl font-extrabold leading-tight sm:text-4xl">{reservation.item?.title}</h1>
+          <p className="mt-2 text-sm text-text-muted">
+            Lent by {reservation.item?.owner?.full_name ?? 'the lender'} ·{' '}
+            <span className="tabular-nums">{formatDateRange(reservation.start_date, reservation.end_date)}</span>
+          </p>
 
-          <section className="mt-8 rounded-2xl border border-lavender/15 bg-white p-6">
-            <div className="relative flex items-center justify-between">
-              <div className="absolute left-0 top-5 h-1 w-full bg-jet-black/10">
-                <div
-                  className="h-full bg-deep-purple transition-all"
-                  style={{ width: `${(currentStep / (STEPS.length - 1)) * 100}%` }}
-                />
-              </div>
-              {STEPS.map((step, index) => (
-                <div key={step} className="relative z-10 flex flex-col items-center">
-                  <div
-                    className={`flex h-10 w-10 items-center justify-center rounded-full border-4 font-bold ${
-                      index < currentStep
-                        ? 'border-deep-purple bg-deep-purple text-white'
-                        : index === currentStep
-                          ? 'border-deep-purple bg-lavender text-white'
-                          : 'border-jet-black/25 bg-white text-jet-black/40'
-                    }`}
-                  >
-                    {index + 1}
-                  </div>
-                  <span className={`mt-2 text-xs ${index === currentStep ? 'font-semibold text-deep-purple' : 'text-jet-black/50'}`}>
-                    {step}
-                  </span>
-                </div>
-              ))}
-            </div>
+          <section className="mt-8 rounded-2xl border border-border bg-surface p-5 sm:p-6" aria-label="Rental progress">
+            <ol className="grid grid-cols-4 gap-2">
+              {STEPS.map((step, index) => {
+                const done = index < currentStep
+                const current = index === currentStep
+                return (
+                  <li key={step} aria-current={current ? 'step' : undefined}>
+                    <div
+                      className={`h-2 rounded-full ${done ? 'bg-primary' : current ? 'bg-lavender' : 'bg-border'}`}
+                    />
+                    <p
+                      className={`mt-3 flex items-center gap-1.5 text-xs sm:text-sm ${
+                        current ? 'font-bold text-text' : done ? 'font-semibold text-text' : 'text-text-muted'
+                      }`}
+                    >
+                      {done && <Check className="h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" />}
+                      {step}
+                    </p>
+                  </li>
+                )
+              })}
+            </ol>
           </section>
 
           {locker && (
-            <section className="mt-4 flex items-start gap-3 rounded-2xl border border-lavender/15 bg-white p-4">
-              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-deep-purple" />
-              <div className="text-sm">
-                <p className="font-semibold text-jet-black">
-                  {locker.name} · Compartment {reservation.compartment?.compartment_code}
-                </p>
-                <p className="text-jet-black/50">
-                  {locker.address}, {locker.city}
-                </p>
-              </div>
-            </section>
+            <LockerCard
+              locker={locker}
+              code={reservation.compartment?.compartment_code}
+              reveal={hasDeposited && !hasRetrieved}
+            />
           )}
 
           {!reservation.compartment_id && (
-            <p className="mt-4 rounded-2xl border border-jet-black/5 bg-jet-black/[0.02] p-4 text-sm text-jet-black/50">
+            <p className="mt-4 rounded-2xl border border-border bg-surface-raised p-4 text-sm text-text-muted">
               We're finding you a locker — check back soon.
             </p>
           )}
 
           {reservation.compartment_id && !hasDeposited && (
-            <p className="mt-4 rounded-2xl border border-jet-black/5 bg-jet-black/[0.02] p-4 text-sm text-jet-black/50">
+            <p className="mt-4 rounded-2xl border border-border bg-surface-raised p-4 text-sm text-text-muted">
               Waiting for the lender to drop off the item at this locker.
             </p>
           )}
 
           {reservation.compartment_id && hasDeposited && !hasRetrieved && (
-            <form onSubmit={handlePickup} className="mt-4 rounded-2xl border border-lavender/15 bg-white p-5">
+            <form onSubmit={handlePickup} className="mt-4 rounded-2xl border border-border bg-surface p-5">
               <div className="mb-3 flex items-center gap-2">
-                <Lock className="h-4 w-4 text-deep-purple" />
-                <p className="text-sm font-semibold text-jet-black">Pick up your item</p>
+                <Lock className="h-4 w-4 text-primary" aria-hidden="true" />
+                <p className="font-bold text-text">Pick up your item</p>
               </div>
-              <p className="mb-4 text-xs text-jet-black/50">
-                Enter your DUI and account password at the locker to confirm it's you and unlock the compartment.
+              <p className="mb-4 text-sm text-text-muted">
+                Enter your DUI and Lendrop ID at the locker to confirm it's you and unlock the compartment.
               </p>
               <div className="space-y-3">
                 <input
@@ -328,24 +353,19 @@ export default function RentalTracking() {
                   value={dui}
                   onChange={(e) => setDui(e.target.value)}
                   placeholder="DUI"
+                  aria-label="DUI"
+                  autoComplete="off"
                   required
-                  className="w-full rounded-xl border border-lavender/15 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+                  className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-primary"
                 />
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Password"
-                  required
-                  className="w-full rounded-xl border border-lavender/15 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
-                />
+                <LendropIdInput id="pickup-lendrop-id" value={lendropId} onChange={setLendropId} />
               </div>
               <div className="mt-3 flex items-center justify-between gap-3">
                 <StatusMessage type={formStatus.type} text={formStatus.text} />
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="ml-auto shrink-0 rounded-full bg-linear-to-r from-deep-purple to-lavender px-4 py-2 text-xs font-semibold text-soft-white glow-sm transition hover:brightness-105 disabled:opacity-50"
+                  className="cta-brand ml-auto shrink-0 rounded-xl px-5 py-2.5 text-sm font-bold text-soft-white disabled:opacity-50"
                 >
                   {submitting ? 'Verifying…' : 'Unlock locker'}
                 </button>
@@ -354,20 +374,20 @@ export default function RentalTracking() {
           )}
 
           {hasRetrieved && !hasReturnDeposited && (
-            <form onSubmit={handleReturn} className="mt-4 rounded-2xl border border-lavender/15 bg-white p-5">
+            <form onSubmit={handleReturn} className="mt-4 rounded-2xl border border-border bg-surface p-5">
               <div className="mb-3 flex items-center gap-2">
-                <Lock className="h-4 w-4 text-deep-purple" />
-                <p className="text-sm font-semibold text-jet-black">Return your item</p>
+                <Lock className="h-4 w-4 text-primary" aria-hidden="true" />
+                <p className="font-bold text-text">Return your item</p>
               </div>
-              <p className="mb-4 text-xs text-jet-black/50">
-                Drop it back at the same locker with a condition photo, then confirm with your DUI and password.
+              <p className="mb-4 text-sm text-text-muted">
+                Drop it back at the same locker with a condition photo, then confirm with your DUI and Lendrop ID.
               </p>
 
               <label
                 htmlFor="return-photo"
-                className="flex cursor-pointer items-center gap-2 rounded-xl border border-dashed border-lavender/30 px-4 py-3 text-xs text-jet-black/60 transition hover:border-lavender"
+                className="flex cursor-pointer items-center gap-2 rounded-xl border border-dashed border-border px-4 py-3 text-sm text-text-muted hover:border-primary"
               >
-                <Camera className="h-4 w-4 shrink-0 text-deep-purple" />
+                <Camera className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
                 {returnPhoto ? returnPhoto.name : 'Attach a condition photo (required)'}
               </label>
               <input
@@ -388,24 +408,19 @@ export default function RentalTracking() {
                   value={returnDui}
                   onChange={(e) => setReturnDui(e.target.value)}
                   placeholder="DUI"
+                  aria-label="DUI"
+                  autoComplete="off"
                   required
-                  className="w-full rounded-xl border border-lavender/15 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+                  className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-primary"
                 />
-                <input
-                  type="password"
-                  value={returnPassword}
-                  onChange={(e) => setReturnPassword(e.target.value)}
-                  placeholder="Password"
-                  required
-                  className="w-full rounded-xl border border-lavender/15 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
-                />
+                <LendropIdInput id="return-lendrop-id" value={returnLendropId} onChange={setReturnLendropId} />
               </div>
               <div className="mt-3 flex items-center justify-between gap-3">
                 <StatusMessage type={returnStatus.type} text={returnStatus.text} />
                 <button
                   type="submit"
                   disabled={returnSubmitting}
-                  className="ml-auto shrink-0 rounded-full bg-linear-to-r from-deep-purple to-lavender px-4 py-2 text-xs font-semibold text-soft-white glow-sm transition hover:brightness-105 disabled:opacity-50"
+                  className="cta-brand ml-auto shrink-0 rounded-xl px-5 py-2.5 text-sm font-bold text-soft-white disabled:opacity-50"
                 >
                   {returnSubmitting ? 'Verifying…' : 'Confirm return'}
                 </button>
@@ -414,15 +429,15 @@ export default function RentalTracking() {
           )}
 
           {hasReturnDeposited && !hasReturnRetrieved && (
-            <p className="mt-4 rounded-2xl border border-jet-black/5 bg-jet-black/[0.02] p-4 text-sm text-jet-black/50">
+            <p className="mt-4 rounded-2xl border border-border bg-surface-raised p-4 text-sm text-text-muted">
               Return dropped off — waiting for the lender to confirm they picked it up.
             </p>
           )}
 
           {hasReturnRetrieved && (
-            <div className="mt-4 flex items-start gap-3 rounded-2xl border border-emerald-100 bg-emerald-50 p-4">
-              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
-              <p className="text-sm text-emerald-700">Rental completed. Thanks for using Lendrop!</p>
+            <div className="mt-4 flex items-start gap-3 rounded-2xl border border-success/30 bg-success-soft p-4">
+              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden="true" />
+              <p className="text-sm text-success">Rental completed. Thanks for using Lendrop!</p>
             </div>
           )}
         </div>

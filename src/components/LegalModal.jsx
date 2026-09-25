@@ -32,7 +32,7 @@ export default function LegalModal({ open, onClose, title, children }) {
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-jet-black/70 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-jet-black/70 p-4"
       onClick={onClose}
     >
       <div
@@ -40,12 +40,11 @@ export default function LegalModal({ open, onClose, title, children }) {
         aria-modal="true"
         aria-labelledby="legal-modal-title"
         onClick={(e) => e.stopPropagation()}
-        className="relative flex max-h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-lavender/15 bg-white shadow-2xl shadow-lavender/25"
+        className="relative flex max-h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-border bg-surface shadow-2xl shadow-lavender/25"
       >
-        <div className="h-px shrink-0 bg-linear-to-r from-transparent via-lavender to-transparent" />
 
-        <div className="flex shrink-0 items-center justify-between border-b border-jet-black/5 px-6 py-4 sm:px-8">
-          <h2 id="legal-modal-title" className="font-display text-lg font-semibold text-deep-purple">
+        <div className="flex shrink-0 items-center justify-between border-b border-border px-6 py-4 sm:px-8">
+          <h2 id="legal-modal-title" className="font-display text-lg font-semibold text-primary">
             {title}
           </h2>
           <button
@@ -53,13 +52,13 @@ export default function LegalModal({ open, onClose, title, children }) {
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="flex h-8 w-8 items-center justify-center rounded-full text-jet-black/50 transition hover:bg-jet-black/5 hover:text-deep-purple focus:outline-none focus-visible:ring-2 focus-visible:ring-lavender"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-text-muted hover:bg-surface-raised hover:text-primary"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
-        <div className="overflow-y-auto px-6 py-6 text-sm leading-relaxed text-jet-black/70 sm:px-8">
+        <div className="overflow-y-auto px-6 py-6 text-sm leading-relaxed text-text-muted sm:px-8">
           {children}
         </div>
       </div>

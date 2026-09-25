@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { CheckCircle2, Lock, MapPin, ShieldCheck } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Lock, MapPin, ShieldCheck } from 'lucide-react'
 import { createCheckout, describeFailureReason, payCheckout } from '../../services/payment/paymentService'
 import { supabase } from '../../lib/supabaseClient'
+import RentalStatus from '../RentalStatus'
+import Shutter from '../Shutter'
 import StatusMessage from '../StatusMessage'
 
 const TEST_CARDS = [
@@ -216,20 +219,20 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
 
   if (phase === 'creating') {
     return (
-      <div className="rounded-2xl border border-lavender/15 bg-white p-6 text-center">
-        <p className="text-sm text-jet-black/50">Preparing your payment…</p>
+      <div className="rounded-2xl border border-border bg-surface p-6 text-center">
+        <p className="text-sm text-text-muted">Preparing your payment…</p>
       </div>
     )
   }
 
   if (phase === 'fatal') {
     return (
-      <div className="space-y-3 rounded-2xl border border-red-100 bg-red-50 p-4 text-center">
-        <p className="text-sm text-red-700">{fatalError}</p>
+      <div className="space-y-3 rounded-2xl border border-danger/30 bg-danger-soft p-4 text-center">
+        <p role="alert" className="text-sm text-danger">{fatalError}</p>
         <button
           type="button"
           onClick={onBackToDates}
-          className="rounded-xl border border-red-200 px-4 py-2 text-xs font-semibold text-red-700 transition hover:bg-red-100"
+          className="cta-outline rounded-xl px-4 py-1.5 text-sm font-semibold"
         >
           Back to dates
         </button>
@@ -239,13 +242,13 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
 
   if (phase === 'expired') {
     return (
-      <div className="space-y-3 rounded-2xl border border-jet-black/10 bg-jet-black/[0.02] p-4 text-center">
-        <p className="text-sm font-semibold text-jet-black">Time to pay ran out</p>
-        <p className="text-xs text-jet-black/50">The dates were released. You can try again.</p>
+      <div className="space-y-3 rounded-2xl border border-border bg-surface-raised p-4 text-center">
+        <p className="font-bold text-text">Time to pay ran out</p>
+        <p className="text-sm text-text-muted">The dates were released. You can try again.</p>
         <button
           type="button"
           onClick={onBackToDates}
-          className="rounded-xl bg-deep-purple px-4 py-2 text-xs font-semibold text-white transition hover:bg-deep-purple/90"
+          className="cta-brand rounded-xl px-4 py-2 text-sm font-semibold text-soft-white"
         >
           Back to dates
         </button>
@@ -255,39 +258,52 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
 
   if (phase === 'success') {
     const locker = reservation?.compartment?.locker
+    const code = reservation?.compartment?.compartment_code
     return (
-      <div className="space-y-3 rounded-2xl border border-emerald-100 bg-emerald-50 p-4 text-center">
-        <CheckCircle2 className="mx-auto h-8 w-8 text-emerald-600" />
-        <div>
-          <p className="text-sm font-semibold text-emerald-800">Booking confirmed!</p>
-          <p className="mt-1 text-xs text-emerald-700">
-            Payment approved ({checkout.environment === 'mock' ? 'test mode' : checkout.environment}).
-          </p>
-        </div>
+      <div className="space-y-3">
+        {/* The signature moment: the shutter rolls up on the rental. */}
+        <Shutter label="Booking confirmed" className="rounded-2xl border border-border">
+          <div className="space-y-3 bg-surface p-5">
+            <RentalStatus status="confirmed" />
+            <p className="text-xl font-extrabold">You're booked.</p>
+            <p className="text-xs text-text-muted">
+              Payment approved ({checkout.environment === 'mock' ? 'test mode' : checkout.environment}).
+            </p>
 
-        {locker ? (
-          <div className="flex items-start gap-2 rounded-xl bg-white p-3 text-left text-xs text-jet-black/70">
-            <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-deep-purple" />
-            <span>
-              {locker.name} · Compartment {reservation.compartment.compartment_code}
-              <br />
-              {locker.address}, {locker.city}
-            </span>
+            {locker ? (
+              <div className="flex items-end justify-between gap-4 rounded-xl bg-surface-raised p-4">
+                <div className="min-w-0 text-sm">
+                  <p className="flex items-center gap-1.5 font-semibold text-text">
+                    <MapPin className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+                    {locker.name}
+                  </p>
+                  <p className="mt-1 text-text-muted">
+                    {locker.address}, {locker.city}
+                  </p>
+                </div>
+                <div className="shrink-0 text-right">
+                  <p className="locker-code text-3xl font-medium text-text">{code}</p>
+                  <p className="text-xs text-text-muted">compartment</p>
+                </div>
+              </div>
+            ) : (
+              <p className="rounded-xl bg-surface-raised p-4 text-sm text-text-muted">
+                We'll assign a locker shortly. Check your rental tracking.
+              </p>
+            )}
           </div>
-        ) : (
-          <p className="text-xs text-emerald-700">We'll assign a locker shortly — check Track pickup.</p>
-        )}
+        </Shutter>
 
-        <a
-          href={`/rental-tracking?reservationId=${reservation?.id ?? ''}`}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-deep-purple px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-deep-purple/90"
+        <Link
+          to={`/rental-tracking?reservationId=${reservation?.id ?? ''}`}
+          className="cta-brand flex w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-bold text-soft-white"
         >
-          View my rental tracking
-        </a>
+          Track this rental
+        </Link>
         <button
           type="button"
           onClick={onClose}
-          className="text-xs font-semibold text-emerald-700/70 hover:text-emerald-800"
+          className="cta-outline w-full rounded-xl px-4 py-2 text-sm font-semibold"
         >
           Done
         </button>
@@ -300,13 +316,13 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
   const expired = remaining <= 0
 
   return (
-    <div className="space-y-3 rounded-2xl border border-lavender/15 bg-white p-4">
+    <div className="space-y-3 rounded-2xl border border-border bg-surface p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-lavender/30 bg-lavender/10 px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-deep-purple">
-          Wompi checkout · Test mode
+        <span className="text-sm font-bold text-text">
+          Pay with Wompi <span className="font-normal text-text-muted">(test mode)</span>
         </span>
         <span
-          className="font-mono text-xs font-semibold text-jet-black/60"
+          className="locker-code text-sm font-medium text-text-muted"
           role="timer"
           aria-label={`Time left to pay: ${formatCountdown(remaining)}`}
         >
@@ -314,20 +330,23 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
         </span>
       </div>
 
-      <div className="space-y-1.5 rounded-xl bg-jet-black/5 p-3 text-xs">
-        <div className="flex items-center justify-between text-jet-black/70">
+      <div className="space-y-1.5 rounded-xl bg-surface-raised p-3 text-xs tabular-nums">
+        <div className="flex items-center justify-between text-text-muted">
           <span>Rental subtotal</span>
-          <span className="font-mono">${Number(checkout.rental_subtotal).toFixed(2)}</span>
+          <span>${Number(checkout.rental_subtotal).toFixed(2)}</span>
         </div>
-        <div className="flex items-center justify-between text-jet-black/70">
+        <div className="flex items-center justify-between text-text-muted">
           <span>Protection fee</span>
-          <span className="font-mono">${Number(checkout.protection_fee_amount).toFixed(2)}</span>
+          <span>${Number(checkout.protection_fee_amount).toFixed(2)}</span>
         </div>
-        <div className="flex items-center justify-between border-t border-jet-black/10 pt-1.5 font-semibold text-jet-black">
-          <span>Total charged today</span>
-          <span className="font-mono">${Number(checkout.amount).toFixed(2)} {checkout.currency}</span>
+        <div className="flex items-center justify-between border-t border-border pt-2 font-semibold text-text">
+          <span className="text-sm">Total charged today</span>
+          <span>
+            <span className="num text-xl">${Number(checkout.amount).toFixed(2)}</span>{' '}
+            <span className="text-text-muted">{checkout.currency}</span>
+          </span>
         </div>
-        <div className="flex items-start gap-1.5 border-t border-jet-black/10 pt-1.5 text-jet-black/50">
+        <div className="flex items-start gap-1.5 border-t border-border pt-1.5 text-text-muted">
           <ShieldCheck className="mt-0.5 h-3 w-3 shrink-0" />
           <span>
             ${Number(checkout.damage_liability_amount).toFixed(2)} damage-liability deposit held — not charged now,
@@ -339,12 +358,12 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
       <button
         type="button"
         onClick={() => setShowTestCards((v) => !v)}
-        className="text-xs font-semibold text-deep-purple underline decoration-dotted hover:text-lavender"
+        className="text-xs font-semibold text-primary underline decoration-dotted hover:underline"
       >
         {showTestCards ? 'Hide test cards' : 'View test cards'}
       </button>
       {showTestCards && (
-        <ul className="space-y-1 rounded-xl bg-jet-black/[0.03] p-3 text-[11px] text-jet-black/60">
+        <ul className="space-y-1 rounded-xl bg-surface-raised p-3 text-xs text-text-muted">
           {TEST_CARDS.map((c) => (
             <li key={c.number} className="flex items-center justify-between gap-3">
               <span className="font-mono">{c.number}</span>
@@ -356,7 +375,7 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
 
       <form onSubmit={handlePay} className="space-y-3">
         <div>
-          <label htmlFor="checkout-holder-name" className="text-xs font-semibold text-jet-black/60">
+          <label htmlFor="checkout-holder-name" className="text-xs font-semibold text-text-muted">
             Name on card
           </label>
           <input
@@ -367,17 +386,17 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
             autoComplete="cc-name"
             value={holderName}
             onChange={(e) => setHolderName(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-jet-black/10 px-3 py-2 text-sm focus:border-lavender focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm focus:border-primary focus:outline-none"
             placeholder="As it appears on the card"
           />
         </div>
 
         <div>
           <div className="flex items-center justify-between">
-            <label htmlFor="checkout-card-number" className="text-xs font-semibold text-jet-black/60">
+            <label htmlFor="checkout-card-number" className="text-xs font-semibold text-text-muted">
               Card number
             </label>
-            {brand && <span className="text-xs font-semibold text-deep-purple">{brand}</span>}
+            {brand && <span className="text-xs font-semibold text-primary">{brand}</span>}
           </div>
           <input
             id="checkout-card-number"
@@ -389,14 +408,14 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
             maxLength={23}
             value={formatCardNumber(digits)}
             onChange={(e) => setCardNumber(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-jet-black/10 px-3 py-2 font-mono text-sm focus:border-lavender focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-border bg-surface px-3 py-2 font-mono text-sm focus:border-primary focus:outline-none"
             placeholder="4242 4242 4242 4242"
           />
         </div>
 
         <div className="flex gap-3">
           <div className="flex-1">
-            <label htmlFor="checkout-expiry" className="text-xs font-semibold text-jet-black/60">
+            <label htmlFor="checkout-expiry" className="text-xs font-semibold text-text-muted">
               Expiry
             </label>
             <input
@@ -409,12 +428,12 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
               maxLength={5}
               value={expiry}
               onChange={(e) => setExpiry(formatExpiryInput(e.target.value))}
-              className="mt-1 w-full rounded-lg border border-jet-black/10 px-3 py-2 font-mono text-sm focus:border-lavender focus:outline-none"
+              className="mt-1 w-full rounded-lg border border-border bg-surface px-3 py-2 font-mono text-sm focus:border-primary focus:outline-none"
               placeholder="MM/YY"
             />
           </div>
           <div className="flex-1">
-            <label htmlFor="checkout-cvc" className="text-xs font-semibold text-jet-black/60">
+            <label htmlFor="checkout-cvc" className="text-xs font-semibold text-text-muted">
               CVC
             </label>
             <input
@@ -427,7 +446,7 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
               maxLength={cvcLen}
               value={cvc}
               onChange={(e) => setCvc(e.target.value.replace(/\D/g, '').slice(0, cvcLen))}
-              className="mt-1 w-full rounded-lg border border-jet-black/10 px-3 py-2 font-mono text-sm focus:border-lavender focus:outline-none"
+              className="mt-1 w-full rounded-lg border border-border bg-surface px-3 py-2 font-mono text-sm focus:border-primary focus:outline-none"
               placeholder="123"
             />
           </div>
@@ -441,21 +460,21 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
           <button
             type="button"
             onClick={handleTryAnotherCard}
-            className="text-xs font-semibold text-deep-purple hover:text-lavender"
+            className="text-xs font-semibold text-primary hover:underline"
           >
-            Try another card →
+            Try another card
           </button>
         )}
 
         <button
           type="submit"
           disabled={paying || expired}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-deep-purple px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-deep-purple/90 disabled:cursor-not-allowed disabled:opacity-50"
+          className="cta-brand flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold text-soft-white disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <Lock className="h-3.5 w-3.5" />
+          <Lock className="h-4 w-4" aria-hidden="true" />
           {paying ? 'Processing…' : `Pay $${Number(checkout.amount).toFixed(2)}`}
         </button>
-        <p className="text-center text-[11px] text-jet-black/40">
+        <p className="text-center text-xs text-text-muted">
           Test-mode gateway — no real card is ever charged.
         </p>
       </form>

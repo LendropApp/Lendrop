@@ -1,0 +1,254 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-25T00:00:00Z",
+  "title": "Design System: Lendrop",
+  "extensions": {
+    "colorMeta": {
+      "deep-purple": {
+        "role": "primary",
+        "displayName": "Shutter Purple",
+        "canonical": "#433075",
+        "tonalRamp": [
+          "#1a1230",
+          "#261b46",
+          "#33245b",
+          "#433075",
+          "#5c47a0",
+          "#7a67c0",
+          "#a79ade",
+          "#dcd6f3"
+        ]
+      },
+      "cta-dark": {
+        "role": "primary",
+        "displayName": "Dark-mode CTA Purple",
+        "canonical": "#7050d4"
+      },
+      "lavender": {
+        "role": "secondary",
+        "displayName": "Stamp Lavender",
+        "canonical": "#a58cf4",
+        "tonalRamp": [
+          "#2e2150",
+          "#44337a",
+          "#5f4aa6",
+          "#7c65cf",
+          "#a58cf4",
+          "#bba8f7",
+          "#d4c7fa",
+          "#eee8fd"
+        ]
+      },
+      "soft-white": {
+        "role": "neutral",
+        "displayName": "Soft White"
+      },
+      "jet-black": {
+        "role": "neutral",
+        "displayName": "Jet Black"
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Panel White"
+      },
+      "surface-raised": {
+        "role": "neutral",
+        "displayName": "Raised Grey"
+      },
+      "text-muted": {
+        "role": "neutral",
+        "displayName": "Muted Ink"
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Hairline"
+      },
+      "steel": {
+        "role": "neutral",
+        "displayName": "Shutter Steel"
+      },
+      "success": {
+        "role": "neutral",
+        "displayName": "Success Green"
+      },
+      "danger": {
+        "role": "neutral",
+        "displayName": "Alert Red"
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero line on shutter and closing bands."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section headings."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Card and step titles."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Paragraphs."
+      },
+      "number": {
+        "displayName": "Number",
+        "purpose": "Prices, counts, step numbers at sign scale."
+      },
+      "code": {
+        "displayName": "Code",
+        "purpose": "Locker and compartment codes, timestamps."
+      }
+    },
+    "shadows": [
+      {
+        "name": "hairline",
+        "value": "0 1px 2px rgb(13 13 13 / 0.12)",
+        "purpose": "Small raised controls."
+      },
+      {
+        "name": "panel",
+        "value": "0 2px 4px rgb(13 13 13 / 0.06), 0 8px 20px -6px rgb(67 48 117 / 0.18)",
+        "purpose": "Menus and raised cards."
+      },
+      {
+        "name": "floating",
+        "value": "0 4px 8px rgb(13 13 13 / 0.06), 0 20px 40px -12px rgb(67 48 117 / 0.24)",
+        "purpose": "The auth panel on the shutter."
+      }
+    ],
+    "motion": [
+      {
+        "name": "shutter-roll",
+        "value": "1100ms cubic-bezier(0.7, 0, 0.2, 1) 350ms",
+        "purpose": "The one signature reveal."
+      },
+      {
+        "name": "theme-swap",
+        "value": "180ms ease",
+        "purpose": "Colour-only transitions when the theme changes."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one main action on a screen.",
+      "html": "<button class=\"ds-btn-primary\">Reserve for $36</button>",
+      "css": ".ds-btn-primary { background: linear-gradient(to right, #433075, #7050d4); color: #fafafa; padding: 12px 24px; border: 0; border-radius: 10px; font: 600 14px Manrope, sans-serif; cursor: pointer; transition: background-color 180ms ease; } .ds-btn-primary:hover { filter: brightness(1.08); } .ds-btn-primary:focus-visible { outline: 2px solid #433075; outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Secondary actions: panel fill with the brand gradient as its border.",
+      "html": "<button class=\"ds-btn-secondary\">Message host</button>",
+      "css": ".ds-btn-secondary { border: 1px solid transparent; background: linear-gradient(#ffffff, #ffffff) padding-box, linear-gradient(to right, #433075, #7050d4) border-box; color: #0d0d0d; padding: 11px 23px; border-radius: 10px; font: 600 14px Manrope, sans-serif; cursor: pointer; } .ds-btn-secondary:hover { background: linear-gradient(#f4f3f7, #f4f3f7) padding-box, linear-gradient(to right, #433075, #7050d4) border-box; color: #433075; } .ds-btn-secondary:focus-visible { outline: 2px solid #433075; outline-offset: 2px; }"
+    },
+    {
+      "name": "Stamp Chip",
+      "kind": "chip",
+      "refersTo": "stamp",
+      "description": "Selected state for chips, segments, dates and lockers.",
+      "html": "<span class=\"ds-chip ds-chip-on\">Cameras</span> <span class=\"ds-chip\">Tools</span>",
+      "css": ".ds-chip { display: inline-block; padding: 6px 12px; border: 1px solid #e6e5ec; border-radius: 8px; font: 600 14px Manrope, sans-serif; color: #5d5a6b; } .ds-chip:hover { color: #0d0d0d; } .ds-chip-on { background: #a58cf4; color: #0d0d0d; border-color: #a58cf4; }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Standard form field.",
+      "html": "<input class=\"ds-input\" placeholder=\"you@example.com\">",
+      "css": ".ds-input { background: #ffffff; color: #0d0d0d; padding: 10px 16px; border: 1px solid #e6e5ec; border-radius: 10px; font: 400 14px Manrope, sans-serif; } .ds-input::placeholder { color: #5d5a6b; } .ds-input:focus-visible { outline: 2px solid #433075; outline-offset: 2px; border-color: #433075; }"
+    },
+    {
+      "name": "Shutter Band",
+      "kind": "custom",
+      "description": "The brand field with its ribbed steel texture and sign lettering.",
+      "html": "<div class=\"ds-shutter\"><span>Rent it. Skip the meetup.</span></div>",
+      "css": ".ds-shutter { background-color: #433075; background-image: repeating-linear-gradient(to bottom, rgb(255 255 255 / 0.07) 0, rgb(255 255 255 / 0.07) 1px, transparent 1px, transparent 12px, rgb(0 0 0 / 0.18) 12px, rgb(0 0 0 / 0.18) 14px); color: #fafafa; padding: 48px 24px; } .ds-shutter span { font: 800 48px/0.98 Archivo, sans-serif; font-stretch: 125%; letter-spacing: -0.025em; }"
+    },
+    {
+      "name": "Rental Status",
+      "kind": "custom",
+      "description": "Shape plus label for a reservation's state.",
+      "html": "<span class=\"ds-status\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 12 12\"><rect x=\"1\" y=\"1\" width=\"10\" height=\"10\" rx=\"1.5\" fill=\"currentColor\"/></svg>Confirmed</span>",
+      "css": ".ds-status { display: inline-flex; align-items: center; gap: 6px; color: #433075; font: 600 12px Manrope, sans-serif; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Lettered Shutter",
+    "overview": "Lendrop's handoff is a locker door opening, so the brand is drawn from the roll-down metal shutters of Salvadoran storefronts and the sign-painted lettering on them, redrawn with machined precision. Brand moments are flat Deep Purple fields ribbed like shutter steel, carrying wide, heavy lettering. The one signature motion is the shutter rolling up to reveal what is behind it. Everything else is quiet.",
+    "keyCharacteristics": [
+      "Flat Deep Purple shutter fields with a ribbed steel texture, only on brand moments",
+      "Expanded Archivo lettering at sign scale; numbers set as part of the lettering",
+      "One Lavender stamp for anything the user has selected",
+      "Rental states shown as a shape plus a word, never colour alone",
+      "Solid panels, hairline borders, small machined radii"
+    ],
+    "rules": [
+      {
+        "name": "The Stamp Rule",
+        "body": "Lavender with black text means \"selected\". Use it for chosen segments, categories, dates and lockers, and for nothing else.",
+        "section": "colors"
+      },
+      {
+        "name": "The Shutter Is Always Dark Rule",
+        "body": "The shutter field stays purple in both themes; only panels and grounds follow the theme.",
+        "section": "colors"
+      },
+      {
+        "name": "The Sign Scale Rule",
+        "body": "Prices, dates and compartment codes are lettering, not body text: set them in the number or code style, large, never buried in a sentence.",
+        "section": "typography"
+      },
+      {
+        "name": "The No Eyebrow Rule",
+        "body": "Headings stand alone. No uppercase labels above them.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Edge Rule",
+        "body": "A panel gets a border or a shadow, not a border under a wide soft shadow, except a floating panel over the shutter.",
+        "section": "elevation"
+      },
+      {
+        "name": "The One Gradient Rule",
+        "body": "Every labelled action button carries the brand gradient: as the fill for a primary action, as the border for a secondary one.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "Do give every labelled action button the brand gradient: filled for primary, as a 1px hairline border on the panel fill for secondary.",
+      "Do put the shutter texture only on shutter bands and reveal moments.",
+      "Do use the Lavender stamp for every selected state, the same way everywhere.",
+      "Do show rental states with the Rental Status shape and label.",
+      "Do label sample or illustrative data on the page."
+    ],
+    "donts": [
+      "Don't use frosted glass, backdrop blur, glowing blobs or gradient washes outside the auth screens. The primary-button gradient is the only gradient elsewhere.",
+      "Don't use Lavender as text in light mode.",
+      "Don't put uppercase eyebrow labels above headings.",
+      "Don't use monospace for anything but codes, card numbers and timestamps.",
+      "Don't publish invented counts, ratings or testimonials."
+    ]
+  }
+}

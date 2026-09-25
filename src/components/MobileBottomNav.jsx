@@ -45,9 +45,8 @@ export default function MobileBottomNav() {
   return (
     <nav
       aria-label="Primary"
-      className="glass fixed inset-x-0 bottom-0 z-50 border-t border-jet-black/5 pb-[env(safe-area-inset-bottom)] md:hidden"
+      className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-surface pb-[env(safe-area-inset-bottom)] md:hidden"
     >
-      <div className="h-px bg-linear-to-r from-transparent via-lavender/40 to-transparent" />
       <div className="grid grid-cols-2">
         <button
           type="button"
@@ -56,14 +55,14 @@ export default function MobileBottomNav() {
             blocked ? 'Publish an item — identity verification required' : 'Publish an item'
           }
           aria-current={isPublishActive ? 'page' : undefined}
-          className={`relative flex flex-col items-center gap-1 py-2.5 text-[11px] font-semibold transition ${
-            isPublishActive ? 'text-deep-purple' : 'text-jet-black/55 hover:text-deep-purple'
+          className={`relative flex flex-col items-center gap-1 py-2.5 text-xs font-semibold transition ${
+            isPublishActive ? 'text-primary' : 'text-text-muted hover:text-primary'
           }`}
         >
           <span className="relative">
             <Plus className="h-5 w-5" />
             {blocked && (
-              <ShieldAlert className="absolute -right-2 -top-1 h-3 w-3 text-amber-500" />
+              <ShieldAlert className="absolute -right-2 -top-1 h-3 w-3 text-danger" />
             )}
           </span>
           Publish
@@ -74,8 +73,8 @@ export default function MobileBottomNav() {
           onClick={() => navigate('/profile')}
           aria-label="Your profile"
           aria-current={isProfileActive ? 'page' : undefined}
-          className={`flex flex-col items-center gap-1 py-2.5 text-[11px] font-semibold transition ${
-            isProfileActive ? 'text-deep-purple' : 'text-jet-black/55 hover:text-deep-purple'
+          className={`flex flex-col items-center gap-1 py-2.5 text-xs font-semibold transition ${
+            isProfileActive ? 'text-primary' : 'text-text-muted hover:text-primary'
           }`}
         >
           <UserCircle2 className="h-5 w-5" />

@@ -81,20 +81,20 @@ export default function CoverageStep({ record, onNext, onBack }) {
 
   return (
     <div className="w-full max-w-md mx-auto px-6">
-      <h1 className="font-display text-2xl sm:text-3xl text-deep-purple leading-snug mb-2">
+      <h1 className="font-display text-2xl sm:text-3xl text-primary leading-snug mb-2">
         Where can you drop off items?
       </h1>
-      <p className="text-jet-black/60 text-sm leading-relaxed mb-8">
+      <p className="text-text-muted text-sm leading-relaxed mb-8">
         Pick the lockers you can get to. Renters will pick up and return your items there.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         {loadError ? (
-          <p className="text-sm text-red-500">{loadError}</p>
+          <p className="text-sm text-danger">{loadError}</p>
         ) : loading ? (
-          <p className="text-sm text-jet-black/40">Loading lockers…</p>
+          <p className="text-sm text-text-muted">Loading lockers…</p>
         ) : lockers.length === 0 ? (
-          <p className="text-sm text-jet-black/50">
+          <p className="text-sm text-text-muted">
             No lockers are set up yet. You can still continue and pick one later.
           </p>
         ) : (
@@ -108,22 +108,22 @@ export default function CoverageStep({ record, onNext, onBack }) {
                     onClick={() => toggleLocker(locker.id)}
                     className={`w-full flex items-center gap-3 rounded-xl border px-4 py-3 text-left transition ${
                       active
-                        ? "border-deep-purple bg-lavender/10"
-                        : "border-lavender/40 bg-white hover:border-lavender"
+                        ? "border-primary bg-surface-raised"
+                        : "border-border bg-surface hover:border-primary"
                     }`}
                   >
                     <span
                       className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
-                        active ? "bg-deep-purple text-white" : "bg-lavender/20 text-deep-purple"
+                        active ? "stamp" : "bg-surface-raised text-primary"
                       }`}
                     >
                       {active ? <Check className="w-4 h-4" /> : <MapPin className="w-4 h-4" />}
                     </span>
                     <span className="min-w-0">
-                      <span className="block text-sm font-medium text-jet-black truncate">
+                      <span className="block text-sm font-medium text-text truncate">
                         {locker.name}
                       </span>
-                      <span className="block text-xs text-jet-black/50 truncate">
+                      <span className="block text-xs text-text-muted truncate">
                         {locker.address} · {locker.city}
                       </span>
                     </span>
@@ -133,20 +133,20 @@ export default function CoverageStep({ record, onNext, onBack }) {
             })}
           </ul>
         )}
-        {error && <p className="text-xs text-red-500">{error}</p>}
+        {error && <p className="text-xs text-danger">{error}</p>}
 
         <div className="flex items-center gap-3 pt-4">
           <button
             type="button"
             onClick={onBack}
-            className="flex items-center justify-center gap-1.5 px-4 py-3.5 rounded-xl text-deep-purple font-medium text-base hover:bg-lavender/10 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-lavender"
+            className="flex items-center justify-center gap-1.5 px-4 py-3.5 rounded-xl text-primary font-medium text-base hover:bg-surface-raised transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-lavender"
           >
             <ArrowLeft className="w-4 h-4" />
             Back
           </button>
           <button
             type="submit"
-            className="flex-1 flex items-center justify-center gap-2 bg-linear-to-r from-deep-purple to-lavender text-white font-medium text-base py-3.5 rounded-xl glow-sm transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-deep-purple focus-visible:ring-offset-2"
+            className="flex-1 flex items-center justify-center gap-2 cta-brand text-soft-white font-medium text-base py-3.5 rounded-xl glow-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-deep-purple focus-visible:ring-offset-2"
           >
             Continue
             <ArrowRight className="w-4 h-4" />

@@ -1,343 +1,124 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Check } from "lucide-react";
+import { supabase } from "../lib/supabaseClient";
+import { getCategoryIcon } from "../lib/categoryIcons";
+import PageHeader from "../components/PageHeader";
 
-const categories = [
-  {
-    id: "clothing",
-    name: "Clothing",
-    description: "Outfits, costumes and special occasion wear",
-    icon: (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="w-7 h-7"
-      >
-        <path d="M8 3l4 2 4-2 5 4-3 4-2-1v11H8V10l-2 1-3-4 5-4z" />
-      </svg>
-    ),
-  },
-  {
-    id: "tools",
-    name: "Tools",
-    description: "Everything you need for your next project",
-    icon: (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="w-7 h-7"
-      >
-        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-      </svg>
-    ),
-  },
-  {
-    id: "cameras",
-    name: "Cameras",
-    description: "Capture your moments with the right gear",
-    icon: (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="w-7 h-7"
-      >
-        <path d="M4 7h4l1.5-2h5L16 7h4a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V8a1 1 0 011-1z" />
-        <circle cx="12" cy="13" r="3.5" />
-      </svg>
-    ),
-  },
-  {
-    id: "drones",
-    name: "Drones",
-    description: "Take your perspective to the next level",
-    icon: (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="w-7 h-7"
-      >
-        <circle cx="12" cy="12" r="2.5" />
-        <path d="M9.5 9.5L6 6M14.5 9.5L18 6M9.5 14.5L6 18M14.5 14.5L18 18" />
-        <circle cx="4.5" cy="4.5" r="2" />
-        <circle cx="19.5" cy="4.5" r="2" />
-        <circle cx="4.5" cy="19.5" r="2" />
-        <circle cx="19.5" cy="19.5" r="2" />
-      </svg>
-    ),
-  },
-  {
-    id: "instruments",
-    name: "Instruments",
-    description: "Make music without owning the equipment",
-    icon: (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="w-7 h-7"
-      >
-        <path d="M9 18V5l12-2v13" />
-        <circle cx="6" cy="18" r="3" />
-        <circle cx="18" cy="16" r="3" />
-      </svg>
-    ),
-  },
-  {
-    id: "sports-gear",
-    name: "Sports gear",
-    description: "Equipment for training, playing and exploring",
-    icon: (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="w-7 h-7"
-      >
-        <circle cx="12" cy="12" r="9" />
-        <path d="M3.5 9h17M3.5 15h17M12 3c2.2 2.4 3.3 5.4 3.3 9S14.2 18.6 12 21M12 3C9.8 5.4 8.7 8.4 8.7 12s1.1 6.6 3.3 9" />
-      </svg>
-    ),
-  },
-];
-
+// Pick the categories you're interested in, then browse them in Explore.
+// Reads the live `categories` table (the same list Explore and Publish
+// use) rather than a hardcoded copy, so the three can't drift apart.
 export default function Categories() {
   const navigate = useNavigate();
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState([]);
 
-  const toggleCategory = (id) => {
+  useEffect(() => {
+    let cancelled = false;
+    supabase
+      .from("categories")
+      .select("id, name, slug")
+      .eq("is_active", true)
+      .order("display_order")
+      .then(({ data }) => {
+        if (cancelled) return;
+        setCategories(data ?? []);
+        setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const toggleCategory = (slug) => {
     setSelected((current) =>
-      current.includes(id)
-        ? current.filter((item) => item !== id)
-        : [...current, id]
+      current.includes(slug) ? current.filter((s) => s !== slug) : [...current, slug]
     );
   };
 
+  // Explore filters by one category at a time, so it opens on the first
+  // one picked.
   const handleContinue = () => {
     if (selected.length === 0) return;
-    navigate("/terms");
+    navigate(`/explore?category=${encodeURIComponent(selected[0])}`);
   };
 
   return (
-    <div className="min-h-screen bg-[#faf9fc] text-jet-black font-[Manrope] overflow-hidden">
-      {/* Decorative background */}
-      <div className="absolute top-[-180px] right-[-140px] w-[420px] h-[420px] rounded-full bg-deep-purple/[0.06] blur-3xl" />
-      <div className="absolute bottom-[-180px] left-[-140px] w-[400px] h-[400px] rounded-full bg-deep-purple/[0.04] blur-3xl" />
+    <div className="min-h-dvh bg-bg pb-28 md:pb-16">
+      <PageHeader backTo="/explore" backLabel="Explore" maxWidth="max-w-5xl" />
 
-      {/* Navbar */}
-      <nav className="w-full border-b border-[#0d0d0d]/10 bg-white">
-        <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-5 lg:px-10">
-          <div className="flex items-center">
-            <img
-              src="/logo-lendrop.png"
-              alt="Lendrop"
-              className="h-10 w-auto object-contain"
-            />
+      <main className="mx-auto max-w-5xl px-6 py-10 sm:px-10">
+        <h1 className="max-w-[18ch] text-4xl font-extrabold sm:text-5xl">What are you interested in renting?</h1>
+        <p className="mt-4 max-w-[60ch] text-text-muted">
+          From a camera for the weekend to the perfect costume for tonight. Pick one or more.
+        </p>
+
+        {loading ? (
+          <p className="mt-10 text-sm text-text-muted">Loading categories…</p>
+        ) : (
+          <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3" role="group" aria-label="Categories">
+            {categories.map((category) => {
+              const isSelected = selected.includes(category.slug);
+              const Icon = getCategoryIcon(category.slug);
+              return (
+                <button
+                  key={category.id}
+                  type="button"
+                  onClick={() => toggleCategory(category.slug)}
+                  aria-pressed={isSelected}
+                  className={`flex items-center gap-4 rounded-2xl border bg-surface p-5 text-left ${
+                    isSelected ? "border-lavender ring-1 ring-lavender" : "border-border hover:border-primary"
+                  }`}
+                >
+                  <span
+                    className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${
+                      isSelected ? "stamp" : "bg-surface-raised text-primary"
+                    }`}
+                  >
+                    <Icon className="h-6 w-6" aria-hidden="true" />
+                  </span>
+                  <span className="min-w-0 flex-1 text-lg font-bold">{category.name}</span>
+                  <span
+                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border ${
+                      isSelected ? "stamp border-transparent" : "border-border"
+                    }`}
+                    aria-hidden="true"
+                  >
+                    {isSelected && <Check className="h-4 w-4" strokeWidth={3} />}
+                  </span>
+                </button>
+              );
+            })}
           </div>
+        )}
 
-          <div className="flex items-center gap-8 font-medium text-[#0d0d0d]">
-            <a href="/" className="transition hover:text-deep-purple">
-              Home
-            </a>
-            <a href="/explore" className="transition hover:text-deep-purple">
-              Explore
-            </a>
-            <a href="/help" className="transition hover:text-deep-purple">
-              Help
-            </a>
-            <a
-              href="/profile"
-              className="flex items-center gap-2 transition hover:text-deep-purple"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 12a4 4 0 100-8 4 4 0 000 8zm0 2c-4.418 0-8 1.79-8 4v2h16v-2c0-2.21-3.582-4-8-4z"
-                />
-              </svg>
-              <span>Profile</span>
-            </a>
-          </div>
-        </div>
-      </nav>
-
-      {/* Main */}
-      <main className="relative z-10 max-w-6xl mx-auto px-8 lg:px-12 pt-10 pb-12">
-        {/* Heading */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-deep-purple/[0.07] text-deep-purple text-xs font-bold tracking-wider mb-5">
-            EXPLORE LENDROP
-          </div>
-
-          <h1 className="text-4xl lg:text-5xl font-bold tracking-tight mb-5">
-            What are you interested
-            <br />
-            <span className="text-deep-purple">in renting?</span>
-          </h1>
-
-          <p className="text-jet-black/50 text-base lg:text-lg leading-relaxed">
-            From a camera for the weekend to the perfect costume for tonight.
-          </p>
-
-          <p className="text-sm text-jet-black/40 mt-3">
-            Choose one or more categories to personalize your experience.
-          </p>
-        </div>
-
-        {/* Category grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {categories.map((category, index) => {
-            const isSelected = selected.includes(category.id);
-
-            return (
-              <button
-                key={category.id}
-                type="button"
-                onClick={() => toggleCategory(category.id)}
-                className={`group relative text-left rounded-3xl p-6 min-h-[190px] transition-all duration-300 ${
-                  isSelected
-                    ? "bg-deep-purple border-4 border-deep-purple shadow-2xl shadow-deep-purple/40 -translate-y-1.5"
-                    : "bg-white border-2 border-jet-black/15 hover:border-deep-purple hover:-translate-y-1.5 shadow-md shadow-jet-black/10 hover:shadow-xl hover:shadow-deep-purple/20"
-                }`}
-              >
-                {/* Number */}
-                <span
-                  className={`absolute top-5 right-5 text-xs font-semibold ${
-                    isSelected ? "text-white/50" : "text-jet-black/25"
-                  }`}
-                >
-                  0{index + 1}
-                </span>
-
-                {/* Icon */}
-                <div
-                  className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-7 transition-all ${
-                    isSelected
-                      ? "bg-white/15 text-white"
-                      : "bg-deep-purple/[0.07] text-deep-purple group-hover:bg-deep-purple group-hover:text-white"
-                  }`}
-                >
-                  {category.icon}
-                </div>
-
-                {/* Text */}
-                <h2
-                  className={`text-lg font-bold mb-2 ${
-                    isSelected ? "text-white" : "text-jet-black"
-                  }`}
-                >
-                  {category.name}
-                </h2>
-
-                <p
-                  className={`text-sm leading-relaxed pr-5 ${
-                    isSelected ? "text-white/65" : "text-jet-black/40"
-                  }`}
-                >
-                  {category.description}
-                </p>
-
-                {/* Selection indicator */}
-                <div
-                  className={`absolute bottom-6 right-6 w-6 h-6 rounded-full border flex items-center justify-center transition-all ${
-                    isSelected
-                      ? "bg-white border-white"
-                      : "border-jet-black/10 group-hover:border-deep-purple"
-                  }`}
-                >
-                  {isSelected && (
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="#433075"
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="w-3.5 h-3.5"
-                    >
-                      <path d="M5 12l4 4L19 7" />
-                    </svg>
-                  )}
-                </div>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Bottom section */}
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-between gap-5">
-          <div className="text-sm text-jet-black/40">
+        <div className="mt-10 flex flex-col gap-5 border-t border-border pt-8 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-text-muted" aria-live="polite">
             {selected.length === 0 ? (
-              "Select at least one category"
+              "Select at least one category."
             ) : (
               <>
-                <span className="font-semibold text-deep-purple">
-                  {selected.length}
-                </span>{" "}
+                <span className="num text-lg text-text">{selected.length}</span>{" "}
                 {selected.length === 1 ? "category" : "categories"} selected
               </>
             )}
-          </div>
-
-          <div className="flex items-center gap-4">
+          </p>
+          <div className="flex gap-3">
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="px-6 py-3.5 rounded-xl text-sm font-semibold text-jet-black/50 hover:text-jet-black transition"
+              className="cta-outline rounded-xl px-7 py-2.5 text-sm font-semibold"
             >
               Back
             </button>
-
             <button
               type="button"
               disabled={selected.length === 0}
               onClick={handleContinue}
-              className={`group px-7 py-3.5 rounded-xl text-sm font-bold flex items-center gap-3 transition-all ${
-                selected.length > 0
-                  ? "bg-deep-purple text-white hover:shadow-xl hover:shadow-deep-purple/20 hover:-translate-y-0.5"
-                  : "bg-jet-black/10 text-jet-black/40 cursor-not-allowed"
-              }`}
+              className="cta-brand rounded-xl px-7 py-3 text-sm font-bold text-soft-white disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Continue
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="w-4 h-4 group-hover:translate-x-1 transition-transform"
-              >
-                <path d="M5 12h14M13 6l6 6-6 6" />
-              </svg>
+              Browse these
             </button>
           </div>
         </div>

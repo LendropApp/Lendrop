@@ -13,9 +13,9 @@ import StatusMessage from '../components/StatusMessage'
 import AvailabilityCalendar from '../components/AvailabilityCalendar'
 import VerificationNotice from '../components/VerificationNotice'
 import MobileNav from '../components/MobileNav'
-import AuroraBlobs from '../components/background/AuroraBlobs'
 import useSmartBack from '../hooks/useSmartBack'
 import { getLockerSizeClasses } from '../services/items/sizeService'
+import Logo from '../components/Logo'
 
 function photoUrl(photo) {
   return getItemPhotoUrl(photo.storage_path)
@@ -339,18 +339,18 @@ export default function ItemDetail() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-soft-white">
-        <p className="text-sm text-jet-black/50">Loading listing…</p>
+      <div className="flex min-h-screen items-center justify-center bg-bg">
+        <p className="text-sm text-text-muted">Loading listing…</p>
       </div>
     )
   }
 
   if (notFound || !item) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-soft-white px-6 text-center">
-        <p className="font-display text-lg font-semibold text-jet-black">Listing not found</p>
-        <p className="text-sm text-jet-black/50">It may have been removed by its owner.</p>
-        <Link to="/explore" className="text-sm font-semibold text-deep-purple hover:text-lavender">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-bg px-6 text-center">
+        <p className="text-2xl font-extrabold">Listing not found</p>
+        <p className="text-sm text-text-muted">It may have been removed by its owner.</p>
+        <Link to="/explore" className="text-sm font-semibold text-primary hover:underline">
           Back to Explore
         </Link>
       </div>
@@ -362,20 +362,19 @@ export default function ItemDetail() {
   const hasOwnerReviews = (item.owner?.total_reviews ?? 0) > 0
 
   return (
-    <div className="min-h-screen bg-soft-white pb-28 md:pb-16">
-      <header className="glass sticky top-0 z-50">
-        <div className="h-px bg-linear-to-r from-transparent via-lavender/50 to-transparent" />
+    <div className="min-h-screen bg-bg pb-28 md:pb-16">
+      <header className="sticky top-0 z-50 border-b border-border bg-surface">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-6 py-4 sm:px-10">
           <button
             type="button"
             onClick={goBack}
             aria-label="Back to Explore"
-            className="flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium text-jet-black/60 transition hover:bg-lavender/10 hover:text-deep-purple"
+            className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium text-text-muted hover:bg-surface-raised hover:text-primary"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Explore
           </button>
-          <img src="/logo-lendrop.png" alt="Lendrop" className="h-7 w-auto" />
+          <Logo />
           <div className="flex w-24 justify-end">
             <MobileNav />
           </div>
@@ -383,12 +382,11 @@ export default function ItemDetail() {
       </header>
 
       <div className="relative isolate overflow-hidden">
-        <AuroraBlobs className="opacity-25" />
         <div className="relative mx-auto max-w-5xl px-6 pt-8 sm:px-10">
           <div className="grid gap-8 lg:grid-cols-5">
             {/* ================= PHOTOS ================= */}
             <div className="lg:col-span-3">
-              <div className="relative aspect-4/3 w-full overflow-hidden rounded-2xl bg-jet-black/5 shadow-sm">
+              <div className="relative aspect-4/3 w-full overflow-hidden rounded-2xl border border-border bg-surface-raised">
                 {photos[activePhoto] && (
                   <img
                     src={photoUrl(photos[activePhoto])}
@@ -401,9 +399,9 @@ export default function ItemDetail() {
                     type="button"
                     aria-label={isFavorited ? 'Remove from saved' : 'Save'}
                     onClick={handleToggleFavorite}
-                    className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-jet-black/40 text-soft-white backdrop-blur transition hover:bg-jet-black/60"
+                    className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-lg bg-surface text-text hover:text-primary"
                   >
-                    <Heart className={`h-4 w-4 ${isFavorited ? 'fill-lavender text-lavender' : ''}`} />
+                    <Heart className={`h-4 w-4 ${isFavorited ? 'fill-primary text-primary' : ''}`} />
                   </button>
                 )}
               </div>
@@ -414,7 +412,9 @@ export default function ItemDetail() {
                       key={photo.id}
                       type="button"
                       onClick={() => setActivePhoto(index)}
-                      className={`h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 transition ${
+                      aria-label={`Photo ${index + 1}`}
+                      aria-pressed={index === activePhoto}
+                      className={`h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 ${
                         index === activePhoto ? 'border-lavender' : 'border-transparent opacity-70 hover:opacity-100'
                       }`}
                     >
@@ -427,46 +427,46 @@ export default function ItemDetail() {
 
             {/* ================= DETAILS ================= */}
             <div className="lg:col-span-2">
-              <div className="flex items-center gap-1.5 text-xs font-medium text-jet-black/50">
-                <CategoryIcon className="h-3.5 w-3.5" />
+              <div className="flex items-center gap-1.5 text-xs font-medium text-text-muted">
+                <CategoryIcon className="h-3.5 w-3.5" aria-hidden="true" />
                 {item.category?.name}
                 {!item.is_available && (
-                  <span className="ml-2 rounded-full bg-jet-black/10 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-jet-black/50">
+                  <span className="ml-2 rounded-md bg-surface-raised px-2 py-0.5 text-xs font-semibold text-text-muted">
                     Unavailable
                   </span>
                 )}
                 {isCurrentlyRented && (
-                  <span className="ml-2 rounded-full bg-lavender/15 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-deep-purple">
+                  <span className="ml-2 rounded-md bg-surface-raised px-2 py-0.5 text-xs font-semibold text-primary">
                     Currently rented
                   </span>
                 )}
               </div>
-              <h1 className="mt-1.5 font-display text-2xl font-bold text-jet-black">{item.title}</h1>
+              <h1 className="mt-2 text-3xl font-extrabold leading-tight sm:text-4xl">{item.title}</h1>
 
-              <p className="mt-2 font-mono text-xl font-semibold text-jet-black">
-                ${item.price_per_day}
-                <span className="font-body text-sm font-normal text-jet-black/45"> / day</span>
+              <p className="mt-3 text-text">
+                <span className="num text-4xl">${item.price_per_day}</span>
+                <span className="text-sm text-text-muted"> / day</span>
               </p>
 
               {Number(item.original_price_per_day) !== Number(item.price_per_day) && (
-                <p className="mt-0.5 text-xs text-jet-black/40">
+                <p className="mt-0.5 text-xs text-text-muted">
                   Listed at ${item.original_price_per_day}/day originally
                 </p>
               )}
 
               {Number(item.declared_value) > 0 && (
-                <p className="mt-1 text-xs text-jet-black/45">
+                <p className="mt-1 text-xs text-text-muted">
                   Backed by a refundable damage-liability hold — see breakdown when booking
                 </p>
               )}
 
               <div className="mt-2 flex flex-wrap items-center gap-2">
-                <span className="flex items-center gap-1.5 text-xs text-jet-black/50">
+                <span className="flex items-center gap-1.5 text-xs text-text-muted">
                   <MapPin className="h-3.5 w-3.5" />
                   {item.location_city}
                 </span>
                 {item.required_locker_size && (
-                  <span className="rounded-full bg-lavender/15 px-2.5 py-1 font-mono text-[11px] font-semibold text-deep-purple">
+                  <span className="rounded-md bg-surface-raised px-2 py-1 text-xs font-semibold text-primary">
                     Fits in locker {sizeClasses.find((s) => s.code === item.required_locker_size)?.label ?? item.required_locker_size}
                     {item.dimensions_source === 'category_default' ? ' (estimated)' : ''}
                   </span>
@@ -474,7 +474,7 @@ export default function ItemDetail() {
               </div>
 
               {/* Owner card */}
-              <div className="mt-6 flex items-center gap-3 rounded-2xl border border-jet-black/10 bg-white p-4">
+              <div className="mt-6 flex items-center gap-3 rounded-2xl border border-border bg-surface p-4">
                 <LockerAvatar
                   label={item.owner?.full_name}
                   photoUrl={item.owner?.avatar_url}
@@ -482,22 +482,22 @@ export default function ItemDetail() {
                   size="md"
                 />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-jet-black">
+                  <p className="truncate text-sm font-semibold text-text">
                     {item.owner?.full_name}
                   </p>
                   {hasOwnerReviews ? (
                     <div className="mt-0.5 flex items-center gap-1">
                       <StarRating value={item.owner.average_rating} size="sm" />
-                      <span className="font-mono text-xs text-jet-black/50">
+                      <span className="text-xs tabular-nums text-text-muted">
                         {Number(item.owner.average_rating).toFixed(1)} ({item.owner.total_reviews})
                       </span>
                     </div>
                   ) : (
-                    <p className="mt-0.5 text-xs text-jet-black/40">New lender · no reviews yet</p>
+                    <p className="mt-0.5 text-xs text-text-muted">New lender · no reviews yet</p>
                   )}
                 </div>
                 {item.owner?.verification_status === 'verified' && (
-                  <ShieldCheck className="h-4 w-4 shrink-0 text-lavender" />
+                  <ShieldCheck className="h-4 w-4 shrink-0 text-primary" />
                 )}
               </div>
 
@@ -506,7 +506,7 @@ export default function ItemDetail() {
                   type="button"
                   onClick={handleMessageOwner}
                   disabled={messaging}
-                  className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-jet-black/10 px-4 py-2.5 text-sm font-semibold text-jet-black/70 transition hover:border-lavender hover:text-deep-purple disabled:opacity-50"
+                  className="cta-outline mt-3 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold disabled:opacity-50"
                 >
                   <MessageCircle className="h-4 w-4" />
                   {messaging ? 'Starting conversation…' : `Message ${item.owner?.full_name?.split(' ')[0] ?? 'lender'}`}
@@ -521,10 +521,10 @@ export default function ItemDetail() {
                     <button
                       type="button"
                       onClick={handleStartBooking}
-                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-deep-purple to-lavender px-4 py-2.5 text-sm font-semibold text-soft-white glow-sm transition hover:brightness-105"
+                      className="flex w-full items-center justify-center gap-2 rounded-xl cta-brand px-4 py-3 text-base font-bold text-soft-white"
                     >
-                      <CalendarDays className="h-4 w-4" />
-                      Rent
+                      <CalendarDays className="h-5 w-5" aria-hidden="true" />
+                      Pick dates to rent
                     </button>
                   ) : checkoutActive ? (
                     <CheckoutPanel
@@ -535,13 +535,13 @@ export default function ItemDetail() {
                       onClose={handleCloseBooking}
                     />
                   ) : (
-                    <div className="space-y-3 rounded-2xl border border-lavender/15 bg-white p-4">
+                    <div className="space-y-3 rounded-2xl border border-border bg-surface p-4">
                       <div className="flex items-center justify-between">
-                        <p className="text-sm font-semibold text-jet-black">Pick your dates</p>
+                        <p className="text-sm font-semibold text-text">Pick your dates</p>
                         <button
                           type="button"
                           onClick={() => setShowBooking(false)}
-                          className="text-xs font-semibold text-jet-black/50 hover:text-deep-purple"
+                          className="text-xs font-semibold text-text-muted hover:text-primary"
                         >
                           Cancel
                         </button>
@@ -554,28 +554,28 @@ export default function ItemDetail() {
                       />
 
                       {days > 0 && breakdownLoading && (
-                        <p className="text-xs text-jet-black/40">Calculating price breakdown…</p>
+                        <p className="text-xs text-text-muted">Calculating price breakdown…</p>
                       )}
 
                       {days > 0 && !breakdownLoading && breakdown && (
                         <>
-                          <div className="space-y-1.5 rounded-xl bg-jet-black/5 p-3 text-xs">
-                            <div className="flex items-center justify-between text-jet-black/70">
+                          <div className="space-y-1.5 rounded-xl bg-surface-raised p-3 text-xs tabular-nums">
+                            <div className="flex items-center justify-between text-text-muted">
                               <span>
                                 ${item.price_per_day} × {days} day{days > 1 ? 's' : ''}
                               </span>
-                              <span className="font-mono">${Number(breakdown.rental_subtotal).toFixed(2)}</span>
+                              <span>${Number(breakdown.rental_subtotal).toFixed(2)}</span>
                             </div>
-                            <div className="flex items-center justify-between text-jet-black/70">
+                            <div className="flex items-center justify-between text-text-muted">
                               <span>Protection fee (non-refundable)</span>
-                              <span className="font-mono">${Number(breakdown.protection_fee_amount).toFixed(2)}</span>
+                              <span>${Number(breakdown.protection_fee_amount).toFixed(2)}</span>
                             </div>
-                            <div className="flex items-center justify-between border-t border-jet-black/10 pt-1.5 font-semibold text-jet-black">
-                              <span>Charged today</span>
-                              <span className="font-mono">${Number(breakdown.total_charged_today).toFixed(2)}</span>
+                            <div className="flex items-center justify-between border-t border-border pt-2 font-semibold text-text">
+                              <span className="text-sm">Charged today</span>
+                              <span className="num text-xl">${Number(breakdown.total_charged_today).toFixed(2)}</span>
                             </div>
 
-                            <div className="flex items-start gap-1.5 border-t border-jet-black/10 pt-1.5 text-jet-black/50">
+                            <div className="flex items-start gap-1.5 border-t border-border pt-1.5 text-text-muted">
                               <Lock className="mt-0.5 h-3 w-3 shrink-0" />
                               <span>
                                 {breakdown.commission_rate > 0
@@ -584,7 +584,7 @@ export default function ItemDetail() {
                               </span>
                             </div>
 
-                            <div className="flex items-start gap-1.5 text-jet-black/50">
+                            <div className="flex items-start gap-1.5 text-text-muted">
                               <ShieldCheck className="mt-0.5 h-3 w-3 shrink-0" />
                               <span>
                                 ${Number(breakdown.damage_liability_amount).toFixed(2)} damage-liability hold (not charged now — refunded automatically if the item comes back with no damage
@@ -594,7 +594,7 @@ export default function ItemDetail() {
                           </div>
 
                           {!hasCapacity && (
-                            <p className="rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-700">
+                            <p role="alert" className="rounded-xl bg-danger-soft px-3 py-2 text-xs text-danger">
                               No lockers of the size this item needs are free for those dates. Try different dates.
                             </p>
                           )}
@@ -603,11 +603,11 @@ export default function ItemDetail() {
                             type="button"
                             onClick={handleContinueToPayment}
                             disabled={!selectedRange.end || !hasCapacity}
-                            className="w-full rounded-xl bg-deep-purple px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-deep-purple/90 disabled:cursor-not-allowed disabled:opacity-50"
+                            className="w-full rounded-xl cta-brand px-4 py-3 text-sm font-bold text-soft-white disabled:cursor-not-allowed disabled:opacity-50"
                           >
                             Continue to payment
                           </button>
-                          <p className="text-center text-[11px] text-jet-black/40">
+                          <p className="text-center text-xs text-text-muted">
                             Next: a Wompi sandbox checkout — no real charge is made until you confirm there.
                           </p>
                         </>
@@ -619,28 +619,28 @@ export default function ItemDetail() {
 
               {isOwner && (
                 <div className="mt-6">
-                  <h2 className="mb-2 font-display text-sm font-semibold text-jet-black">Your booking calendar</h2>
+                  <h2 className="mb-3 text-lg font-bold">Your booking calendar</h2>
                   <AvailabilityCalendar bookedRanges={bookedRanges} readOnly />
                 </div>
               )}
 
               <div className="mt-6">
-                <h2 className="font-display text-sm font-semibold text-jet-black">Description</h2>
-                <p className="mt-2 whitespace-pre-line text-sm leading-6 text-jet-black/60">
+                <h2 className="text-lg font-bold">Description</h2>
+                <p className="mt-2 max-w-[65ch] whitespace-pre-line text-sm leading-6 text-text-muted">
                   {item.description}
                 </p>
               </div>
 
               {isOwner && (
-                <div className="mt-6 border-t border-jet-black/5 pt-4">
+                <div className="mt-6 border-t border-border pt-4">
                   {confirmingDelete ? (
                     <div className="flex items-center gap-2">
-                      <p className="text-xs text-jet-black/60">Delete this listing?</p>
+                      <p className="text-xs text-text-muted">Delete this listing?</p>
                       <button
                         type="button"
                         onClick={() => setConfirmingDelete(false)}
                         disabled={deleting}
-                        className="rounded-full border border-jet-black/10 px-3 py-1.5 text-xs font-semibold text-jet-black/70 hover:bg-jet-black/5"
+                        className="cta-outline rounded-lg px-3 py-1 text-xs font-semibold"
                       >
                         Cancel
                       </button>
@@ -648,7 +648,7 @@ export default function ItemDetail() {
                         type="button"
                         onClick={handleDelete}
                         disabled={deleting}
-                        className="rounded-full bg-red-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-600 disabled:opacity-50"
+                        className="rounded-lg bg-red-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-800 disabled:opacity-50"
                       >
                         {deleting ? 'Deleting…' : 'Confirm delete'}
                       </button>
@@ -657,7 +657,7 @@ export default function ItemDetail() {
                     <button
                       type="button"
                       onClick={() => setConfirmingDelete(true)}
-                      className="flex items-center gap-1.5 text-xs font-semibold text-red-500 hover:text-red-600"
+                      className="flex items-center gap-1.5 text-xs font-semibold text-danger hover:underline"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                       Delete listing
@@ -669,31 +669,32 @@ export default function ItemDetail() {
           </div>
 
           {/* ================= REVIEWS ================= */}
-          <section className="mt-12 border-t border-jet-black/5 pt-8">
-            <h2 className="font-display text-lg font-semibold text-jet-black">
-              Reviews {reviews.length > 0 && `(${reviews.length})`}
+          <section className="mt-12 border-t border-border pt-8">
+            <h2 className="text-2xl font-extrabold">
+              Reviews {reviews.length > 0 && <span className="num text-text-muted">{reviews.length}</span>}
             </h2>
 
             {!isOwner && hasRented && (
               <form
                 onSubmit={handleSubmitReview}
-                className="mt-4 rounded-2xl border border-lavender/15 bg-white p-4"
+                className="mt-4 rounded-2xl border border-border bg-surface p-4"
               >
-                <p className="mb-2 text-sm font-medium text-jet-black">Rate this lender</p>
+                <p className="mb-2 text-sm font-medium text-text">Rate this lender</p>
                 <StarRating value={myRating} onChange={setMyRating} />
                 <textarea
                   value={myComment}
                   onChange={(e) => setMyComment(e.target.value.slice(0, 500))}
                   placeholder="Share how the item and pickup went…"
                   rows={3}
-                  className="mt-3 w-full resize-none rounded-xl border border-lavender/15 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+                  aria-label="Your review"
+                  className="mt-3 w-full resize-none rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none focus:border-primary"
                 />
                 <div className="mt-3 flex items-center justify-between gap-3">
                   <StatusMessage type={reviewStatus.type} text={reviewStatus.text} />
                   <button
                     type="submit"
                     disabled={submittingReview}
-                    className="ml-auto shrink-0 rounded-full bg-linear-to-r from-deep-purple to-lavender px-4 py-2 text-xs font-semibold text-soft-white glow-sm transition hover:brightness-105 disabled:opacity-50"
+                    className="ml-auto shrink-0 rounded-xl cta-brand px-4 py-2 text-sm font-semibold text-soft-white disabled:opacity-50"
                   >
                     {submittingReview ? 'Saving…' : 'Post review'}
                   </button>
@@ -702,19 +703,19 @@ export default function ItemDetail() {
             )}
 
             {!isOwner && !hasRented && (
-              <p className="mt-4 rounded-2xl border border-jet-black/5 bg-jet-black/[0.02] p-4 text-sm text-jet-black/50">
+              <p className="mt-4 rounded-2xl border border-border bg-surface-raised p-4 text-sm text-text-muted">
                 {user ? 'You can leave a review once you have rented this item.' : 'Sign in and rent this item to leave a review.'}
               </p>
             )}
 
             <div className="mt-6 space-y-4">
               {reviewsLoading ? (
-                <p className="text-sm text-jet-black/40">Loading reviews…</p>
+                <p className="text-sm text-text-muted">Loading reviews…</p>
               ) : reviews.length === 0 ? (
-                <p className="text-sm text-jet-black/40">No reviews yet. Be the first to comment.</p>
+                <p className="text-sm text-text-muted">No reviews yet. Be the first to comment.</p>
               ) : (
                 reviews.map((review) => (
-                  <div key={review.id} className="flex gap-3 rounded-2xl border border-jet-black/5 bg-white p-4">
+                  <div key={review.id} className="flex gap-3 rounded-2xl border border-border bg-surface p-4">
                     <LockerAvatar
                       label={review.reviewer?.full_name}
                       photoUrl={review.reviewer?.avatar_url}
@@ -722,16 +723,16 @@ export default function ItemDetail() {
                     />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-2">
-                        <p className="truncate text-sm font-semibold text-jet-black">
+                        <p className="truncate text-sm font-semibold text-text">
                           {review.reviewer?.full_name ?? 'Lendrop user'}
                         </p>
-                        <span className="shrink-0 text-[11px] text-jet-black/40">
+                        <span className="shrink-0 text-xs text-text-muted">
                           {new Date(review.created_at).toLocaleDateString()}
                         </span>
                       </div>
                       <StarRating value={review.rating} size="sm" className="mt-1" />
                       {review.comment && (
-                        <p className="mt-1.5 text-sm leading-5 text-jet-black/60">{review.comment}</p>
+                        <p className="mt-1.5 text-sm leading-5 text-text-muted">{review.comment}</p>
                       )}
                     </div>
                   </div>

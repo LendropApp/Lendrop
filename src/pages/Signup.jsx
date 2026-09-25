@@ -106,16 +106,16 @@ export default function Signup() {
     return (
       <AuthLayout>
         <div className="text-center">
-          <p className="mb-2 font-display text-lg font-semibold text-deep-purple">
+          <p className="mb-2 font-display text-lg font-semibold text-primary">
             Check your email
           </p>
-          <p className="text-sm text-jet-black/60">
+          <p className="text-sm text-text-muted">
             We sent a verification link to <strong>{email}</strong>. Confirm it
             to be able to log in.
           </p>
           <Link
             to="/login"
-            className="mt-6 inline-block text-sm font-medium text-deep-purple hover:text-lavender"
+            className="mt-6 inline-block text-sm font-medium text-primary hover:underline"
           >
             Back to log in
           </Link>
@@ -141,7 +141,7 @@ export default function Signup() {
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             placeholder="Diego Martínez"
-            className="w-full rounded-xl border border-lavender/20 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+            className="w-full rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
           />
         </div>
 
@@ -157,7 +157,7 @@ export default function Signup() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
-            className="w-full rounded-xl border border-lavender/20 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+            className="w-full rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
           />
         </div>
 
@@ -175,7 +175,7 @@ export default function Signup() {
               onChange={(e) => setDui(formatDui(e.target.value))}
               placeholder="12345678-9"
               maxLength={10}
-              className="locker-code w-full rounded-xl border border-lavender/20 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+              className="locker-code w-full rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
             />
           </div>
 
@@ -190,11 +190,11 @@ export default function Signup() {
               max={maxBirthDate}
               value={dateOfBirth}
               onChange={(e) => setDateOfBirth(e.target.value)}
-              className="w-full rounded-xl border border-lavender/20 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+              className="w-full rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
             />
           </div>
         </div>
-        <p className="-mt-2 text-xs text-jet-black/45">
+        <p className="-mt-2 text-xs text-text-muted">
           Used to verify your identity for rentals. You must be {MIN_AGE}+ to use Lendrop.
         </p>
 
@@ -225,12 +225,12 @@ export default function Signup() {
           />
         </div>
 
-        <label className="flex items-start gap-2.5 pt-1 text-sm text-jet-black/70">
+        <label className="flex items-start gap-2.5 pt-1 text-sm text-text-muted">
           <input
             type="checkbox"
             checked={agreedToTerms}
             onChange={(e) => setAgreedToTerms(e.target.checked)}
-            className="mt-0.5 h-4 w-4 shrink-0 rounded border-jet-black/20 text-deep-purple focus:ring-lavender/40"
+            className="mt-0.5 h-4 w-4 shrink-0 rounded border-border text-primary focus:ring-lavender/40"
           />
           <span>
             I agree to the{' '}
@@ -241,7 +241,7 @@ export default function Signup() {
                 e.stopPropagation()
                 setOpenLegal('terms')
               }}
-              className="font-medium text-deep-purple underline decoration-lavender/50 underline-offset-2 hover:text-lavender"
+              className="font-medium text-primary underline decoration-lavender/50 underline-offset-2 hover:underline"
             >
               Terms of Service
             </button>{' '}
@@ -253,7 +253,7 @@ export default function Signup() {
                 e.stopPropagation()
                 setOpenLegal('privacy')
               }}
-              className="font-medium text-deep-purple underline decoration-lavender/50 underline-offset-2 hover:text-lavender"
+              className="font-medium text-primary underline decoration-lavender/50 underline-offset-2 hover:underline"
             >
               Privacy Policy
             </button>
@@ -266,7 +266,7 @@ export default function Signup() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full rounded-xl bg-linear-to-r from-deep-purple to-lavender py-2.5 text-sm font-semibold text-soft-white glow-sm transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 disabled:opacity-50"
+          className="w-full rounded-xl cta-brand py-2.5 text-sm font-semibold text-soft-white glow-sm transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 disabled:opacity-50"
         >
           {isSubmitting ? 'Creating account…' : 'Create account'}
         </button>

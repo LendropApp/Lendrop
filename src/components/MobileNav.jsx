@@ -12,10 +12,10 @@ const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
 
 const VERIFICATION_PILL = {
-  verified: 'bg-emerald-100 text-emerald-700',
-  pending: 'bg-amber-100 text-amber-700',
-  rejected: 'bg-red-100 text-red-600',
-  unverified: 'bg-jet-black/10 text-jet-black/50',
+  verified: 'bg-success-soft text-success',
+  pending: 'bg-surface-raised text-primary',
+  rejected: 'bg-danger-soft text-danger',
+  unverified: 'bg-surface-raised text-text-muted',
 }
 
 /**
@@ -113,7 +113,7 @@ export default function MobileNav() {
   function badgeFor(kind) {
     if (kind === 'notifications' && unreadNotifications > 0) {
       return (
-        <span className="ml-auto min-w-5 rounded-full bg-lavender px-1.5 py-0.5 text-center font-mono text-[10px] font-semibold text-soft-white">
+        <span className="stamp ml-auto min-w-5 rounded-md px-1.5 py-0.5 text-center text-xs font-bold tabular-nums">
           {unreadNotifications > 9 ? '9+' : unreadNotifications}
         </span>
       )
@@ -121,7 +121,7 @@ export default function MobileNav() {
     if (kind === 'verification' && verificationStatus !== 'verified') {
       return (
         <span
-          className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-semibold ${VERIFICATION_PILL[verificationStatus] ?? VERIFICATION_PILL.unverified}`}
+          className={`ml-auto rounded-md px-2 py-0.5 text-xs font-semibold ${VERIFICATION_PILL[verificationStatus] ?? VERIFICATION_PILL.unverified}`}
         >
           {verification.label}
         </span>
@@ -130,10 +130,9 @@ export default function MobileNav() {
     return null
   }
 
-  // Portalled to <body> on purpose: every app header carries the .glass
-  // class, whose backdrop-filter makes the header a containing block for
-  // fixed-position descendants. Rendered in place, the overlay gets
-  // clipped to the header's box instead of covering the screen.
+  // Portalled to <body> on purpose: headers are sticky z-50 stacking
+  // contexts, and an overlay rendered inside one could only stack within
+  // it, and would clip to its box if a header ever regains a filter.
   const drawer = (
     <div className="fixed inset-0 z-[60] md:hidden">
       <button
@@ -141,7 +140,7 @@ export default function MobileNav() {
         aria-label="Close menu"
         tabIndex={-1}
         onClick={() => setOpen(false)}
-        className="absolute inset-0 h-full w-full cursor-default bg-jet-black/40 backdrop-blur-sm"
+        className="absolute inset-0 h-full w-full cursor-default bg-jet-black/40"
       />
 
       <div
@@ -149,14 +148,13 @@ export default function MobileNav() {
         role="dialog"
         aria-modal="true"
         aria-label="Main menu"
-        className="absolute inset-y-0 right-0 flex w-[86%] max-w-sm flex-col overflow-y-auto bg-soft-white shadow-[0_0_60px_-12px_rgba(13,13,13,0.45)]"
+        className="absolute inset-y-0 right-0 flex w-[86%] max-w-sm flex-col overflow-y-auto bg-bg shadow-[0_0_60px_-12px_rgba(13,13,13,0.45)]"
       >
-        <div className="h-px shrink-0 bg-linear-to-r from-transparent via-lavender to-transparent" />
 
         <div className="flex items-start justify-between gap-3 px-5 pb-4 pt-5">
           <Link
             to="/profile"
-            className="flex min-w-0 items-center gap-3 rounded-2xl p-1 transition hover:bg-lavender/10"
+            className="flex min-w-0 items-center gap-3 rounded-2xl p-1 transition hover:bg-surface-raised"
           >
             <LockerAvatar
               label={firstName}
@@ -165,10 +163,10 @@ export default function MobileNav() {
               size="md"
             />
             <span className="min-w-0">
-              <span className="block truncate font-display text-base font-semibold text-jet-black">
+              <span className="block truncate font-display text-base font-semibold text-text">
                 {profile?.full_name ?? firstName}
               </span>
-              <span className="block font-mono text-[10px] uppercase tracking-widest text-lavender">
+              <span className="block text-xs font-semibold text-primary">
                 {isHost ? 'Lender & renter' : 'Renter'}
               </span>
             </span>
@@ -178,7 +176,7 @@ export default function MobileNav() {
             type="button"
             onClick={() => setOpen(false)}
             aria-label="Close menu"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-jet-black/10 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border text-text-muted transition hover:border-primary hover:text-primary"
           >
             <X className="h-4 w-4" />
           </button>
@@ -188,7 +186,7 @@ export default function MobileNav() {
           <div className="px-5 pb-2">
             <Link
               to={BECOME_HOST_CTA.to}
-              className="flex items-center justify-center gap-2 rounded-xl bg-linear-to-r from-deep-purple to-lavender px-4 py-2.5 text-sm font-semibold text-soft-white glow-sm transition hover:brightness-105"
+              className="cta-brand flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-soft-white"
             >
               <BecomeHostIcon className="h-4 w-4" />
               {BECOME_HOST_CTA.label}
@@ -199,7 +197,7 @@ export default function MobileNav() {
         <nav className="flex-1 px-2 pb-4">
           {sections.map((section) => (
             <div key={section.id} className="mt-4 first:mt-2">
-              <p className="px-3 pb-1 font-mono text-[10px] font-semibold uppercase tracking-widest text-jet-black/35">
+              <p className="px-3 pb-1 text-xs font-bold text-text-muted">
                 {section.title}
               </p>
               <ul>
@@ -212,15 +210,15 @@ export default function MobileNav() {
                         className={({ isActive }) =>
                           `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
                             isActive
-                              ? 'bg-lavender/15 text-deep-purple'
-                              : 'text-jet-black hover:bg-lavender/5 hover:text-deep-purple'
+                              ? 'bg-surface-raised text-primary'
+                              : 'text-text hover:bg-surface-raised hover:text-primary'
                           }`
                         }
                       >
                         {({ isActive }) => (
                           <>
                             <Icon
-                              className={`h-4 w-4 shrink-0 ${isActive ? 'text-deep-purple' : 'text-jet-black/45'}`}
+                              className={`h-4 w-4 shrink-0 ${isActive ? 'text-primary' : 'text-text-muted'}`}
                             />
                             <span className="truncate">{item.label}</span>
                             {badgeFor(item.badge)}
@@ -235,14 +233,14 @@ export default function MobileNav() {
           ))}
         </nav>
 
-        <div className="border-t border-jet-black/5 px-2 py-3">
+        <div className="border-t border-border px-2 py-3">
           <button
             type="button"
             onClick={() => {
               setOpen(false)
               signOut()
             }}
-            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-500 transition hover:bg-red-50"
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-danger transition hover:bg-danger-soft"
           >
             <LogOut className="h-4 w-4" />
             Sign out
@@ -260,7 +258,7 @@ export default function MobileNav() {
         aria-label="Open menu"
         aria-expanded={open}
         aria-haspopup="dialog"
-        className="flex h-9 w-9 items-center justify-center rounded-full border border-jet-black/10 text-jet-black/60 transition hover:border-lavender hover:text-deep-purple"
+        className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-text-muted hover:border-primary hover:text-primary"
       >
         <Menu className="h-4 w-4" />
       </button>

@@ -93,24 +93,24 @@ export default function ContactCityStep({ record, onNext, onBack }) {
 
   return (
     <div className="w-full max-w-md mx-auto px-6">
-      <h1 className="font-display text-2xl sm:text-3xl text-deep-purple leading-snug mb-2">
+      <h1 className="font-display text-2xl sm:text-3xl text-primary leading-snug mb-2">
         Tell us how to reach you
       </h1>
-      <p className="text-jet-black/60 text-sm leading-relaxed mb-8">
+      <p className="text-text-muted text-sm leading-relaxed mb-8">
         We use your phone number to confirm bookings and updates about your items.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-jet-black/70 mb-1.5">
+          <label htmlFor="phone" className="block text-sm font-medium text-text-muted mb-1.5">
             Phone number
           </label>
           <div
-            className={`flex items-center rounded-xl border bg-white focus-within:ring-2 focus-within:ring-deep-purple ${
-              errors.phone ? "border-red-400" : "border-lavender/40"
+            className={`flex items-center rounded-xl border bg-surface focus-within:ring-2 focus-within:ring-deep-purple ${
+              errors.phone ? "border-danger" : "border-border"
             }`}
           >
-            <span className="pl-4 pr-2 py-3 text-base text-jet-black/50 border-r border-lavender/40 select-none">
+            <span className="pl-4 pr-2 py-3 text-base text-text-muted border-r border-border select-none">
               +503
             </span>
             <input
@@ -120,22 +120,22 @@ export default function ContactCityStep({ record, onNext, onBack }) {
               onChange={handlePhoneChange}
               autoComplete="tel"
               placeholder="0000-0000"
-              className="flex-1 min-w-0 px-3 py-3 text-base text-jet-black placeholder:text-jet-black/40 bg-transparent focus:outline-none rounded-r-xl"
+              className="flex-1 min-w-0 px-3 py-3 text-base text-text placeholder:text-text-muted bg-transparent focus:outline-none rounded-r-xl"
             />
           </div>
-          {errors.phone && <p className="text-xs text-red-500 mt-1.5">{errors.phone}</p>}
+          {errors.phone && <p className="text-xs text-danger mt-1.5">{errors.phone}</p>}
         </div>
 
         <div>
-          <label htmlFor="zone" className="block text-sm font-medium text-jet-black/70 mb-1.5">
+          <label htmlFor="zone" className="block text-sm font-medium text-text-muted mb-1.5">
             Department
           </label>
           <select
             id="zone"
             value={form.zone}
             onChange={handleDepartmentChange}
-            className={`w-full rounded-xl border px-4 py-3 text-base text-jet-black bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-deep-purple ${
-              errors.zone ? "border-red-400" : "border-lavender/40"
+            className={`w-full rounded-xl border px-4 py-3 text-base text-text bg-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-deep-purple ${
+              errors.zone ? "border-danger" : "border-border"
             }`}
           >
             <option value="" disabled>Select your department</option>
@@ -143,11 +143,11 @@ export default function ContactCityStep({ record, onNext, onBack }) {
               <option key={d} value={d}>{d}</option>
             ))}
           </select>
-          {errors.zone && <p className="text-xs text-red-500 mt-1.5">{errors.zone}</p>}
+          {errors.zone && <p className="text-xs text-danger mt-1.5">{errors.zone}</p>}
         </div>
 
         <div>
-          <label htmlFor="city" className="block text-sm font-medium text-jet-black/70 mb-1.5">
+          <label htmlFor="city" className="block text-sm font-medium text-text-muted mb-1.5">
             City
           </label>
           <select
@@ -155,8 +155,8 @@ export default function ContactCityStep({ record, onNext, onBack }) {
             value={form.city}
             onChange={handleCityChange}
             disabled={!form.zone}
-            className={`w-full rounded-xl border px-4 py-3 text-base text-jet-black bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-deep-purple disabled:bg-jet-black/5 disabled:text-jet-black/40 ${
-              errors.city ? "border-red-400" : "border-lavender/40"
+            className={`w-full rounded-xl border px-4 py-3 text-base text-text bg-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-deep-purple disabled:bg-surface-raised disabled:text-text-muted ${
+              errors.city ? "border-danger" : "border-border"
             }`}
           >
             <option value="" disabled>
@@ -166,21 +166,21 @@ export default function ContactCityStep({ record, onNext, onBack }) {
               <option key={c} value={c}>{c}</option>
             ))}
           </select>
-          {errors.city && <p className="text-xs text-red-500 mt-1.5">{errors.city}</p>}
+          {errors.city && <p className="text-xs text-danger mt-1.5">{errors.city}</p>}
         </div>
 
         <div className="flex items-center gap-3 pt-4">
           <button
             type="button"
             onClick={onBack}
-            className="flex items-center justify-center gap-1.5 px-4 py-3.5 rounded-xl text-deep-purple font-medium text-base hover:bg-lavender/10 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-lavender"
+            className="flex items-center justify-center gap-1.5 px-4 py-3.5 rounded-xl text-primary font-medium text-base hover:bg-surface-raised transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-lavender"
           >
             <ArrowLeft className="w-4 h-4" />
             Back
           </button>
           <button
             type="submit"
-            className="flex-1 flex items-center justify-center gap-2 bg-linear-to-r from-deep-purple to-lavender text-white font-medium text-base py-3.5 rounded-xl glow-sm transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-deep-purple focus-visible:ring-offset-2"
+            className="flex-1 flex items-center justify-center gap-2 cta-brand text-soft-white font-medium text-base py-3.5 rounded-xl glow-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-deep-purple focus-visible:ring-offset-2"
           >
             Continue
             <ArrowRight className="w-4 h-4" />

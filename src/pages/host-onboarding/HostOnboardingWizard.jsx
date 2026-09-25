@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { supabase } from '../../lib/supabaseClient'
-import AuroraBlobs from '../../components/background/AuroraBlobs'
 import IntroStep from './IntroStep'
 import ContactCityStep from './ContactCityStep'
 import CoverageStep from './CoverageStep'
@@ -126,15 +125,14 @@ export default function HostOnboardingWizard() {
 
   if (loading || !record) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-soft-white">
-        <div className="animate-pulse font-display text-deep-purple">Loading…</div>
+      <div className="min-h-screen flex items-center justify-center bg-bg">
+        <div className="animate-pulse font-display text-primary">Loading…</div>
       </div>
     )
   }
 
   return (
-    <div className="relative isolate min-h-screen overflow-hidden bg-soft-white flex flex-col">
-      <AuroraBlobs className="opacity-30" />
+    <div className="relative isolate min-h-screen overflow-hidden bg-bg flex flex-col">
       {stepIndex > 0 && stepIndex < STEPS.length - 1 && (
         <ProgressBar current={stepIndex} total={STEPS.length - 2} />
       )}
@@ -148,9 +146,9 @@ export default function HostOnboardingWizard() {
 function ProgressBar({ current, total }) {
   const pct = Math.round((current / total) * 100)
   return (
-    <div className="relative h-1 w-full bg-lavender/20">
+    <div className="relative h-1 w-full bg-surface-raised">
       <div
-        className="h-1 bg-linear-to-r from-deep-purple to-lavender transition-all duration-300"
+        className="h-1 cta-brand transition-all duration-300"
         style={{ width: `${pct}%` }}
       />
     </div>

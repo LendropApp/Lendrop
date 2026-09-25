@@ -61,7 +61,7 @@ export default function Login() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
-            className="w-full rounded-xl border border-lavender/20 px-4 py-2.5 text-sm outline-none transition focus:border-lavender focus:ring-2 focus:ring-lavender/30"
+            className="w-full rounded-xl border border-border px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-lavender/30"
           />
         </div>
 
@@ -79,7 +79,7 @@ export default function Login() {
           <div className="mt-2 text-right">
             <Link
               to="/forgot-password"
-              className="text-xs font-medium text-deep-purple hover:text-lavender"
+              className="text-xs font-medium text-primary hover:underline"
             >
               Forgot your password?
             </Link>
@@ -91,7 +91,7 @@ export default function Login() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full rounded-xl bg-linear-to-r from-deep-purple to-lavender py-2.5 text-sm font-semibold text-soft-white glow-sm transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 disabled:opacity-50"
+          className="w-full rounded-xl cta-brand py-2.5 text-sm font-semibold text-soft-white glow-sm transition hover:shadow-[0_4px_28px_-4px_rgba(165,140,244,0.75)] hover:brightness-105 disabled:opacity-50"
         >
           {isSubmitting ? 'Logging in…' : 'Log in'}
         </button>

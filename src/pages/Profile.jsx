@@ -4,6 +4,7 @@ import {
   ArrowLeft,
   BarChart3,
   ChevronRight,
+  CircleHelp,
   CreditCard,
   Edit3,
   Heart,
@@ -11,9 +12,13 @@ import {
   MapPin,
   MessageCircle,
   Package,
+  PackagePlus,
   Settings,
   ShieldCheck,
   Sparkles,
+  Star,
+  Store,
+  Truck,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import MobileNav from '../components/MobileNav'
@@ -21,21 +26,71 @@ import { supabase } from '../lib/supabaseClient'
 import LockerAvatar from '../components/LockerAvatar'
 import StarRating from '../components/StarRating'
 import ProfileCompletion from '../components/ProfileCompletion'
-import AuroraBlobs from '../components/background/AuroraBlobs'
+import LendropIdCard from '../components/LendropIdCard'
 import useSmartBack from '../hooks/useSmartBack'
+import Logo from '../components/Logo'
 
-const ACCOUNT_MENU = [
-  { to: '/messages', icon: MessageCircle, label: 'Messages', desc: 'Coordinate pickups and drop offs' },
-  { to: '/history', icon: Package, label: 'Activity', desc: 'Your rentals and lendings history' },
-  { to: '/verification', icon: ShieldCheck, label: 'Trust & verification', desc: 'Verify your identity' },
+// The account hub, grouped by what you're doing: renting, hosting, or
+// managing the account itself. Hosting links only show for hosts; other
+// people get a single "Become a host" entry instead.
+const RENTING = [
+  { to: '/history', icon: Package, label: 'Activity', desc: 'Your rentals and cancellations' },
+  { to: '/messages', icon: MessageCircle, label: 'Messages', desc: 'Talk to owners and renters' },
+  { to: '/favorites', icon: Heart, label: 'Saved items', desc: 'Things you want to rent later' },
   { to: '/payment-methods', icon: CreditCard, label: 'Payment methods', desc: 'Manage saved cards' },
-  { to: '/earnings-dashboard', icon: BarChart3, label: 'Lender statistics', desc: 'Earnings and ratings' },
-  { to: '/premium', icon: Sparkles, label: 'Lendrop Premium', desc: 'Coming soon', badge: 'Soon' },
-  { to: '/settings', icon: Settings, label: 'Settings', desc: 'Notifications, browsing defaults, password' },
 ]
 
+const HOSTING = [
+  { to: '/my-listings', icon: Store, label: 'My listings', desc: 'Edit, pause or remove items' },
+  { to: '/owner-delivery', icon: Truck, label: 'Drop-offs & returns', desc: 'Items to leave or collect at lockers' },
+  { to: '/earnings-dashboard', icon: BarChart3, label: 'Lender statistics', desc: 'Earnings and payouts' },
+  { to: '/publish', icon: PackagePlus, label: 'Publish an item', desc: 'List something new' },
+]
+
+const BECOME_HOST = [{ to: '/become-host', icon: Store, label: 'Become a host', desc: 'Earn from things you already own' }]
+
+const ACCOUNT = [
+  { to: '/verification', icon: ShieldCheck, label: 'Trust & verification', desc: 'Verify your identity' },
+  { to: '/settings', icon: Settings, label: 'Settings', desc: 'Notifications, defaults, password, theme' },
+  { to: '/premium', icon: Sparkles, label: 'Lendrop Premium', desc: 'No service fee for hosts', badge: 'Soon' },
+  { to: '/help', icon: CircleHelp, label: 'Help center', desc: 'FAQ and contact' },
+]
+
+function MenuGroup({ title, items }) {
+  return (
+    <section aria-labelledby={`menu-${title}`}>
+      <h2 id={`menu-${title}`} className="mb-3 text-lg font-extrabold">
+        {title}
+      </h2>
+      <ul className="overflow-hidden rounded-2xl border border-border bg-surface">
+        {items.map(({ to, icon: Icon, label, desc, badge }, index) => (
+          <li key={to} className={index > 0 ? 'border-t border-border' : ''}>
+            <Link to={to} className="flex items-center gap-3 p-4 hover:bg-surface-raised">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface-raised">
+                <Icon className="h-5 w-5 text-primary" aria-hidden="true" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="flex items-center gap-2">
+                  <span className="text-sm font-semibold text-text">{label}</span>
+                  {badge && (
+                    <span className="rounded-md bg-surface-raised px-2 py-0.5 text-xs font-semibold text-primary">
+                      {badge}
+                    </span>
+                  )}
+                </span>
+                <span className="block text-xs text-text-muted">{desc}</span>
+              </span>
+              <ChevronRight className="h-4 w-4 shrink-0 text-text-muted" aria-hidden="true" />
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
 export default function Profile() {
-  const { user, profile, profileLoading, signOut } = useAuth()
+  const { user, profile, profileLoading, isHost, signOut } = useAuth()
   const navigate = useNavigate()
   const goBack = useSmartBack('/explore')
 
@@ -64,165 +119,120 @@ export default function Profile() {
 
   if (profileLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-soft-white">
-        <p className="text-sm text-jet-black/50">Loading profile…</p>
+      <div className="flex min-h-screen items-center justify-center bg-bg">
+        <p className="text-sm text-text-muted">Loading profile…</p>
       </div>
     )
   }
 
   const firstName = profile?.full_name?.split(' ')[0] || 'User'
-  const hasReviews = (profile?.total_reviews ?? 0) > 0
+  const reviewCount = profile?.total_reviews ?? 0
+  const hasReviews = reviewCount > 0
+  const verified = profile?.verification_status === 'verified'
+
+  const stats = [
+    { to: '/my-listings', icon: Store, value: itemsCount, label: itemsCount === 1 ? 'Item listed' : 'Items listed' },
+    { to: '/favorites', icon: Heart, value: favoritesCount, label: 'Saved' },
+    { to: '/history', icon: Star, value: reviewCount, label: reviewCount === 1 ? 'Review' : 'Reviews' },
+  ]
 
   return (
-    <div className="min-h-screen bg-soft-white pb-28 md:pb-16">
-      <header className="glass sticky top-0 z-50">
-        <div className="h-px bg-linear-to-r from-transparent via-lavender/50 to-transparent" />
+    <div className="min-h-screen bg-bg pb-28 md:pb-16">
+      <header className="sticky top-0 z-50 border-b border-border bg-surface">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-6 py-4 sm:px-10">
           <button
             type="button"
             onClick={goBack}
             aria-label="Back to Explore"
-            className="flex items-center gap-2 text-sm font-medium text-jet-black/60 transition hover:text-deep-purple"
+            className="flex items-center gap-2 text-sm font-medium text-text-muted hover:text-primary"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Explore
+            Explore
           </button>
-          <img src="/logo-lendrop.png" alt="Lendrop" className="h-7 w-auto" />
-          <div className="flex items-center gap-2">
-            <MobileNav />
-            <button
-              type="button"
-              onClick={handleSignOut}
-              aria-label="Log out"
-              className="hidden items-center gap-1.5 text-sm font-medium text-jet-black/60 transition hover:text-red-500 md:flex"
-            >
-              <LogOut className="h-4 w-4" />
-              <span className="hidden sm:inline">Log out</span>
-            </button>
-          </div>
+          <Logo />
+          <MobileNav />
+          <span className="hidden w-16 md:block" aria-hidden="true" />
         </div>
       </header>
 
-      <div className="relative isolate overflow-hidden">
-        <AuroraBlobs className="opacity-25" />
-        <div className="relative mx-auto max-w-3xl space-y-6 px-6 py-8 sm:px-10">
-          {/* ================= PROFILE CARD ================= */}
-          <section className="rounded-2xl border border-lavender/15 bg-white p-6 sm:p-8">
-            <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-start sm:text-left">
-              <LockerAvatar
-                label={firstName}
-                photoUrl={profile?.avatar_url}
-                verified={profile?.verification_status === 'verified'}
-                size="lg"
-              />
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
-                    <h1 className="font-display text-xl font-bold text-jet-black">
-                      {profile?.full_name || 'User'}
-                    </h1>
-                    {profile?.city && (
-                      <div className="mt-1 flex items-center justify-center gap-1.5 text-sm text-jet-black/50 sm:justify-start">
-                        <MapPin className="h-3.5 w-3.5" />
-                        {profile.city}
-                      </div>
-                    )}
-                  </div>
-                  <Link
-                    to="/profile/edit"
-                    className="flex shrink-0 items-center gap-1.5 rounded-full border border-jet-black/10 px-4 py-2 text-xs font-semibold text-jet-black/70 transition hover:border-lavender hover:text-deep-purple"
-                  >
-                    <Edit3 className="h-3.5 w-3.5" />
-                    Edit profile
-                  </Link>
-                </div>
-
-                <div className="mt-3 flex items-center justify-center gap-2 sm:justify-start">
-                  {hasReviews ? (
-                    <>
-                      <StarRating value={profile.average_rating} size="sm" />
-                      <span className="font-mono text-sm font-medium text-jet-black">
-                        {Number(profile.average_rating).toFixed(1)}
-                      </span>
-                      <span className="text-sm text-jet-black/45">
-                        ({profile.total_reviews} reviews)
-                      </span>
-                    </>
-                  ) : (
-                    <span className="text-sm text-jet-black/40">No reviews yet</span>
-                  )}
-                  {profile?.verification_status === 'verified' && (
-                    <span className="flex items-center gap-1 text-xs font-semibold text-lavender">
-                      <ShieldCheck className="h-3.5 w-3.5" />
-                      Verified
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {profile?.bio && (
-              <p className="mt-5 border-t border-jet-black/5 pt-5 text-sm leading-6 text-jet-black/60">
-                {profile.bio}
-              </p>
-            )}
-
-            <div className="mt-5 grid grid-cols-2 gap-3 border-t border-jet-black/5 pt-5">
-              <Link
-                to="/explore"
-                className="flex items-center gap-3 rounded-xl bg-jet-black/5 p-3.5 transition hover:bg-lavender/10"
-              >
-                <Package className="h-4 w-4 text-deep-purple" />
-                <div>
-                  <p className="text-sm font-semibold text-jet-black">{itemsCount}</p>
-                  <p className="text-xs text-jet-black/45">Items listed</p>
-                </div>
-              </Link>
-              <Link
-                to="/favorites"
-                className="flex items-center gap-3 rounded-xl bg-jet-black/5 p-3.5 transition hover:bg-lavender/10"
-              >
-                <Heart className="h-4 w-4 text-deep-purple" />
-                <div>
-                  <p className="text-sm font-semibold text-jet-black">{favoritesCount}</p>
-                  <p className="text-xs text-jet-black/45">Saved items</p>
-                </div>
-              </Link>
-            </div>
-          </section>
-
-          {/* ================= COMPLETE YOUR PROFILE ================= */}
-          <ProfileCompletion user={user} profile={profile} />
-
-          {/* ================= ACCOUNT MENU ================= */}
-          <section className="overflow-hidden rounded-2xl border border-lavender/15 bg-white">
-            {ACCOUNT_MENU.map(({ to, icon: Icon, label, desc, badge }, index) => (
-              <Link
-                key={to}
-                to={to}
-                className={`flex items-center gap-3 p-4 transition hover:bg-lavender/5 ${
-                  index > 0 ? 'border-t border-jet-black/5' : ''
-                }`}
-              >
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-lavender/15">
-                  <Icon className="h-4.5 w-4.5 text-deep-purple" />
+      {/* ================= IDENTITY BAND ================= */}
+      <section className="brand-field">
+        <div className="mx-auto flex max-w-3xl flex-col gap-5 px-6 py-10 sm:flex-row sm:items-center sm:px-10">
+          <LockerAvatar label={firstName} photoUrl={profile?.avatar_url} verified={verified} size="lg" />
+          <div className="min-w-0 flex-1">
+            <h1 className="text-3xl font-extrabold leading-tight sm:text-4xl">{profile?.full_name || 'User'}</h1>
+            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-soft-white/85">
+              {profile?.city && (
+                <span className="flex items-center gap-1.5">
+                  <MapPin className="h-4 w-4" aria-hidden="true" />
+                  {profile.city}
                 </span>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-semibold text-jet-black">{label}</p>
-                    {badge && (
-                      <span className="rounded-full bg-lavender/15 px-2 py-0.5 text-[10px] font-semibold text-deep-purple">
-                        {badge}
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-xs text-jet-black/45">{desc}</p>
-                </div>
-                <ChevronRight className="h-4 w-4 shrink-0 text-jet-black/25" />
-              </Link>
-            ))}
-          </section>
+              )}
+              {hasReviews ? (
+                <span className="flex items-center gap-1.5">
+                  <StarRating value={profile.average_rating} size="sm" />
+                  <span className="font-semibold tabular-nums text-soft-white">
+                    {Number(profile.average_rating).toFixed(1)}
+                  </span>
+                </span>
+              ) : (
+                <span>No reviews yet</span>
+              )}
+              {verified && (
+                <span className="flex items-center gap-1 font-semibold text-soft-white">
+                  <ShieldCheck className="h-4 w-4" aria-hidden="true" />
+                  Verified
+                </span>
+              )}
+              {isHost && <span className="font-semibold text-soft-white">Host</span>}
+            </div>
+          </div>
+          <Link
+            to="/profile/edit"
+            className="flex shrink-0 items-center gap-1.5 self-start rounded-xl border border-white/40 px-4 py-2 text-sm font-semibold text-soft-white hover:border-white sm:self-center"
+          >
+            <Edit3 className="h-4 w-4" aria-hidden="true" />
+            Edit profile
+          </Link>
         </div>
+        {profile?.bio && (
+          <p className="mx-auto max-w-3xl px-6 pb-8 text-sm leading-relaxed text-soft-white/85 sm:px-10">{profile.bio}</p>
+        )}
+      </section>
+
+      <div className="mx-auto max-w-3xl space-y-8 px-6 py-8 sm:px-10">
+        {/* ================= STATS ================= */}
+        <ul className="grid grid-cols-3 gap-3" aria-label="Your numbers">
+          {stats.map(({ to, icon: Icon, value, label }) => (
+            <li key={label}>
+              <Link to={to} className="block rounded-2xl border border-border bg-surface p-4 hover:border-primary">
+                <Icon className="h-4 w-4 text-primary" aria-hidden="true" />
+                <p className="num mt-2 text-3xl text-text">{value}</p>
+                <p className="text-xs text-text-muted">{label}</p>
+              </Link>
+            </li>
+          ))}
+        </ul>
+
+        {/* ================= LENDROP ID (private) ================= */}
+        <LendropIdCard userId={user?.id} />
+
+        {/* ================= COMPLETE YOUR PROFILE ================= */}
+        <ProfileCompletion user={user} profile={profile} />
+
+        {/* ================= MENU ================= */}
+        <MenuGroup title="Renting" items={RENTING} />
+        <MenuGroup title="Hosting" items={isHost ? HOSTING : BECOME_HOST} />
+        <MenuGroup title="Account" items={ACCOUNT} />
+
+        <button
+          type="button"
+          onClick={handleSignOut}
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-surface py-3 text-sm font-semibold text-danger hover:bg-danger-soft"
+        >
+          <LogOut className="h-4 w-4" aria-hidden="true" />
+          Log out
+        </button>
       </div>
     </div>
   )

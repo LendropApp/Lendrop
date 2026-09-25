@@ -131,10 +131,10 @@ export default function Home() {
           </nav>
 
           <div className="hidden items-center gap-4 md:flex">
-            <Link to="/login" className="cta-outline rounded-xl px-5 py-[9px] text-sm font-semibold">
+            <Link to="/login" className="cta-outline min-w-32 rounded-xl px-8 py-[9px] text-center text-sm font-semibold">
               Log in
             </Link>
-            <Link to="/signup" className="cta-brand rounded-xl px-5 py-2.5 text-sm font-semibold text-soft-white">
+            <Link to="/signup" className="cta-brand min-w-32 rounded-xl px-8 py-2.5 text-center text-sm font-semibold text-soft-white">
               Sign up
             </Link>
           </div>
@@ -176,13 +176,13 @@ export default function Home() {
 
       <main>
         {/* ================= HERO: the shutter ================= */}
-        <section className="shutter">
+        <section className="brand-field">
           <div className="mx-auto grid max-w-6xl gap-10 px-6 pb-10 pt-14 sm:px-10 lg:grid-cols-12 lg:gap-12 lg:pb-14 lg:pt-20">
             <div className="lg:col-span-7">
               <h1 className="text-5xl font-extrabold leading-[0.98] text-soft-white sm:text-7xl lg:text-8xl">
                 Rent it. Skip the meetup.
               </h1>
-              <p className="mt-6 max-w-[52ch] text-lg leading-relaxed text-brand-surface-muted">
+              <p className="mt-6 max-w-[52ch] text-lg leading-relaxed text-soft-white/85">
                 Borrow cameras, tools, bikes and more from people in El Salvador. The owner leaves it
                 in a locker and you pick it up with a PIN. You never have to meet.
               </p>
@@ -214,7 +214,7 @@ export default function Home() {
                   </figure>
                 </Shutter>
               </div>
-              <p className="mt-2 text-xs text-brand-surface-muted">Sample listing.</p>
+              <p className="mt-2 text-xs text-soft-white/80">Sample listing.</p>
             </div>
           </div>
 
@@ -391,7 +391,7 @@ export default function Home() {
         </section>
 
         {/* ================= CLOSE ================= */}
-        <section className="shutter px-6 py-16 sm:px-10 lg:py-20">
+        <section className="brand-field px-6 py-16 sm:px-10 lg:py-20">
           <div className="mx-auto flex max-w-6xl flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <h2 className="max-w-[18ch] text-4xl font-extrabold text-soft-white sm:text-6xl">
               Find it. Reserve it. Pick it up.

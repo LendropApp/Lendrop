@@ -271,6 +271,73 @@
     color: var(--primary);
   }
 
+  /* ── Brand field ────────────────────────────────────────────────────
+     The landing page's hero and closing bands: a Deep Purple field with
+     two layers of soft light in the brand purples drifting slowly across
+     it. The light is painted with radial gradients (already soft) and
+     only moved with transform, so there is no blur filter to repaint
+     each frame. Content sits above both layers via isolation.
+
+     Contrast: the brightest point the layers reach is about #6a50c0;
+     Soft White measures over 5:1 there, so text on the field uses Soft
+     White rather than the muted lavender tint. */
+  .brand-field {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background-color: var(--brand-surface);
+    color: var(--brand-surface-text);
+  }
+
+  .brand-field::before,
+  .brand-field::after {
+    content: "";
+    position: absolute;
+    inset: -45%;
+    z-index: -1;
+    pointer-events: none;
+    will-change: transform;
+  }
+
+  .brand-field::before {
+    background:
+      radial-gradient(30% 28% at 28% 32%, rgb(112 80 212 / 0.75), transparent 70%),
+      radial-gradient(22% 24% at 72% 68%, rgb(165 140 244 / 0.3), transparent 70%);
+    animation: field-drift-a 22s ease-in-out infinite alternate;
+  }
+
+  .brand-field::after {
+    background:
+      radial-gradient(26% 30% at 70% 26%, rgb(26 18 48 / 0.55), transparent 70%),
+      radial-gradient(24% 22% at 24% 74%, rgb(112 80 212 / 0.5), transparent 70%);
+    animation: field-drift-b 30s ease-in-out infinite alternate;
+  }
+
+  @keyframes field-drift-a {
+    0% {
+      transform: translate(0, 0) rotate(0deg);
+    }
+    100% {
+      transform: translate(9%, -6%) rotate(14deg);
+    }
+  }
+
+  @keyframes field-drift-b {
+    0% {
+      transform: translate(0, 0) rotate(0deg);
+    }
+    100% {
+      transform: translate(-8%, 7%) rotate(-12deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .brand-field::before,
+    .brand-field::after {
+      animation: none;
+    }
+  }
+
   /* Slow ambient drift for the aurora blobs behind the auth screens
      (AuroraBlobs.jsx, AuthLayout.jsx). */
   @keyframes aurora-drift {

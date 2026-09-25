@@ -205,13 +205,16 @@ Cut-metal corners: 8px for small controls, 10px for buttons and inputs, 12px for
 ### Shutter
 A ribbed Shutter Purple panel lettered with a label that rolls up once (1.1s, `cubic-bezier(0.7, 0, 0.2, 1)`, 350ms delay) to reveal the content beneath. The content is always rendered and readable; with reduced motion the shutter never appears. Use it for reveals only: the hero compartment, a confirmed rental, a pickup PIN.
 
+### Brand Field
+The landing page's hero and closing bands: a Deep Purple field with two layers of soft light in the brand purples (#7050d4, Lavender, and a deep #1a1230 shadow) drifting slowly across it (22s and 30s, alternating). The light is radial gradients moved only with transform, never a blur filter. Text on it is Soft White. It stops for reduced motion.
+
 ### Rental Status
 A 12px shape plus a label: hollow circle pending, filled square confirmed, triangle active, ticked square completed, struck circle cancelled, diamond disputed.
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** put the shutter texture only on shutter bands and reveal moments.
+- **Do** use the animated Brand Field for the landing hero and closing bands, and keep the ribbed shutter texture for the compartment reveal and the Explore greeting.
 - **Do** give every labelled action button the brand gradient: filled for primary, as a 1px hairline border on the panel fill for secondary.
 - **Do** use the Lavender stamp for every selected state, the same way everywhere.
 - **Do** show rental states with the Rental Status shape and label.

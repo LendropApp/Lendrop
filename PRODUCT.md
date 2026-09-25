@@ -21,12 +21,12 @@ Lendrop is a peer-to-peer rental marketplace. The full loop is: publish → sear
 
 ## Positioning
 
-Handoffs happen through lockers, not meetups. The owner drops the item into an assigned locker compartment and the renter collects it with a system-generated PIN/code. Every locker event is logged. Identity is tied to the Salvadoran national ID (DUI), and photo evidence is required before and after each rental.
+Handoffs happen through lockers, not meetups. The owner drops the item into an assigned locker compartment and the renter collects it by confirming their identity (DUI and account password) at the locker. Every locker event is logged. Identity is tied to the Salvadoran national ID (DUI), and photo evidence is required before and after each rental.
 
 ## Operating Context
 
 - Market: El Salvador. Currency USD. Payments through Wompi El Salvador (sandbox today, production later).
-- Lockers are simulated in software today (state + PIN/QR). Physical hardware comes later behind the same `LockerProvider` interface.
+- Lockers are simulated in software today (state + identity check). Physical hardware comes later behind the same `LockerProvider` interface.
 - Item size is estimated and checked against locker compartment sizes before listing.
 - Users switch between renter and host roles in the same account (host onboarding at `/become-host`).
 

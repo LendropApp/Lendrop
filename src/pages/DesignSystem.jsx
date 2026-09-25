@@ -106,8 +106,8 @@ export default function DesignSystem() {
               <p className="text-sm text-text-muted">days, Oct 4 – Oct 7</p>
             </div>
             <div>
-              <p className="locker-code text-4xl font-medium">482 913</p>
-              <p className="text-sm text-text-muted">pickup PIN</p>
+              <p className="locker-code text-4xl font-medium">B4</p>
+              <p className="text-sm text-text-muted">compartment</p>
             </div>
           </div>
         </Section>

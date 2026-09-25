@@ -99,7 +99,7 @@
       },
       "code": {
         "displayName": "Code",
-        "purpose": "Locker codes, PINs, timestamps."
+        "purpose": "Locker and compartment codes, timestamps."
       }
     },
     "shadows": [
@@ -217,7 +217,7 @@
       },
       {
         "name": "The Sign Scale Rule",
-        "body": "Prices, dates and PINs are lettering, not body text: set them in the number or code style, large, never buried in a sentence.",
+        "body": "Prices, dates and compartment codes are lettering, not body text: set them in the number or code style, large, never buried in a sentence.",
         "section": "typography"
       },
       {
@@ -247,7 +247,7 @@
       "Don't use frosted glass, backdrop blur, glowing blobs or gradient washes outside the auth screens. The primary-button gradient is the only gradient elsewhere.",
       "Don't use Lavender as text in light mode.",
       "Don't put uppercase eyebrow labels above headings.",
-      "Don't use monospace for anything but codes, PINs and timestamps.",
+      "Don't use monospace for anything but codes, card numbers and timestamps.",
       "Don't publish invented counts, ratings or testimonials."
     ]
   }

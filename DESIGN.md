@@ -95,7 +95,7 @@ components:
 
 Lendrop's handoff is a locker door opening, so the brand is drawn from the roll-down metal shutters of Salvadoran storefronts and the sign-painted lettering on them, redrawn with machined precision. Brand moments are flat Deep Purple fields ribbed like shutter steel, carrying wide, heavy lettering. The one signature motion is the shutter rolling up to reveal what is behind it.
 
-Everything else is quiet. App screens are plain Soft White or Jet Black grounds with solid panels, hairline borders and purple used precisely. Real item photos and real states (statuses, prices, PINs, locker events) carry the interface; there is no decorative imagery.
+Everything else is quiet. App screens are plain Soft White or Jet Black grounds with solid panels, hairline borders and purple used precisely. Real item photos and real states (statuses, prices, compartment codes, locker events) carry the interface; there is no decorative imagery.
 
 The system rejects the aurora/glass look on app screens: no frosted panels, no glowing blobs, no gradient washes, no lavender halos. Two deliberate exceptions: primary buttons keep the brand gradient, and the login, signup and password screens keep their original animated backdrop (the locker wall, drifting aurora and sliding tabs).
 
@@ -134,7 +134,7 @@ Two brand purples do all the expressive work; everything else is neutral.
 
 **Display Font:** Archivo, loaded with its width axis (with ui-sans-serif)
 **Body Font:** Manrope (with ui-sans-serif)
-**Label/Mono Font:** JetBrains Mono, for locker codes, PINs and timestamps only
+**Label/Mono Font:** JetBrains Mono, for locker and compartment codes, card numbers and timestamps only
 
 **Character:** Archivo stretched to 125% width reads as painted shop lettering; Manrope underneath keeps body text calm and legible.
 
@@ -144,10 +144,10 @@ Two brand purples do all the expressive work; everything else is neutral.
 - **Title** (700, 1rem): card and step titles, 112% width.
 - **Body** (400, 1rem, 1.6): paragraphs, capped around 48–60ch.
 - **Number** (800, tabular): prices, counts and step numbers at sign scale.
-- **Code** (400, tabular, 0.05em tracking): locker codes, PINs, log timestamps.
+- **Code** (400, tabular, 0.05em tracking): locker and compartment codes, log timestamps.
 
 ### Named Rules
-**The Sign Scale Rule.** Prices, dates and PINs are lettering, not body text: set them in the number or code style, large, never buried in a sentence.
+**The Sign Scale Rule.** Prices, dates and compartment codes are lettering, not body text: set them in the number or code style, large, never buried in a sentence.
 
 **The No Eyebrow Rule.** Headings stand alone. No uppercase labels above them.
 
@@ -203,7 +203,7 @@ Cut-metal corners: 8px for small controls, 10px for buttons and inputs, 12px for
 - **Mobile:** a two-action bottom bar (Publish, Profile) and a drawer for everything else.
 
 ### Shutter
-A ribbed Shutter Purple panel lettered with a label that rolls up once (1.1s, `cubic-bezier(0.7, 0, 0.2, 1)`, 350ms delay) to reveal the content beneath. The content is always rendered and readable; with reduced motion the shutter never appears. Use it for reveals only: the hero compartment, a confirmed rental, a pickup PIN.
+A ribbed Shutter Purple panel lettered with a label that rolls up once (1.1s, `cubic-bezier(0.7, 0, 0.2, 1)`, 350ms delay) to reveal the content beneath. The content is always rendered and readable; with reduced motion the shutter never appears. Use it for reveals only: the hero compartment, a confirmed rental, an item ready for pickup.
 
 ### Brand Field
 The landing page's hero and closing bands: a Deep Purple field with two layers of soft light in the brand purples (#7050d4, Lavender, and a deep #1a1230 shadow) drifting slowly across it (22s and 30s, alternating). The light is radial gradients moved only with transform, never a blur filter. Text on it is Soft White. It stops for reduced motion.
@@ -224,5 +224,5 @@ A 12px shape plus a label: hollow circle pending, filled square confirmed, trian
 - **Don't** use frosted glass, backdrop blur, glowing blobs or gradient washes outside the auth screens. The primary-button gradient is the only gradient elsewhere.
 - **Don't** use Lavender as text in light mode.
 - **Don't** put uppercase eyebrow labels above headings.
-- **Don't** use monospace for anything but codes, PINs and timestamps.
+- **Don't** use monospace for anything but codes, card numbers and timestamps.
 - **Don't** publish invented counts, ratings or testimonials.

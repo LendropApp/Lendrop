@@ -14,14 +14,13 @@ const SAMPLE_LISTING = {
   item: 'Canon EOS R6',
   price: 18,
   location: 'Downtown San Salvador',
-  pin: '482 913',
   image:
     'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=900&q=80',
 }
 
 const SAMPLE_LOG = [
   { time: 'Oct 4 · 09:12', who: 'Owner', event: 'Item deposited, photo attached' },
-  { time: 'Oct 4 · 18:40', who: 'Renter', event: 'Item retrieved with PIN' },
+  { time: 'Oct 4 · 18:40', who: 'Renter', event: 'Item retrieved, identity checked' },
   { time: 'Oct 7 · 17:05', who: 'Renter', event: 'Return deposited, photo attached' },
   { time: 'Oct 7 · 19:30', who: 'Owner', event: 'Return retrieved' },
 ]
@@ -38,7 +37,7 @@ const HANDOFF_STEPS = [
   },
   {
     title: 'You pick it up',
-    desc: 'Your PIN opens the compartment. The drop-off photo shows the condition it was left in.',
+    desc: 'Confirm it is you with your DUI and password, and the compartment opens. The drop-off photo shows the condition it was left in.',
     status: 'active',
   },
   {
@@ -184,7 +183,7 @@ export default function Home() {
               </h1>
               <p className="mt-6 max-w-[52ch] text-lg leading-relaxed text-soft-white/85">
                 Borrow cameras, tools, bikes and more from people in El Salvador. The owner leaves it
-                in a locker and you pick it up with a PIN. You never have to meet.
+                in a locker and you pick it up by confirming it is you. You never have to meet.
               </p>
             </div>
 
@@ -263,7 +262,7 @@ export default function Home() {
               <Checklist
                 items={[
                   'Pay by card online, before anything changes hands',
-                  'Get your pickup PIN once the owner drops it off',
+                  'Get your locker and compartment once the owner drops it off',
                   'Return it to the same locker when you are done',
                 ]}
               />

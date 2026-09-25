@@ -1,7 +1,7 @@
 /**
  * The brand's one signature moment: a ribbed Deep Purple shutter that
  * rolls up once to reveal what is behind it (an item in its compartment,
- * a confirmed rental, a pickup PIN). Use it for those reveals only, not
+ * a confirmed rental, an item ready for pickup). Use it for those reveals only, not
  * as decoration on ordinary screens.
  *
  * The children are always rendered and readable; the shutter is a layer

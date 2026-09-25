@@ -13,7 +13,7 @@ Whole-app redesign, wave 1: the shared design system (tokens, type, browser surf
 
 THESIS: Lendrop's handoff is a locker door opening, so the brand is a Salvadoran storefront rótulo on a roll-down shutter, redrawn with machined precision. It refuses the rental-marketplace default (photo hero + search + trust badges) and the dark-neon futurist glow.
 
-OWN-WORLD: Flat Deep Purple #433075 fields that own whole regions, Lavender #a58cf4 as the one selection/stamp colour, ribbed shutter steel as the only texture, Soft White and Jet Black grounds. Wide expanded grotesk lettering (Archivo, stretched) at sign scale; Manrope body; JetBrains Mono only for codes and PINs. Rectangular panels with small machined radii; no glass, no blur, no gradients, no glow.
+OWN-WORLD: Flat Deep Purple #433075 fields that own whole regions, Lavender #a58cf4 as the one selection/stamp colour, ribbed shutter steel as the only texture, Soft White and Jet Black grounds. Wide expanded grotesk lettering (Archivo, stretched) at sign scale; Manrope body; JetBrains Mono only for codes and card numbers. Rectangular panels with small machined radii; no glass, no blur, no gradients, no glow.
 
 STORY: Visitors understand that strangers lend through a locker and never meet; they believe it because verification, photo evidence and locker events are shown as real states; renters reserve, hosts list.
 

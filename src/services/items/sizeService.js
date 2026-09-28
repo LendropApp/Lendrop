@@ -48,8 +48,8 @@ export async function estimateItemSize({ category, title, description }) {
 }
 
 // Per-category cap on the longest packed side (cm), or null when only the
-// locker sizes limit it. Bicycles use it so only small bikes get listed;
-// the set_item_required_locker_size trigger enforces the same cap on save.
+// locker sizes limit it. The set_item_required_locker_size trigger
+// enforces the same cap on save.
 export async function getCategoryMaxLengthCm(categorySlug) {
   const { data, error } = await supabase
     .from('categories')

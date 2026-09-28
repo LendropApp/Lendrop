@@ -199,7 +199,7 @@ create table public.categories (
   -- conceptually part of categories.
   default_locker_size text,
   -- Límite del lado más largo empacado (cm); NULL = solo lo limitan los
-  -- tamaños de locker. Bicicletas: solo pequeñas (de niño o plegables).
+  -- tamaños de locker.
   max_item_length_cm numeric(6,1) check (max_item_length_cm is null or max_item_length_cm > 0)
 );
 
@@ -223,7 +223,6 @@ insert into public.categories (name, slug, display_order, default_locker_size) v
   ('Cameras', 'cameras', 3, 'small'),
   ('Drones', 'drones', 4, 'medium'),
   ('Musical Instruments', 'musical-instruments', 5, 'xlarge'),
-  ('Bicycles', 'bicycles', 6, null),  -- sin tamaño por defecto: el dueño debe dar medidas (ver max_item_length_cm abajo)
   ('Sports Equipment', 'sports-equipment', 7, 'large'),
   ('Electronics', 'electronics', 8, 'small'),
   ('Camping Equipment', 'camping-equipment', 9, 'large'),
@@ -231,7 +230,6 @@ insert into public.categories (name, slug, display_order, default_locker_size) v
   ('Costumes', 'costumes', 11, 'medium');
 
 update public.categories set damage_liability_cap = 500 where slug in ('cameras', 'drones', 'electronics');
-update public.categories set max_item_length_cm = 100 where slug = 'bicycles';
 
 
 -- ────────────────────────────────────────────────────────────────────

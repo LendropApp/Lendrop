@@ -22,10 +22,8 @@ function fitFor(l, w, h, kg, sizeClasses, maxLengthCm) {
   return computeRequiredLockerSize(l, w, h, kg, sizeClasses)
 }
 
-function tooLongMessage(category, maxLengthCm) {
-  return category === 'bicycles'
-    ? `Only small bikes can be listed, like kids' or folding bikes, up to ${maxLengthCm} cm on the longest side.`
-    : `Items in this category can be up to ${maxLengthCm} cm on the longest side.`
+function tooLongMessage(maxLengthCm) {
+  return `Items in this category can be up to ${maxLengthCm} cm on the longest side.`
 }
 
 function SizeScaleIllustration({ sizeClasses, recommendedCode }) {
@@ -102,7 +100,7 @@ export default function ItemSizeStep({ category, title, description, initialDime
     }
   }, [category])
 
-  // Capped categories (bikes) have no default size, so the owner has to
+  // Capped categories usually have no default size, so the owner has to
   // enter real measurements -- open the inputs straight away.
   useEffect(() => {
     if (maxLengthCm != null && phase === 'fallback') setEditing(true)
@@ -171,7 +169,7 @@ export default function ItemSizeStep({ category, title, description, initialDime
         heightCm: null,
         weightKg: null,
         blocked: needsDims,
-        blockedMessage: needsDims ? `Enter the measurements. ${tooLongMessage(category, maxLengthCm)}` : '',
+        blockedMessage: needsDims ? `Enter the measurements. ${tooLongMessage(maxLengthCm)}` : '',
       })
       return
     }
@@ -184,9 +182,9 @@ export default function ItemSizeStep({ category, title, description, initialDime
       heightCm: h,
       weightKg: kg || null,
       blocked: !fit,
-      blockedMessage: tooLong ? tooLongMessage(category, maxLengthCm) : '',
+      blockedMessage: tooLong ? tooLongMessage(maxLengthCm) : '',
     })
-  }, [lengthCm, widthCm, heightCm, weightKg, sizeClasses, maxLengthCm, category]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [lengthCm, widthCm, heightCm, weightKg, sizeClasses, maxLengthCm]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleManualChange(setter) {
     return (e) => {
@@ -302,7 +300,7 @@ export default function ItemSizeStep({ category, title, description, initialDime
             Packed item measurements
           </p>
           {maxLengthCm != null && !tooLong && (
-            <p className="text-xs text-text-muted">{tooLongMessage(category, maxLengthCm)}</p>
+            <p className="text-xs text-text-muted">{tooLongMessage(maxLengthCm)}</p>
           )}
           <div className="grid grid-cols-3 gap-2">
             <div>
@@ -386,7 +384,7 @@ export default function ItemSizeStep({ category, title, description, initialDime
           <div>
             <p className="font-semibold">
               {tooLong ? (
-                tooLongMessage(category, maxLengthCm)
+                tooLongMessage(maxLengthCm)
               ) : (
                 <>
                   This item is too large for our lockers (max {XLARGE_LIMITS.height}×{XLARGE_LIMITS.width}×

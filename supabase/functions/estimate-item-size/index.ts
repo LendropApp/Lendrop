@@ -140,7 +140,7 @@ Deno.serve(async (request) => {
 
     const systemPrompt = `You estimate the PACKED dimensions and weight of items listed on Lendrop, a peer-to-peer rental marketplace in El Salvador where items are handed over through smart lockers.
 
-"Packed" means how the owner would realistically place it in a locker: inside its usual case, bag, garment bag or box (camera in its bag, drone in its case, guitar in its gig bag, tent in its sack, clothing folded in a box or garment bag, bicycle folded if it's a folding bike, otherwise whole with handlebars turned sideways).
+"Packed" means how the owner would realistically place it in a locker: inside its usual case, bag, garment bag or box (camera in its bag, drone in its case, guitar in its gig bag, tent in its sack, clothing folded in a box or garment bag).
 
 Rules:
 - Use your knowledge of the specific brand/model when one is given; otherwise use typical sizes for that kind of item.
@@ -214,7 +214,7 @@ Respond with ONLY this JSON, no other text:
   }
 
   // La recomendación la calcula la BD con la misma regla que el trigger de items
-  // (incluido el límite de largo de la categoría, p. ej. bicicletas pequeñas)
+  // (incluido el límite de largo de la categoría, si tiene uno)
   const tooLongForCategory = maxLengthCm != null && estimate.length_cm > maxLengthCm
   const { data: sizeCode, error: sizeErr } = await admin.rpc('compute_required_locker_size', {
     p_l: estimate.length_cm,

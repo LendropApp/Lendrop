@@ -66,7 +66,7 @@ Deno.serve(async (request) => {
   const title = typeof body.title === 'string' ? body.title.trim().slice(0, 150) : ''
   const description = typeof body.description === 'string' ? body.description.trim().slice(0, 2000) : ''
   if (!category) return json({ error: 'CATEGORY_REQUIRED' }, 400)
-  if (title.length < 3) return json({ error: 'TITLE_REQUIRED', message: 'Escribe el nombre del artículo para estimar su tamaño.' }, 400)
+  if (title.length < 3) return json({ error: 'TITLE_REQUIRED', message: 'Enter the item’s name to estimate its size.' }, 400)
 
   const admin = createClient(supabaseUrl, serviceKey)
 
@@ -104,15 +104,19 @@ Deno.serve(async (request) => {
       weightKg: null,
       confidence: 'low',
       packaging: null,
-      reasoning: `Tamaño típico para ${categoryRow.name}. Ingresa las medidas reales para una recomendación exacta.`,
+      reasoning:
+        maxLengthCm != null
+          ? `We couldn't estimate this one. Enter the real packed measurements to check that it fits.`
+          : `Typical size for ${categoryRow.name.trim()}. Enter the real measurements for an exact recommendation.`,
       fitsInLockers: Boolean(categoryRow.default_locker_size),
       recommendedSize: sizeInfo(categoryRow.default_locker_size),
       maxLengthCm,
       fallbackReason: reason,
     })
 
-  // Caché
-  const cacheKey = await sha256Hex(`${category}:${norm(title)}:${norm(description)}`)
+  // Caché. El prefijo "en:" invalida las entradas viejas, cuyos textos
+  // (packaging/reasoning) estaban en español.
+  const cacheKey = await sha256Hex(`en:${category}:${norm(title)}:${norm(description)}`)
   let estimate: Estimate | null = null
   let cached = false
 
@@ -143,10 +147,10 @@ Rules:
 - Return the three outer dimensions in centimeters (length >= width >= height) and weight in kilograms.
 - Be realistic, never optimistic: if unsure, round UP.
 - confidence: "high" if a specific known model is identifiable, "medium" for a clear generic item, "low" if the description is vague.
-- packaging and reasoning: short, in Spanish.
+- packaging and reasoning: short, in English.
 
 Respond with ONLY this JSON, no other text:
-{"length_cm": <number>, "width_cm": <number>, "height_cm": <number>, "weight_kg": <number>, "confidence": "high"|"medium"|"low", "packaging": "<como va empacado>", "reasoning": "<una frase corta>"}`
+{"length_cm": <number>, "width_cm": <number>, "height_cm": <number>, "weight_kg": <number>, "confidence": "high"|"medium"|"low", "packaging": "<how it's packed>", "reasoning": "<one short sentence>"}`
 
     const userPrompt = `Category: ${categoryRow.name}\nTitle: ${title}\nDescription: ${description || '(none)'}`
 

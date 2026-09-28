@@ -68,7 +68,8 @@ async function normalizeFunctionError(error) {
     try {
       const body = await error.context.json()
       const code = body?.error ?? 'UNKNOWN'
-      return { code, message: body?.message || FUNCTION_ERROR_MESSAGES[code] || DEFAULT_MESSAGE }
+      // Our own English copy wins over the function's message text.
+      return { code, message: FUNCTION_ERROR_MESSAGES[code] || body?.message || DEFAULT_MESSAGE }
     } catch {
       return { code: 'UNKNOWN', message: DEFAULT_MESSAGE }
     }

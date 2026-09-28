@@ -8,6 +8,7 @@ import { getCategoryIcon } from '../lib/categoryIcons'
 import PageHeader from '../components/PageHeader'
 import StatusMessage from '../components/StatusMessage'
 import VerificationNotice from '../components/VerificationNotice'
+import ListingDraftBanner from '../components/ListingDraftBanner'
 
 // is_available doubles as the published/paused switch: a paused listing
 // still exists and stays editable, it just drops out of Explore and out
@@ -153,6 +154,7 @@ export default function MyListings() {
 
         <div className="mt-4 space-y-3">
           <StatusMessage type={status.type} text={status.text} />
+          <ListingDraftBanner />
           {!isVerified && <VerificationNotice status={verificationStatus} action="publish" />}
         </div>
 

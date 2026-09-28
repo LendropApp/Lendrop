@@ -29,6 +29,7 @@ import MobileNav from '../components/MobileNav'
 import { buildSteps } from '../components/ProfileCompletion'
 import Logo from '../components/Logo'
 import SiteFooter from '../components/SiteFooter'
+import ListingDraftBanner from '../components/ListingDraftBanner'
 
 const ROUTES = {
   becomeLender: '/become-host',
@@ -458,6 +459,13 @@ export default function Explore() {
           </p>
         </div>
       </section>
+
+      {/* ================= UNFINISHED LISTING ================= */}
+      {user && (
+        <div className="mx-auto max-w-6xl px-6 pt-6 empty:hidden sm:px-10">
+          <ListingDraftBanner />
+        </div>
+      )}
 
       {/* ================= PROFILE COMPLETION NUDGE ================= */}
       {profileIncomplete && (

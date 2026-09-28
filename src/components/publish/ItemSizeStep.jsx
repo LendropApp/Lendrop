@@ -71,7 +71,9 @@ export default function ItemSizeStep({ category, title, description, initialDime
   const [estimate, setEstimate] = useState(null)
   const [errorMessage, setErrorMessage] = useState('')
 
-  const [editing, setEditing] = useState(false)
+  // Saved measurements (an edit, or a restored draft) are shown straight
+  // away rather than hidden behind "Adjust measurements".
+  const [editing, setEditing] = useState(Boolean(initialDimensions))
   const [userEdited, setUserEdited] = useState(Boolean(initialDimensions))
   const [lengthCm, setLengthCm] = useState(initialDimensions?.lengthCm ?? '')
   const [widthCm, setWidthCm] = useState(initialDimensions?.widthCm ?? '')

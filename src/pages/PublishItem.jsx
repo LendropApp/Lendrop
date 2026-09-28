@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, Check, ImagePlus, X } from 'lucide-react'
+import { ArrowLeft, Check, History, ImagePlus, X } from 'lucide-react'
 import StatusMessage from '../components/StatusMessage'
 import VerificationNotice from '../components/VerificationNotice'
 import { isVerificationError } from '../lib/verification'
@@ -11,6 +11,7 @@ import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
 import { getCategoryIcon } from '../lib/categoryIcons'
 import { getItemPhotoUrl } from '../lib/photos'
+import { clearListingDraft, loadListingDraft, saveListingDraft } from '../lib/listingDraft'
 import useSmartBack from '../hooks/useSmartBack'
 
 const MAX_PHOTOS = 6
@@ -109,6 +110,120 @@ export default function PublishItem() {
   const [published, setPublished] = useState(null)
   const [sizeValues, setSizeValues] = useState({ lengthCm: null, widthCm: null, heightCm: null, weightKg: null, blocked: false })
   const [initialSizeValues, setInitialSizeValues] = useState(null)
+  // Drafts only apply to a new listing. The form waits for the draft
+  // check so ItemSizeStep mounts with the restored measurements.
+  const [draftReady, setDraftReady] = useState(isEditing)
+  const [restoredAt, setRestoredAt] = useState(null)
+  const [sizeStepKey, setSizeStepKey] = useState(0)
+  const draftTimer = useRef(null)
+  const pendingDraft = useRef(null) // latest unsaved snapshot, flushed on leave
+
+  // Restore the unfinished listing the user left, if there is one.
+  useEffect(() => {
+    if (isEditing || !user) return
+    let cancelled = false
+    loadListingDraft(user.id).then((draft) => {
+      if (cancelled) return
+      if (draft) {
+        setTitle(draft.title ?? '')
+        setDescription(draft.description ?? '')
+        setCategorySlug(draft.categorySlug ?? null)
+        setCondition(draft.condition ?? 'good')
+        setPricePerDay(draft.pricePerDay ?? '')
+        setDeclaredValue(draft.declaredValue ?? '')
+        if (draft.locationCity) setLocationCity(draft.locationCity)
+        if (draft.size?.lengthCm != null) setInitialSizeValues(draft.size)
+        setPhotos(
+          (draft.photos ?? []).map((photo, index) => {
+            const file = new File([photo.file], photo.name || `photo-${index + 1}.jpg`, { type: photo.type || photo.file.type })
+            return {
+              id: `draft-${index}-${Math.random().toString(36).slice(2)}`,
+              file,
+              previewUrl: URL.createObjectURL(file),
+            }
+          })
+        )
+        setRestoredAt(draft.savedAt ?? null)
+      }
+      setDraftReady(true)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [isEditing, user])
+
+  // Autosave the new-listing form a moment after each change, photos
+  // included, so leaving the page never loses what was filled in.
+  useEffect(() => {
+    if (isEditing || !user || !draftReady || published) return
+    clearTimeout(draftTimer.current)
+    pendingDraft.current = {
+      title,
+      description,
+      categorySlug,
+      condition,
+      pricePerDay,
+      declaredValue,
+      locationCity,
+      size:
+        sizeValues.lengthCm != null
+          ? {
+              lengthCm: sizeValues.lengthCm,
+              widthCm: sizeValues.widthCm,
+              heightCm: sizeValues.heightCm,
+              weightKg: sizeValues.weightKg ?? '',
+            }
+          : null,
+      photos: photos.map((p) => ({ file: p.file, name: p.file.name, type: p.file.type })),
+    }
+    draftTimer.current = setTimeout(() => {
+      saveListingDraft(user.id, pendingDraft.current)
+      pendingDraft.current = null
+    }, 600)
+    return () => clearTimeout(draftTimer.current)
+  }, [
+    isEditing,
+    user,
+    draftReady,
+    published,
+    title,
+    description,
+    categorySlug,
+    condition,
+    pricePerDay,
+    declaredValue,
+    locationCity,
+    sizeValues,
+    photos,
+  ])
+
+  // Leaving the page right after typing: save the last change instead of
+  // dropping it with the pending timer.
+  useEffect(() => {
+    const userId = user?.id
+    return () => {
+      if (userId && pendingDraft.current) saveListingDraft(userId, pendingDraft.current)
+    }
+  }, [user?.id])
+
+  function handleDiscardDraft() {
+    clearTimeout(draftTimer.current)
+    pendingDraft.current = null
+    clearListingDraft(user?.id)
+    photos.forEach((p) => URL.revokeObjectURL(p.previewUrl))
+    setPhotos([])
+    setTitle('')
+    setDescription('')
+    setCategorySlug(null)
+    setCondition('good')
+    setPricePerDay('')
+    setDeclaredValue('')
+    setLocationCity(lockerCities.length === 1 ? lockerCities[0] : '')
+    setInitialSizeValues(null)
+    setSizeStepKey((k) => k + 1)
+    setRestoredAt(null)
+    setStatus({ type: '', text: '' })
+  }
 
   useEffect(() => {
     let cancelled = false
@@ -123,7 +238,7 @@ export default function PublishItem() {
         )
         setLockerCities(cities)
         // New listing with a single option: pick it for them.
-        if (!isEditing && cities.length === 1) setLocationCity(cities[0])
+        if (!isEditing && cities.length === 1) setLocationCity((prev) => prev || cities[0])
         setLockerCitiesLoading(false)
       })
     return () => {
@@ -400,6 +515,10 @@ export default function PublishItem() {
     const coverUrl = supabase.storage.from('item-photos').getPublicUrl(photoRows[0].storage_path)
       .data.publicUrl
 
+    // It's live, so there is nothing left to come back to.
+    clearTimeout(draftTimer.current)
+    pendingDraft.current = null
+    clearListingDraft(user.id)
     setPublished({ ...item, coverUrl })
   }
 
@@ -439,6 +558,14 @@ export default function PublishItem() {
             </button>
           </div>
         </div>
+      </div>
+    )
+  }
+
+  if (!draftReady) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-bg">
+        <p className="font-body text-sm text-text-muted">Loading…</p>
       </div>
     )
   }
@@ -529,6 +656,26 @@ export default function PublishItem() {
       >
         <div className="min-w-0 space-y-5">
           {!isEditing && <VerificationNotice status={verificationStatus} action="publish" />}
+
+          {restoredAt && (
+            <div
+              role="status"
+              className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-surface-raised p-4 text-sm"
+            >
+              <History className="h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
+              <p className="min-w-0 flex-1 text-text">
+                <span className="font-semibold">Welcome back.</span>{' '}
+                <span className="text-text-muted">We kept the listing you started, pick up where you left off.</span>
+              </p>
+              <button
+                type="button"
+                onClick={handleDiscardDraft}
+                className="cta-outline shrink-0 rounded-xl px-4 py-1.5 text-sm font-semibold"
+              >
+                Start over
+              </button>
+            </div>
+          )}
 
           {/* ================= 1. PHOTOS ================= */}
           <Step step={stepById.photos} hint={`Up to ${MAX_PHOTOS}. The first one is the cover renters see.`}>
@@ -659,6 +806,7 @@ export default function PublishItem() {
           {/* ================= 3. SIZE ================= */}
           <Step step={stepById.size} hint="So we know it fits a locker compartment.">
             <ItemSizeStep
+              key={sizeStepKey}
               category={categorySlug}
               title={title}
               description={description}

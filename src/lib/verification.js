@@ -25,7 +25,7 @@ const COPY = {
     tone: 'pending',
     title: 'Your documents are under review',
     body: (action) =>
-      `We're still checking your ID. As soon as it's approved you'll be able to ${VERIFICATION_ACTIONS[action]} — reviews usually take less than 24 hours.`,
+      `We're still checking your ID. As soon as it's approved you'll be able to ${VERIFICATION_ACTIONS[action]}, reviews usually take less than 24 hours.`,
     cta: 'Check status',
   },
   rejected: {

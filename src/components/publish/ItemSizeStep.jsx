@@ -275,7 +275,7 @@ export default function ItemSizeStep({ category, title, description, initialDime
                   · <span className="font-mono">{estimate.weightKg} kg</span>
                 </>
               ) : null}
-              {estimate.packaging ? <span className="text-text-muted"> — {estimate.packaging}</span> : null}
+              {estimate.packaging ? <span className="text-text-muted">, {estimate.packaging}</span> : null}
             </p>
           )}
 

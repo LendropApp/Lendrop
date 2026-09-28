@@ -349,7 +349,7 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
         <div className="flex items-start gap-1.5 border-t border-border pt-1.5 text-text-muted">
           <ShieldCheck className="mt-0.5 h-3 w-3 shrink-0" />
           <span>
-            ${Number(checkout.damage_liability_amount).toFixed(2)} damage-liability deposit held — not charged now,
+            ${Number(checkout.damage_liability_amount).toFixed(2)} damage-liability deposit held, not charged now,
             released automatically if the item comes back with no damage.
           </span>
         </div>
@@ -475,7 +475,7 @@ export default function CheckoutPanel({ itemId, startDate, endDate, onBackToDate
           {paying ? 'Processing…' : `Pay $${Number(checkout.amount).toFixed(2)}`}
         </button>
         <p className="text-center text-xs text-text-muted">
-          Test-mode gateway — no real card is ever charged.
+          Test-mode gateway, no real card is ever charged.
         </p>
       </form>
     </div>

@@ -52,7 +52,7 @@ export default function MobileBottomNav() {
           type="button"
           onClick={handlePublish}
           aria-label={
-            blocked ? 'Publish an item — identity verification required' : 'Publish an item'
+            blocked ? 'Publish an item, identity verification required' : 'Publish an item'
           }
           aria-current={isPublishActive ? 'page' : undefined}
           className={`relative flex flex-col items-center gap-1 py-2.5 text-xs font-semibold transition ${

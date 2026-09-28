@@ -138,7 +138,7 @@ export default function History() {
 
     setRentals((prev) => prev.map((r) => (r.id === id ? { ...r, status: 'cancelled' } : r)))
     setConfirmCancelId(null)
-    setCancelStatus({ type: 'success', text: 'Reservation cancelled — refund simulated, no real charge was made.' })
+    setCancelStatus({ type: 'success', text: 'Reservation cancelled, refund simulated, no real charge was made.' })
   }
 
   function openReviewForm(row) {

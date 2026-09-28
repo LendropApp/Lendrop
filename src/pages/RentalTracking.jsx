@@ -164,7 +164,7 @@ export default function RentalTracking() {
 
     setDui('')
     setLendropId('')
-    setFormStatus({ type: 'success', text: 'Locker opened — enjoy your rental!' })
+    setFormStatus({ type: 'success', text: 'Locker opened, enjoy your rental!' })
     await loadReservation()
   }
 
@@ -217,7 +217,7 @@ export default function RentalTracking() {
 
     setReturnDui('')
     setReturnLendropId('')
-    setReturnStatus({ type: 'success', text: 'Return confirmed — thanks!' })
+    setReturnStatus({ type: 'success', text: 'Return confirmed, thanks!' })
     await loadReservation()
   }
 
@@ -236,7 +236,7 @@ export default function RentalTracking() {
         <div className="mx-auto max-w-2xl px-6 py-8 sm:px-10">
           <h1 className="text-3xl font-extrabold">Which rental?</h1>
           <p className="mt-1 text-sm text-text-muted">
-            You have {pickList.length} active rentals — pick one to track.
+            You have {pickList.length} active rentals, pick one to track.
           </p>
           <div className="mt-6 space-y-3">
             {pickList.map((r) => (
@@ -328,7 +328,7 @@ export default function RentalTracking() {
 
           {!reservation.compartment_id && (
             <p className="mt-4 rounded-2xl border border-border bg-surface-raised p-4 text-sm text-text-muted">
-              We're finding you a locker — check back soon.
+              We're finding you a locker, check back soon.
             </p>
           )}
 
@@ -430,7 +430,7 @@ export default function RentalTracking() {
 
           {hasReturnDeposited && !hasReturnRetrieved && (
             <p className="mt-4 rounded-2xl border border-border bg-surface-raised p-4 text-sm text-text-muted">
-              Return dropped off — waiting for the lender to confirm they picked it up.
+              Return dropped off, waiting for the lender to confirm they picked it up.
             </p>
           )}
 

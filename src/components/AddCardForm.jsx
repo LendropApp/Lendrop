@@ -244,7 +244,7 @@ export default function AddCardForm({ onSaved, onCancel, makeDefault = false }) 
         <form onSubmit={handlePaypalSubmit} className="space-y-3">
           <div className="flex items-center gap-2 rounded-xl bg-surface-raised p-3 text-xs text-text-muted">
             <CreditCard className="h-4 w-4 shrink-0 text-primary" />
-            Sandbox: this simulates connecting a PayPal account — no real PayPal login happens.
+            Sandbox: this simulates connecting a PayPal account, no real PayPal login happens.
           </div>
           <div>
             <label className="text-xs font-semibold text-text-muted">PayPal email</label>

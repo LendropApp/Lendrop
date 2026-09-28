@@ -5,6 +5,7 @@ import StatusMessage from '../components/StatusMessage'
 import VerificationNotice from '../components/VerificationNotice'
 import { isVerificationError } from '../lib/verification'
 import PriceSuggestionButton from '../components/PriceSuggestionButton'
+import ReplacementValueSuggestionButton from '../components/ReplacementValueSuggestionButton'
 import ItemSizeStep from '../components/publish/ItemSizeStep'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabaseClient'
@@ -716,6 +717,13 @@ export default function PublishItem() {
                   What it would cost to replace. Sets the renter's refundable damage hold (35% of this,
                   capped by category).
                 </p>
+                <ReplacementValueSuggestionButton
+                  category={categorySlug}
+                  title={title}
+                  description={description}
+                  condition={condition}
+                  onApply={(value) => setDeclaredValue(String(value))}
+                />
               </div>
             </div>
           </Step>

@@ -455,7 +455,7 @@ export default function ItemDetail() {
 
               {Number(item.declared_value) > 0 && (
                 <p className="mt-1 text-xs text-text-muted">
-                  Backed by a refundable damage-liability hold — see breakdown when booking
+                  Backed by a refundable damage-liability hold, see breakdown when booking
                 </p>
               )}
 
@@ -578,7 +578,7 @@ export default function ItemDetail() {
                               <Lock className="mt-0.5 h-3 w-3 shrink-0" />
                               <span>
                                 {breakdown.commission_rate > 0
-                                  ? `Lendrop's ${Math.round(breakdown.commission_rate * 100)}% commission ($${Number(breakdown.commission_amount).toFixed(2)}) is deducted from the lender's payout — it doesn't add to what you pay.`
+                                  ? `Lendrop's ${Math.round(breakdown.commission_rate * 100)}% commission ($${Number(breakdown.commission_amount).toFixed(2)}) is deducted from the lender's payout, it doesn't add to what you pay.`
                                   : `${item.owner?.full_name?.split(' ')[0] ?? 'This lender'} is Premium, so Lendrop charges no commission on this rental.`}
                               </span>
                             </div>
@@ -586,7 +586,7 @@ export default function ItemDetail() {
                             <div className="flex items-start gap-1.5 text-text-muted">
                               <ShieldCheck className="mt-0.5 h-3 w-3 shrink-0" />
                               <span>
-                                ${Number(breakdown.damage_liability_amount).toFixed(2)} damage-liability hold (not charged now — refunded automatically if the item comes back with no damage
+                                ${Number(breakdown.damage_liability_amount).toFixed(2)} damage-liability hold (not charged now, refunded automatically if the item comes back with no damage
                                 {breakdown.damage_liability_cap_applied ? `; capped at $${Number(breakdown.damage_liability_cap_applied).toFixed(2)} for this category` : ''}).
                               </span>
                             </div>
@@ -607,7 +607,7 @@ export default function ItemDetail() {
                             Continue to payment
                           </button>
                           <p className="text-center text-xs text-text-muted">
-                            Next: a Wompi sandbox checkout — no real charge is made until you confirm there.
+                            Next: a Wompi sandbox checkout, no real charge is made until you confirm there.
                           </p>
                         </>
                       )}

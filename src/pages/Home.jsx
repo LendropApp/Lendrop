@@ -38,7 +38,7 @@ const HANDOFF_STEPS = [
   },
   {
     title: 'You bring it back',
-    desc: 'Same locker, a new photo, door closed. No need to find the owner.',
+    desc: 'The nearest available locker, a new photo, door closed. No need to find the owner.',
   },
   {
     title: 'Deposit released',
@@ -179,7 +179,7 @@ export default function Home() {
                 Rent it. Skip the meetup.
               </h1>
               <p className="mt-5 max-w-[52ch] text-base leading-relaxed text-soft-white/85 sm:mt-6 sm:text-lg">
-                Borrow cameras, tools, bikes and more from people in El Salvador. The owner leaves it
+                Borrow cameras, tools, camping gear and more from people in El Salvador. The owner leaves it
                 in a locker and you pick it up by confirming it is you. You never have to meet.
               </p>
             </div>
@@ -260,7 +260,7 @@ export default function Home() {
                 items={[
                   'Pay by card online, before anything changes hands',
                   'Get your locker and compartment once the owner drops it off',
-                  'Return it to the same locker when you are done',
+                  'Return it to the nearest available locker when you are done',
                 ]}
               />
               <Link to="/explore" className="cta-brand mt-8 inline-block rounded-xl px-6 py-3 text-sm font-semibold text-soft-white">

@@ -25,7 +25,7 @@ const TOPICS = [
       },
       {
         q: 'Do I ever have to meet the owner?',
-        a: 'No. The owner leaves the item in the locker and you pick it up there. When you are done you return it to the same locker.',
+        a: 'No. The owner leaves the item in the locker and you pick it up there. When you are done you return it to the nearest available locker.',
       },
       {
         q: 'The item is not in the locker yet. What now?',
@@ -95,7 +95,7 @@ const TOPICS = [
       },
       {
         q: 'How do I hand the item over?',
-        a: 'After a rental is paid, open Drop-offs & returns, photograph the item and confirm the drop-off at the assigned locker with your DUI and Lendrop ID. When it comes back, you collect it the same way.',
+        a: 'After a rental is paid, open Drop-offs & returns, photograph the item and confirm the drop-off at the assigned locker with your DUI and Lendrop ID. When it comes back, you collect it the same way from the locker it was returned to.',
       },
       {
         q: 'The item came back damaged.',

@@ -12,7 +12,7 @@ const ITEMS = [
   { code: 'A3', item: 'DJI drone', photo: 'photo-1527977966376-1c8408f9f108' },
   { code: 'A4', item: 'Polaroid camera', photo: 'photo-1526170375885-4d8ecf77b99f' },
   { code: 'B1', item: 'Acoustic guitar', photo: 'photo-1510915361894-db8b60106cb1' },
-  { code: 'B2', item: 'City bike', photo: 'photo-1485965120184-e220f721d03e' },
+  { code: 'B2', item: 'Folding bike', photo: 'photo-1485965120184-e220f721d03e' },
   { code: 'B3', item: 'Hard-shell suitcase', photo: 'photo-1565026057447-bc90a3dceb87' },
   { code: 'B4', item: 'Bookshelf speaker', photo: 'photo-1545454675-3531b543be5d' },
   { code: 'C1', item: '4-person tent', photo: 'photo-1504280390367-361c6d9f38f4' },

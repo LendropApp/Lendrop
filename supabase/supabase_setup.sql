@@ -197,11 +197,15 @@ create table public.categories (
   -- at this point in the file (section 8), so the FK is added there via
   -- ALTER once it does. The column itself lives here since it's
   -- conceptually part of categories.
-  default_locker_size text
+  default_locker_size text,
+  -- Límite del lado más largo empacado (cm); NULL = solo lo limitan los
+  -- tamaños de locker. Bicicletas: solo pequeñas (de niño o plegables).
+  max_item_length_cm numeric(6,1) check (max_item_length_cm is null or max_item_length_cm > 0)
 );
 
 comment on column public.categories.damage_liability_cap is 'Max USD damage-liability hold for items in this category. NULL = no cap (35% of declared_value applies uncapped).';
 comment on column public.categories.default_locker_size is 'Fallback locker size for items in this category with no owner-provided dimensions yet.';
+comment on column public.categories.max_item_length_cm is 'Max longest packed side (cm) for items in this category. NULL = only the locker sizes limit it.';
 
 -- NOTA DE DESVIACIÓN DEL ESTADO EN VIVO: los nombres/slugs originales de
 -- este seed eran en español (Ropa/ropa, Cámaras/camaras, etc.) — en algún
@@ -219,7 +223,7 @@ insert into public.categories (name, slug, display_order, default_locker_size) v
   ('Cameras', 'cameras', 3, 'small'),
   ('Drones', 'drones', 4, 'medium'),
   ('Musical Instruments', 'musical-instruments', 5, 'xlarge'),
-  ('Bicycles', 'bicycles', 6, 'xlarge'),
+  ('Bicycles', 'bicycles', 6, null),  -- sin tamaño por defecto: el dueño debe dar medidas (ver max_item_length_cm abajo)
   ('Sports Equipment', 'sports-equipment', 7, 'large'),
   ('Electronics', 'electronics', 8, 'small'),
   ('Camping Equipment', 'camping-equipment', 9, 'large'),
@@ -227,6 +231,7 @@ insert into public.categories (name, slug, display_order, default_locker_size) v
   ('Costumes', 'costumes', 11, 'medium');
 
 update public.categories set damage_liability_cap = 500 where slug in ('cameras', 'drones', 'electronics');
+update public.categories set max_item_length_cm = 100 where slug = 'bicycles';
 
 
 -- ────────────────────────────────────────────────────────────────────
@@ -394,15 +399,26 @@ grant execute on function public.compute_required_locker_size(numeric, numeric, 
 
 -- El tamaño requerido siempre lo calcula la BD, nunca el cliente: si el
 -- dueño dio medidas, se calcula con ellas; si no, se usa el tamaño por
--- defecto de la categoría.
+-- defecto de la categoría. Si la categoría tiene max_item_length_cm y el
+-- lado más largo lo supera, no cabe (NULL).
 create function public.set_item_required_locker_size()
 returns trigger
 language plpgsql
 set search_path = public
 as $$
+declare
+  v_max_length numeric;
 begin
   if new.length_cm is not null then
-    new.required_locker_size := public.compute_required_locker_size(new.length_cm, new.width_cm, new.height_cm, new.weight_kg);
+    select c.max_item_length_cm into v_max_length
+    from public.categories c where c.id = new.category_id;
+
+    if v_max_length is not null
+       and greatest(new.length_cm, new.width_cm, new.height_cm) > v_max_length then
+      new.required_locker_size := null;
+    else
+      new.required_locker_size := public.compute_required_locker_size(new.length_cm, new.width_cm, new.height_cm, new.weight_kg);
+    end if;
     new.dimensions_source := 'owner';
   else
     select c.default_locker_size into new.required_locker_size

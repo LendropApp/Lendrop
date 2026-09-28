@@ -269,7 +269,10 @@ export default function PublishItem() {
       return
     }
     if (sizeValues.blocked) {
-      setStatus({ type: 'error', text: 'This item is too large for our lockers. Adjust its measurements before publishing.' })
+      setStatus({
+        type: 'error',
+        text: sizeValues.blockedMessage || 'This item is too large for our lockers. Adjust its measurements before publishing.',
+      })
       return
     }
     if (!locationCity) {

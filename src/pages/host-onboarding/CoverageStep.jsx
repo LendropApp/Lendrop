@@ -85,7 +85,7 @@ export default function CoverageStep({ record, onNext, onBack }) {
         Where can you drop off items?
       </h1>
       <p className="text-text-muted text-sm leading-relaxed mb-8">
-        Pick the lockers you can get to. Renters will pick up and return your items there.
+        Pick the lockers you can get to. Renters will pick up your items there and return them to the nearest available locker.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>

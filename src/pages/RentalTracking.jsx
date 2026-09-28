@@ -380,7 +380,7 @@ export default function RentalTracking() {
                 <p className="font-bold text-text">Return your item</p>
               </div>
               <p className="mb-4 text-sm text-text-muted">
-                Drop it back at the same locker with a condition photo, then confirm with your DUI and Lendrop ID.
+                Drop it back at the nearest available locker with a condition photo, then confirm with your DUI and Lendrop ID.
               </p>
 
               <label

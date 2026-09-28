@@ -72,7 +72,7 @@ Deno.serve(async (request) => {
 
   const { data: categoryRow } = await admin
     .from('categories')
-    .select('id, name, default_locker_size')
+    .select('id, name, default_locker_size, max_item_length_cm')
     .eq('slug', category)
     .maybeSingle()
   if (!categoryRow) return json({ error: 'UNKNOWN_CATEGORY' }, 400)
@@ -95,6 +95,8 @@ Deno.serve(async (request) => {
       : null
   }
 
+  const maxLengthCm = categoryRow.max_item_length_cm == null ? null : Number(categoryRow.max_item_length_cm)
+
   const fallback = (reason: string) =>
     json({
       source: 'category_default',
@@ -105,6 +107,7 @@ Deno.serve(async (request) => {
       reasoning: `Tamaño típico para ${categoryRow.name}. Ingresa las medidas reales para una recomendación exacta.`,
       fitsInLockers: Boolean(categoryRow.default_locker_size),
       recommendedSize: sizeInfo(categoryRow.default_locker_size),
+      maxLengthCm,
       fallbackReason: reason,
     })
 
@@ -133,7 +136,7 @@ Deno.serve(async (request) => {
 
     const systemPrompt = `You estimate the PACKED dimensions and weight of items listed on Lendrop, a peer-to-peer rental marketplace in El Salvador where items are handed over through smart lockers.
 
-"Packed" means how the owner would realistically place it in a locker: inside its usual case, bag, garment bag or box (camera in its bag, drone in its case, guitar in its gig bag, tent in its sack, clothing folded in a box or garment bag, bicycle whole with handlebars turned sideways).
+"Packed" means how the owner would realistically place it in a locker: inside its usual case, bag, garment bag or box (camera in its bag, drone in its case, guitar in its gig bag, tent in its sack, clothing folded in a box or garment bag, bicycle folded if it's a folding bike, otherwise whole with handlebars turned sideways).
 
 Rules:
 - Use your knowledge of the specific brand/model when one is given; otherwise use typical sizes for that kind of item.
@@ -207,6 +210,8 @@ Respond with ONLY this JSON, no other text:
   }
 
   // La recomendación la calcula la BD con la misma regla que el trigger de items
+  // (incluido el límite de largo de la categoría, p. ej. bicicletas pequeñas)
+  const tooLongForCategory = maxLengthCm != null && estimate.length_cm > maxLengthCm
   const { data: sizeCode, error: sizeErr } = await admin.rpc('compute_required_locker_size', {
     p_l: estimate.length_cm,
     p_w: estimate.width_cm,
@@ -226,7 +231,8 @@ Respond with ONLY this JSON, no other text:
     confidence: estimate.confidence,
     packaging: estimate.packaging,
     reasoning: estimate.reasoning,
-    fitsInLockers: Boolean(sizeCode),
-    recommendedSize: sizeInfo(sizeCode ?? null),
+    fitsInLockers: Boolean(sizeCode) && !tooLongForCategory,
+    recommendedSize: tooLongForCategory ? null : sizeInfo(sizeCode ?? null),
+    maxLengthCm,
   })
 })

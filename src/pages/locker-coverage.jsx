@@ -39,7 +39,7 @@ export default function LockerCoverage() {
       <main className="mx-auto max-w-5xl px-6 py-10 sm:px-10">
         <h1 className="text-4xl font-extrabold sm:text-5xl">Locker coverage</h1>
         <p className="mt-4 max-w-[60ch] text-text-muted">
-          Select the locker locations where renters can pick up and return your items.
+          Select the locker locations where renters can pick up your items. Returns go to the nearest available locker.
         </p>
 
         <div className="mt-10">

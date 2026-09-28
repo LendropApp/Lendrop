@@ -1,6 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { AlertTriangle, Info, Ruler, Sparkles, Weight } from 'lucide-react'
-import { estimateItemSize, computeRequiredLockerSize, getLockerSizeClasses } from '../../services/items/sizeService'
+import {
+  estimateItemSize,
+  computeRequiredLockerSize,
+  getCategoryMaxLengthCm,
+  getLockerSizeClasses,
+} from '../../services/items/sizeService'
 
 const CONFIDENCE_COPY = {
   high: { label: 'Accurate estimate', tone: 'text-success bg-success-soft' },
@@ -9,6 +14,19 @@ const CONFIDENCE_COPY = {
 }
 
 const XLARGE_LIMITS = { height: 190, width: 110, depth: 60, weight: 40 }
+
+// Mirrors set_item_required_locker_size: past the category's max length
+// the item fits nothing, otherwise it's the smallest locker it fits.
+function fitFor(l, w, h, kg, sizeClasses, maxLengthCm) {
+  if (maxLengthCm != null && Math.max(l, w, h) > maxLengthCm) return null
+  return computeRequiredLockerSize(l, w, h, kg, sizeClasses)
+}
+
+function tooLongMessage(category, maxLengthCm) {
+  return category === 'bicycles'
+    ? `Only small bikes can be listed, like kids' or folding bikes, up to ${maxLengthCm} cm on the longest side.`
+    : `Items in this category can be up to ${maxLengthCm} cm on the longest side.`
+}
 
 function SizeScaleIllustration({ sizeClasses, recommendedCode }) {
   if (!sizeClasses.length) return null
@@ -71,6 +89,25 @@ export default function ItemSizeStep({ category, title, description, initialDime
       .catch(() => setSizeClasses([]))
   }, [])
 
+  const [maxLengthCm, setMaxLengthCm] = useState(null)
+  useEffect(() => {
+    setMaxLengthCm(null)
+    if (!category) return
+    let cancelled = false
+    getCategoryMaxLengthCm(category).then((max) => {
+      if (!cancelled) setMaxLengthCm(max)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [category])
+
+  // Capped categories (bikes) have no default size, so the owner has to
+  // enter real measurements -- open the inputs straight away.
+  useEffect(() => {
+    if (maxLengthCm != null && phase === 'fallback') setEditing(true)
+  }, [maxLengthCm, phase])
+
   const runEstimate = useRef(async (cat, t, desc) => {
     setPhase('loading')
     setErrorMessage('')
@@ -126,19 +163,30 @@ export default function ItemSizeStep({ category, title, description, initialDime
     const hasDims = lengthCm !== '' && widthCm !== '' && heightCm !== ''
 
     if (!hasDims || sizeClasses.length === 0) {
-      onChange?.({ lengthCm: null, widthCm: null, heightCm: null, weightKg: null, blocked: false })
+      // A capped category can't fall back to a default size: no measurements, no listing.
+      const needsDims = maxLengthCm != null
+      onChange?.({
+        lengthCm: null,
+        widthCm: null,
+        heightCm: null,
+        weightKg: null,
+        blocked: needsDims,
+        blockedMessage: needsDims ? `Enter the measurements. ${tooLongMessage(category, maxLengthCm)}` : '',
+      })
       return
     }
 
-    const fit = computeRequiredLockerSize(l, w, h, kg, sizeClasses)
+    const fit = fitFor(l, w, h, kg, sizeClasses, maxLengthCm)
+    const tooLong = maxLengthCm != null && Math.max(l, w, h) > maxLengthCm
     onChange?.({
       lengthCm: l,
       widthCm: w,
       heightCm: h,
       weightKg: kg || null,
       blocked: !fit,
+      blockedMessage: tooLong ? tooLongMessage(category, maxLengthCm) : '',
     })
-  }, [lengthCm, widthCm, heightCm, weightKg, sizeClasses]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [lengthCm, widthCm, heightCm, weightKg, sizeClasses, maxLengthCm, category]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleManualChange(setter) {
     return (e) => {
@@ -147,11 +195,17 @@ export default function ItemSizeStep({ category, title, description, initialDime
     }
   }
 
-  const previewFit =
-    lengthCm !== '' && widthCm !== '' && heightCm !== ''
-      ? computeRequiredLockerSize(Number(lengthCm), Number(widthCm), Number(heightCm), Number(weightKg) || 0, sizeClasses)
-      : null
-  const blocked = (lengthCm !== '' && widthCm !== '' && heightCm !== '' && !previewFit) || estimate?.fitsInLockers === false
+  const hasDims = lengthCm !== '' && widthCm !== '' && heightCm !== ''
+  const previewFit = hasDims
+    ? fitFor(Number(lengthCm), Number(widthCm), Number(heightCm), Number(weightKg) || 0, sizeClasses, maxLengthCm)
+    : null
+  const tooLong =
+    hasDims && maxLengthCm != null && Math.max(Number(lengthCm), Number(widthCm), Number(heightCm)) > maxLengthCm
+  // Once there are measurements they decide; the estimate only speaks for
+  // itself before that (and a capped category's fallback isn't a verdict).
+  const blocked = hasDims
+    ? !previewFit
+    : estimate?.fitsInLockers === false && !(phase === 'fallback' && maxLengthCm != null)
 
   if (!category || title.trim().length < 3) {
     return (
@@ -247,6 +301,9 @@ export default function ItemSizeStep({ category, title, description, initialDime
             <Ruler className="h-3.5 w-3.5" />
             Packed item measurements
           </p>
+          {maxLengthCm != null && !tooLong && (
+            <p className="text-xs text-text-muted">{tooLongMessage(category, maxLengthCm)}</p>
+          )}
           <div className="grid grid-cols-3 gap-2">
             <div>
               <label htmlFor="size-length" className="mb-1 block text-xs text-text-muted">
@@ -328,8 +385,14 @@ export default function ItemSizeStep({ category, title, description, initialDime
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
           <div>
             <p className="font-semibold">
-              This item is too large for our lockers (max {XLARGE_LIMITS.height}×{XLARGE_LIMITS.width}×
-              {XLARGE_LIMITS.depth} cm, {XLARGE_LIMITS.weight} kg).
+              {tooLong ? (
+                tooLongMessage(category, maxLengthCm)
+              ) : (
+                <>
+                  This item is too large for our lockers (max {XLARGE_LIMITS.height}×{XLARGE_LIMITS.width}×
+                  {XLARGE_LIMITS.depth} cm, {XLARGE_LIMITS.weight} kg).
+                </>
+              )}
             </p>
             <p className="mt-1 text-xs text-danger">It can't be published as available. Please review the measurements you entered.</p>
           </div>

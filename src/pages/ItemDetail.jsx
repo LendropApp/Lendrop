@@ -230,7 +230,6 @@ export default function ItemDetail() {
       navigate('/login', { state: { from: { pathname: `/item/${itemId}` } } })
       return
     }
-    setBookingStatus({ type: '', text: '' })
     setShowBooking((v) => !v)
   }
 

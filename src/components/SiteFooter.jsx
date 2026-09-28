@@ -82,7 +82,7 @@ export default function SiteFooter() {
         </div>
 
         <div className="mt-10 flex flex-col items-start gap-4 border-t border-border pt-6 text-xs text-text-muted sm:flex-row sm:items-center sm:justify-between">
-          <span>© {new Date().getFullYear()} Lendrop · San Salvador, El Salvador</span>
+          <span>© {new Date().getFullYear()} Lendrop · Sitio del Niño, El Salvador</span>
           <PoweredBy />
         </div>
       </div>

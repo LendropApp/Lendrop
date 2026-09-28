@@ -67,26 +67,26 @@ function luhn(num: string): boolean {
 export function validateCard(card: CardInput): string {
   const num = String(card?.number ?? '').replace(/\s|-/g, '')
   if (!/^[0-9]{13,19}$/.test(num) || !luhn(num)) {
-    throw new CardValidationError('INVALID_CARD_NUMBER', 'El número de tarjeta no es válido.')
+    throw new CardValidationError('INVALID_CARD_NUMBER', 'That card number isn’t valid.')
   }
   const month = Number(card.expMonth)
   let year = Number(card.expYear)
   if (year < 100) year += 2000
   if (!Number.isInteger(month) || month < 1 || month > 12 || !Number.isInteger(year)) {
-    throw new CardValidationError('INVALID_EXPIRY', 'La fecha de vencimiento no es válida.')
+    throw new CardValidationError('INVALID_EXPIRY', 'That expiry date isn’t valid.')
   }
   const now = new Date()
   const expEnd = new Date(Date.UTC(year, month, 1))
   if (expEnd <= now) {
-    throw new CardValidationError('CARD_EXPIRED', 'La tarjeta está vencida.')
+    throw new CardValidationError('CARD_EXPIRED', 'That card has expired.')
   }
   const brand = detectBrand(num)
   const cvcLen = brand === 'AMEX' ? 4 : 3
   if (!new RegExp(`^[0-9]{${cvcLen}}$`).test(String(card.cvc ?? ''))) {
-    throw new CardValidationError('INVALID_CVC', 'El código de seguridad no es válido.')
+    throw new CardValidationError('INVALID_CVC', 'That security code isn’t valid.')
   }
   if (String(card.holderName ?? '').trim().length < 3) {
-    throw new CardValidationError('INVALID_HOLDER', 'Escribe el nombre como aparece en la tarjeta.')
+    throw new CardValidationError('INVALID_HOLDER', 'Enter the name exactly as it appears on the card.')
   }
   return num
 }

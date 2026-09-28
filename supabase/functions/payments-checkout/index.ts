@@ -70,7 +70,7 @@ Deno.serve(async (request) => {
       p_transaction_id: `expire:${payment.id}`,
       p_failure_reason: 'checkout_expired',
     })
-    return json({ error: 'CHECKOUT_EXPIRED', message: 'El tiempo para pagar venció. Vuelve a reservar las fechas.' }, 410)
+    return json({ error: 'CHECKOUT_EXPIRED', message: 'The time to pay ran out. Please pick your dates again.' }, 410)
   }
 
   const gateway = resolveGateway()
@@ -90,7 +90,7 @@ Deno.serve(async (request) => {
   } catch (e) {
     if (e instanceof CardValidationError) return json({ error: e.code, message: e.message }, 422)
     console.error('gateway_failure', { paymentId: payment.id, error: String(e) })
-    return json({ error: 'GATEWAY_UNAVAILABLE', message: 'La pasarela no respondió. Intenta de nuevo.' }, 502)
+    return json({ error: 'GATEWAY_UNAVAILABLE', message: 'The payment gateway didn’t respond. Please try again.' }, 502)
   }
 
   const { data: applied, error: applyErr } = await admin.rpc('apply_payment_result', {

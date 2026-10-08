@@ -1,0 +1,17 @@
+{
+  "name": "lendrop-demo-videos",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Scripted screen recordings of the real Lendrop UI for the pitch deck.",
+  "scripts": {
+    "video1": "node video1-signup.mjs",
+    "video2": "node video2-booking.mjs",
+    "video3": "node video3-publish.mjs",
+    "still": "node video3-publish.mjs --still",
+    "cleanup": "node cleanup.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0"
+  }
+}
